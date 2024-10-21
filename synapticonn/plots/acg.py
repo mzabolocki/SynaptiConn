@@ -30,7 +30,7 @@ plt.style.use(style_path)  # set globally
 @check_dependency(plt, 'matplotlib')
 @check_ndim
 @check_empty
-def plot_acg(spike_train_ms, bin_size_ms=1, max_lag_ms=100, ax=None, **kwargs):
+def plot_acg(spike_train_ms, bin_size_ms=1, max_lag_ms=100, abels=True, ax=None, **kwargs):
     """Plot an autocorrelogram for a single spike train.
 
     Parameters
@@ -45,6 +45,8 @@ def plot_acg(spike_train_ms, bin_size_ms=1, max_lag_ms=100, ax=None, **kwargs):
         Default is 100 ms.
     ax : matplotlib.axes.Axes, optional
         Axis to plot on.
+    labels: bool, optional
+        Whether to add axis labels. Default
     **kwargs
         Additional keyword arguments passed to `ax.bar`.
 
@@ -60,8 +62,10 @@ def plot_acg(spike_train_ms, bin_size_ms=1, max_lag_ms=100, ax=None, **kwargs):
     lags, autocorr = _compute_autocorrelogram(spike_train_ms, bin_size_ms, max_lag_ms)
 
     ax.bar(lags, autocorr, width=bin_size_ms, **kwargs)
-    ax.set_xlabel('Time lag (ms)')
-    ax.set_ylabel('Spike counts/bin')
+
+    if labels:
+        ax.set_xlabel('Time lag (ms)')
+        ax.set_ylabel('Spike counts/bin')
 
     return ax
 
