@@ -69,5 +69,7 @@ def _make_bins(max_lag_ms, bin_size_ms):
 
     bins = np.arange(-max_lag_ms, max_lag_ms + bin_size_ms, bin_size_ms)
 
+    assert len(bins) >= 1, "No bins created. Increase max_lag_ms or decrease bin_size_ms."
+
     return bins
 
