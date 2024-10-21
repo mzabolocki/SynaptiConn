@@ -1,5 +1,5 @@
 #=========================================================================
-# paper.mplstyle
+# plots.mplstyle
 # 
 # A matplotlib style sheet for publication figures. You can store it
 # in $home/.matplotlib/stylelib/ after setting $MPLCONFIGDIR
