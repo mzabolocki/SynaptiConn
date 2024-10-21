@@ -13,18 +13,22 @@ from matplotlib import style
 
 from synapticonn.utils.mod_utils import check_dependency
 from synapticonn.plots.checks import check_empty, check_ndim
+from synapticonn.plots.style import apply_plot_style
 
 
 ##########################################################
 ##########################################################
 
 
-style.use(pathlib.Path('synapticonn', 'plots', 'plots.mplstyle'))
+style_path = pathlib.Path('synapticonn', 'plots', 'plots.mplstyle')
+plt.style.use(style_path)  # set globally
 
 
 ##########################################################
 ##########################################################
 
+
+@apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'plots.mplstyle'))
 @check_dependency(plt, 'matplotlib')
 @check_ndim
 @check_empty
@@ -51,6 +55,7 @@ def plot_acg(spike_train_ms, bin_size_ms=1, max_lag_ms=100, ax=None, **kwargs):
     ax : matplotlib.axes.Axes
         Axis with the autocorrelogram plot.
     """
+
     if ax is None:
         ax = plt.gca()
 
