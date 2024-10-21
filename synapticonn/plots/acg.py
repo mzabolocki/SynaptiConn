@@ -9,8 +9,6 @@ import pathlib
 import numpy as np
 import matplotlib.pyplot as plt
 
-from matplotlib import style
-
 from synapticonn.utils.mod_utils import check_dependency
 from synapticonn.plots.checks import check_empty, check_ndim
 from synapticonn.plots.style import apply_plot_style
