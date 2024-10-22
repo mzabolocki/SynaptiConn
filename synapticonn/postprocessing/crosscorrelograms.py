@@ -11,7 +11,7 @@ import numpy as np
 ##########################################################
 
 
-def compute_cross_correlogram(spike_train_set, labels, bin_size_ms, max_lag_ms):
+def compute_crosscorrelogram(spike_train_set, labels, bin_size_ms, max_lag_ms):
     """ Compute the cross-correlogram between all pairs of spike trains in a set.
 
     Entry function to compute correlograms across all units in a 'spike_train_set'.
