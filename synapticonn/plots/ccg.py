@@ -30,7 +30,7 @@ plt.style.use(style_path)  # set globally
 @check_dependency(plt, 'matplotlib')
 @check_ndim
 @check_empty
-def plot_ccg(spike_train_ms_1, spike_train_ms_2, bin_size_ms=1, max_lag_ms=100, labels=True, ax=None, **kwargs):
+def plot_ccg(cross_correlograms_data, bin_size_ms=1, max_lag_ms=100, labels=True, ax=None, **kwargs):
     """Plot an autocorrelogram for a single spike train.
 
     Parameters
@@ -59,3 +59,28 @@ def plot_ccg(spike_train_ms_1, spike_train_ms_2, bin_size_ms=1, max_lag_ms=100, 
     if ax is None:
         ax = plt.gca()
 
+    pair_identifiers = list(cross_correlograms_data['cross_correllations'].keys())
+
+    labels = [str(label) for label in labels]
+    fig, ax = plt.subplots(len(labels), len(labels), figsize=(25, 15), sharey=False, sharex=True)
+
+    for count, pair_id in enumerate(pair_identifiers):
+
+        cross_corr = cross_correlograms_data['cross_correllations'][pair_id]
+        bins = cross_correlograms_data['bins'][pair_id]
+        bin_size = bins[1] - bins[0]
+
+        y = np.where(np.array(labels) == pair_id.split('_')[0])[0][0]
+        x = np.where(np.array(labels) == pair_id.split('_')[1])[0][0]
+
+        if x == y:
+            ax[x, y].bar(bins[:-1], cross_corr, width=bin_size, align='edge', color='green')
+        else:
+            ax[x, y].bar(bins[:-1], cross_corr, width=bin_size, align='edge', color='blue')
+
+        if x == 0:
+            ax[x, y].set_title(labels[y])
+        if y == 0:
+            ax[x, y].set_ylabel(labels[x])
+        if x == len(labels) - 1:
+            ax[x, y].set_xlabel('Time lag (ms)')
