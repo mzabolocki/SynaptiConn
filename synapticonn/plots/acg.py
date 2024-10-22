@@ -9,9 +9,9 @@ import pathlib
 import numpy as np
 import matplotlib.pyplot as plt
 
-from synapticonn.postprocessing.correlograms import compute_autocorrelogram
+from synapticonn.postprocessing.autocorrelograms import compute_autocorrelogram
 from synapticonn.utils.mod_utils import check_dependency
-from synapticonn.plots.checks import check_empty, check_ndim
+from synapticonn.plots.checks import check_empty, check_ndim, check_millisecond
 from synapticonn.plots.style import apply_plot_style
 
 
@@ -31,6 +31,7 @@ plt.style.use(style_path)  # set globally
 @check_dependency(plt, 'matplotlib')
 @check_ndim
 @check_empty
+@check_millisecond
 def plot_acg(spike_train_ms, bin_size_ms=1, max_lag_ms=100, labels=True, ax=None, **kwargs):
     """Plot an autocorrelogram for a single spike train.
 
