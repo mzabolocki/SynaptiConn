@@ -13,6 +13,7 @@ from synapticonn.utils.mod_utils import check_dependency
 from synapticonn.plots.style import apply_plot_style
 from synapticonn.plots.save import savefig
 from synapticonn.plots.plot_utils import check_ax
+from synapticonn.plots.aesthetics import CCG_COLORS
 
 
 ##########################################################
@@ -94,9 +95,9 @@ def plot_ccg(cross_correlograms_data, labels=None, ax=None, **kwargs):
 
         # plot on the subplot
         if x == y:
-            ax[x, y].bar(bins[:-1], cross_corr, width=bin_size, align='edge', color='green', **kwargs)
+            ax[x, y].bar(bins[:-1], cross_corr, width=bin_size, align='edge', color=CCG_COLORS['self'], **kwargs)
         else:
-            ax[x, y].bar(bins[:-1], cross_corr, width=bin_size, align='edge', color='blue', **kwargs)
+            ax[x, y].bar(bins[:-1], cross_corr, width=bin_size, align='edge', color=CCG_COLORS['pairs'], **kwargs)
 
         # labeling
         if x == 0:

@@ -63,7 +63,7 @@ def plot_acg(spike_train_ms, bin_size_ms=1, max_lag_ms=100, show_axes=True, ax=N
 
     lags, autocorr = compute_autocorrelogram(spike_train_ms, bin_size_ms, max_lag_ms)
 
-    ax.bar(lags, autocorr, width=bin_size_ms, **kwargs)
+    ax.bar(lags, autocorr, width=bin_size_ms, align='edge', **kwargs)
 
     if show_axes:
         ax.set_xlabel('Time lag (ms)')
