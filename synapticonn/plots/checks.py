@@ -4,7 +4,7 @@ Decorators for checking array properties before function execution.
 """
 
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 ####################################################
 ####################################################
@@ -59,4 +59,27 @@ def check_millisecond(func):
 
         return func(spike_train_ms, *args, **kwargs)
 
+    return wrapper
+
+
+def check_ccg_ax(func):
+    """ Decorator to check axes for CCG plots before plotting multiple subplots."""
+    def wrapper(*args, **kwargs):
+
+        labels = kwargs.get('labels', None)
+        ax = kwargs.get('ax', None)
+        figsize = kwargs.pop('figsize', (25, 25))
+
+        # create the figure and subplots if not provided
+        if ax is None:
+            num_rows = int(np.ceil(len(labels)))
+            num_cols = int(np.ceil(len(labels)))
+            _, ax = plt.subplots(num_rows, num_cols, figsize=figsize)
+            kwargs['ax'] = ax
+        else:
+            # ensure the shape of ax matches the number of labels
+            if (ax.shape[0] != len(labels)) or (ax.shape[1] != len(labels)):
+                raise ValueError("Number of axes must match the number of labels.")
+
+        return func(*args, **kwargs)
     return wrapper
