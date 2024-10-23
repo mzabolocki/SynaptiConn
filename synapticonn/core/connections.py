@@ -1,11 +1,11 @@
 """ Base model object, which is used to quantify monosynaptic connections between neurons. """
 
 
-
 import numpy as np
 import pandas as pd
 
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
+
 
 ###############################################################################
 ###############################################################################
@@ -27,7 +27,14 @@ class SynaptiConn():
         Sampling rate of the spike times (in Hz).
     """
 
+    # ----- CLASS VARIABLES
+    # flag to check spike time conversion to milliseconds
     conversion = False
+
+
+    ###########################################################################
+    ###########################################################################
+
 
     def __init__(self, spike_times, bin_size_ms=1, max_lag_ms=100, recording_length=None, srate=None):
         """ Initialize the SynaptiConn object. """
