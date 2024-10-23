@@ -13,6 +13,7 @@ from synapticonn.postprocessing.autocorrelograms import compute_autocorrelogram
 from synapticonn.utils.mod_utils import check_dependency
 from synapticonn.plots.checks import check_empty, check_ndim, check_millisecond
 from synapticonn.plots.style import apply_plot_style
+from synapticonn.plots.save import savefig
 
 
 ##########################################################
@@ -27,6 +28,7 @@ plt.style.use(style_path)  # set globally
 ##########################################################
 
 
+@savefig
 @apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
 @check_dependency(plt, 'matplotlib')
 @check_ndim
