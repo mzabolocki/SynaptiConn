@@ -1,7 +1,7 @@
 """
 mod_utils.py
 
-Utility functions & decorators for the module.
+Module utiling functions.
 """
 
 from functools import wraps
