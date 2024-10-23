@@ -1,5 +1,4 @@
-"""
-autocorrelograms.py
+""" autocorrelograms.py
 
 Modules for generating autocorrelograms.
 """

@@ -1,4 +1,4 @@
-"""Style and aesthetics definitions for plots."""
+""" Style and aesthetics definitions for plots. """
 
 import pathlib
 

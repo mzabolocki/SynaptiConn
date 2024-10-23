@@ -1,5 +1,4 @@
-"""
-acg.py
+""" acg.py
 
 Modules for plotting autocorrelograms.
 """

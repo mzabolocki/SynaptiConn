@@ -1,5 +1,4 @@
-"""
-ccg.py
+""" ccg.py
 
 Modules for plotting cross-correlograms.
 """
@@ -108,7 +107,3 @@ def plot_ccg(cross_correlograms_data, labels=None, ax=None, **kwargs):
             ax[x, y].set_xlabel('Time lag (ms)')
 
     return ax
-
-
-# place the colors into a style folder??
-# check how figsize is added

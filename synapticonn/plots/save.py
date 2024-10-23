@@ -1,5 +1,4 @@
-"""
-save.py
+""" save.py
 
 Module for saving out figures.
 """
