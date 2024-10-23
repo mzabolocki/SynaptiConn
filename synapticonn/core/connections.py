@@ -27,6 +27,8 @@ class SynaptiConn():
         Sampling rate of the spike times (in Hz).
     """
 
+    conversion = False
+
     def __init__(self, spike_times, bin_size_ms=1, max_lag_ms=100, recording_length=None, srate=None):
         """ Initialize the SynaptiConn object. """
 
@@ -50,8 +52,8 @@ class SynaptiConn():
     def _check_spike_time_conversion(self):
         """ Check that spike time values are in millisecond format. """
 
-        assert self.srate is not None, 'The sampling rate must be provided.'
-        assert self.recording_length is not None, 'The recording length must be provided.'
+        if SynaptiConn.conversion:
+            return
 
         converted_keys = []
         for key, spks in self.spike_times.items():
@@ -71,6 +73,8 @@ class SynaptiConn():
         if converted_keys:
             converted_keys_str = ', '.join(map(str, converted_keys))
             print(f"Warning: Spike times for unit(s) {converted_keys_str} were converted to milliseconds.")
+
+        SynaptiConn.conversion = True
 
     def _check_negative_spike_times(self):
         """ Check for negative spike times. """
