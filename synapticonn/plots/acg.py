@@ -19,7 +19,7 @@ from synapticonn.plots.style import apply_plot_style
 ##########################################################
 
 
-style_path = pathlib.Path('synapticonn', 'plots', 'plots.mplstyle')
+style_path = pathlib.Path('synapticonn', 'plots', 'settings.mplstyle')
 plt.style.use(style_path)  # set globally
 
 
@@ -27,7 +27,7 @@ plt.style.use(style_path)  # set globally
 ##########################################################
 
 
-@apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'plots.mplstyle'))
+@apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
 @check_dependency(plt, 'matplotlib')
 @check_ndim
 @check_empty

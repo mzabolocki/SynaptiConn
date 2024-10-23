@@ -18,7 +18,7 @@ from synapticonn.plots.style import apply_plot_style
 ##########################################################
 
 
-style_path = pathlib.Path('synapticonn', 'plots', 'plots.mplstyle')
+style_path = pathlib.Path('synapticonn', 'plots', 'settings.mplstyle')
 plt.style.use(style_path)  # set globally
 
 
@@ -26,7 +26,7 @@ plt.style.use(style_path)  # set globally
 ##########################################################
 
 
-@apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'plots.mplstyle'))
+@apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
 @check_dependency(plt, 'matplotlib')
 @check_ndim
 @check_empty
@@ -84,3 +84,5 @@ def plot_ccg(cross_correlograms_data, bin_size_ms=1, max_lag_ms=100, labels=True
             ax[x, y].set_ylabel(labels[x])
         if x == len(labels) - 1:
             ax[x, y].set_xlabel('Time lag (ms)')
+
+    return ax
