@@ -53,6 +53,7 @@ class SynaptiConn():
         # internal checks
         self._run_initial_spike_time_checks()
 
+
     def _run_initial_spike_time_checks(self):
         """ Run all the spike-time-related checks at initialization. """
 
@@ -60,6 +61,7 @@ class SynaptiConn():
         self._check_spike_time_conversion()
         self._check_negative_spike_times()
         self._check_spike_times_values()
+
 
     def report_spike_units(self):
         """ Report the spike units. """
@@ -69,6 +71,7 @@ class SynaptiConn():
         spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks}
 
         return spk_unit_summary
+
 
     def set_bin_settings(self, bin_size_ms=1, max_lag_ms=100):
         """ Set the settings of the object.
@@ -87,6 +90,7 @@ class SynaptiConn():
         self.max_lag_ms = max_lag_ms
         self._run_initial_spike_time_checks()
 
+
     def _reset_parameters(self):
         """ Reset the parameters of the object. """
 
@@ -96,6 +100,7 @@ class SynaptiConn():
         self.recording_length = None
         self.srate = None
 
+
     @staticmethod
     def extract_spike_unit_labels(func):
         """ Decorator to extract spike unit labels from spike_times dictionary. """
@@ -104,6 +109,7 @@ class SynaptiConn():
             spike_unit_labels = list(self.spike_times.keys())
             return func(self, spike_unit_labels, *args, **kwargs)
         return wrapper
+
 
     @extract_spike_unit_labels
     def plot_autocorrelogram(self, spike_unit_labels: list,
@@ -131,6 +137,7 @@ class SynaptiConn():
         spike_times = self._get_spike_times_for_units(spike_units_to_collect)
         plot_acg(spike_times, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms, **kwargs)
 
+
     @extract_spike_unit_labels
     def plot_crosscorrelogram(self, spike_unit_labels: list,
                               spike_pairs: list = None, **kwargs):
@@ -146,6 +153,7 @@ class SynaptiConn():
         crosscorrelogram_data = compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms)
 
         plot_ccg(crosscorrelogram_data, **kwargs)
+
 
     @requires_sampling_rate
     @requires_recording_length
@@ -186,6 +194,7 @@ class SynaptiConn():
 
         SynaptiConn.converted_to_ms = True
 
+
     def _check_negative_spike_times(self):
         """ Check for negative spike times. """
 
@@ -193,11 +202,13 @@ class SynaptiConn():
             if not np.all(spks >= 0):
                 raise SpikeTimesError(f'Spike times for unit {key} must be non-negative.')
 
+
     def _check_spike_times_type(self):
         """ Ensure spike times is a dictionary. """
 
         if not isinstance(self.spike_times, dict):
             raise SpikeTimesError('Spike times must be a dictionary with unit-ids as keys.')
+
 
     def _check_spike_times_values(self):
         """ Check the values of the spike times dictionary are in floats or arr format. """
@@ -207,6 +218,7 @@ class SynaptiConn():
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D numpy array. Got {type(value)} instead.')
             if not np.issubdtype(value.dtype, np.floating):
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
+
 
     def _validate_spike_units_to_plot(self, spike_units_to_plot: list = None,
                                       spike_unit_labels: list = None):
@@ -231,6 +243,7 @@ class SynaptiConn():
             raise SpikeTimesError('No valid spike units to plot.')
 
         return spike_units_to_plot
+
 
     def _get_spike_times_for_units(self, spike_units_to_collect: list = None):
         """ Retrieve spike times for the selected units.
