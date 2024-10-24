@@ -7,23 +7,21 @@ Modules for generating crosscorrelograms.
 import numpy as np
 
 from synapticonn.postprocessing.correlogram_utils import make_bins
+from synapticonn.utils.errors import SpikeTimesError
+
 
 ##########################################################
 ##########################################################
 
 
-def compute_crosscorrelogram(spike_train_set, labels, bin_size_ms, max_lag_ms):
-    """ Compute the cross-correlogram between all pairs of spike trains in a set.
-
-    Entry function to compute correlograms across all units in a 'spike_train_set'.
-    This is a dictionary, indexed by unit ID and containing spike times (in milliseconds).
+def compute_crosscorrelogram(spike_times_set, labels, bin_size_ms, max_lag_ms):
+    """ Compute the cross-correlogram between all pairs of spike trains.
 
     Parameters
     ----------
-    spike_train_set : dict
-        Dictionary containing spike times for each unit.
-        Indexed by unit ID.
-        Spike times are in milliseconds.
+    spike_times_set: list
+        List of spike times for each unit.
+        No labels are required for this function.
     labels : list
         List of labels for each unit.
     bin_size_ms : float
@@ -38,12 +36,14 @@ def compute_crosscorrelogram(spike_train_set, labels, bin_size_ms, max_lag_ms):
         of spike trains. Indexed by unit ID pairs
     """
 
-    assert len(spike_train_set) > 1, 'The spike train set must contain at least two spike trains.'
+    if len(spike_times_set) <= 1:
+        raise SpikeTimesError('The spike train set must contain at least two',
+                              'spike trains to compute cross-correlograms.')
 
     cross_corr_dict = {}
     bins_dict = {}
-    for i, spike_train_1 in enumerate(spike_train_set):
-        for j, spike_train_2 in enumerate(spike_train_set):
+    for i, spike_train_1 in enumerate(spike_times_set):
+        for j, spike_train_2 in enumerate(spike_times_set):
             cross_corr, bins = _compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_size_ms, max_lag_ms)
             cross_corr_dict[f'{labels[i]}_{labels[j]}'] = cross_corr
             bins_dict[f'{labels[i]}_{labels[j]}'] = bins

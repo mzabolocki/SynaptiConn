@@ -59,6 +59,15 @@ class SynaptiConn():
         self._check_negative_spike_times()
         self._check_spike_times_values()
 
+    def report_spike_units(self):
+        """ Report the spike units. """
+
+        labels = list(self.spike_times.keys())
+        n_spks = [len(self.spike_times[label]) for label in labels]
+        spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks}
+
+        return spk_unit_summary
+
     def set_bin_settings(self, bin_size_ms=1, max_lag_ms=100):
         """ Set the settings of the object.
 
@@ -95,15 +104,15 @@ class SynaptiConn():
         return wrapper
 
     @extract_spike_unit_labels
-    def plot_autocorrelogram(self, spike_unit_labels,
-                             spike_units_to_plot: list = None, **kwargs):
+    def plot_autocorrelogram(self, spike_unit_labels: list,
+                             spike_units: list = None, **kwargs):
         """ Plot the autocorrelogram.
 
         Parameters
         ----------
         spike_unit_labels : list
             List of spike unit labels.
-        spike_units_to_plot : list
+        spike_units : list
             List of spike units to plot.
         **kwargs
             Additional keyword arguments passed to `plot_acg`.
@@ -114,20 +123,28 @@ class SynaptiConn():
         The bin size and maximum lag are set by the object parameters.
         """
 
-        spike_units_to_plot = self._validate_spike_units_to_plot(spike_units_to_plot, spike_unit_labels)
-        print(f'Plotting autocorrelogram for spike units: {spike_units_to_plot}')
+        spike_units_to_collect = self._validate_spike_units_to_plot(spike_units, spike_unit_labels)
+        print(f'Plotting autocorrelogram for spike units: {spike_units_to_collect}')
 
-        spike_times = self._get_spike_times_for_units(spike_units_to_plot)
+        spike_times = self._get_spike_times_for_units(spike_units_to_collect)
         plot_acg(spike_times, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms, **kwargs)
 
-    def report_spike_units(self):
-        """ Report the spike units. """
+    @extract_spike_unit_labels
+    def plot_crosscorrelogram(self, spike_unit_labels: list,
+                              spike_pairs: list = None, **kwargs):
+        """ Plot the cross-correlogram. """
 
-        labels = list(self.spike_times.keys())
-        n_spks = [len(self.spike_times[label]) for label in labels]
-        spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks}
+        spike_units = np.unique(spike_pairs)
+        spike_units = self._validate_spike_units_to_plot(spike_units, spike_unit_labels)  # check for valid spike-units
 
-        return spk_unit_summary
+        # **WARNING : removing spike pairs that do not contain spike units
+        spike_pairs = [pair for pair in spike_pairs if pair[0] in spike_units and pair[1] in spike_units]
+        print(f'Plotting cross-correlogram for available spike units: {spike_units}')
+        print(f'Plotting cross-correlogram for spike pairs: {spike_pairs}')
+
+        # filter for available spike pairs
+        filtered_spike_times = [self.spike_times[spike_id] for spike_id in spike_units]
+
 
     @requires_sampling_rate
     @requires_recording_length
@@ -214,15 +231,15 @@ class SynaptiConn():
 
         return spike_units_to_plot
 
-    def _get_spike_times_for_units(self, spike_units_to_plot: list = None):
+    def _get_spike_times_for_units(self, spike_units_to_collect: list = None):
         """ Retrieve spike times for the selected units.
 
         Parameters
         ----------
-        spike_units_to_plot : list
-            List of spike units to plot.
+        spike_units_to_collect : list
+            List of spike units to collect.
         """
-        return {key: self.spike_times[key] for key in spike_units_to_plot}
+        return {key: self.spike_times[key] for key in spike_units_to_collect}
 
 
 
