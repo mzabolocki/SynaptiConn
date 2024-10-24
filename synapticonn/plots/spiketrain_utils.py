@@ -17,7 +17,9 @@ import numpy as np
 
 
 def check_spiketrain_ndim(func):
-    """Decorator to check if array is 1D before function execution."""
+    """Decorator to check if array is 1D before function execution.
+    To be used on a single spike train (1D), in a list or array format.
+    """
 
     def wrapper(spike_train_ms, *args, **kwargs):
         if len(spike_train_ms) == 0:
@@ -31,6 +33,8 @@ def check_spiketrain_ndim(func):
 
 def check_spiketrain_millisecond(func):
     """ Decorator to check if array is in milliseconds before function execution.
+    
+    To be performed on a single spike train (1D).
 
     Notes:
     ------

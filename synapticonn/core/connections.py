@@ -67,20 +67,32 @@ class SynaptiConn():
         return wrapper
 
     @extract_spike_unit_labels
-    def plot_autocorrelogram(self, spike_unit_labels, spike_units_to_plot=None, ax=None, **kwargs):
-        """ Plot the autocorrelogram. """
+    def plot_autocorrelogram(self, spike_unit_labels, spike_units_to_plot=None, **kwargs):
+        """ Plot the autocorrelogram.
 
-        assert spike_units_to_plot is not None, 'Please provide spike units to plot.'  # TO DO: add the error message
+        Parameters
+        ----------
+        spike_unit_labels : list
+            List of spike unit labels.
+        spike_units_to_plot : list
+            List of spike units to plot.
+        **kwargs
+            Additional keyword arguments passed to `plot_acg`.
 
-        # find the spike units to plot in spike_unit_labels
-        spike_units_to_plot = np.array(spike_units_to_plot)  # TO DO: only change to array if not already
-        spike_units_to_plot = spike_units_to_plot[np.isin(spike_units_to_plot, spike_unit_labels)]  # TO DO: wrapper for this?
+        Notes
+        -----
+        Autocorrelograms are computed for each spike unit and plotted.
+        The bin size and maximum lag are set by the object parameters.
+        """
+
+        if not spike_unit_labels:
+            raise SpikeTimesError('Spike unit labels are required.')
+
+        spike_units_to_plot = self._validate_spike_units_to_plot(spike_units_to_plot, spike_unit_labels)
         print(f'Plotting autocorrelogram for spike units: {spike_units_to_plot}')
 
-        spike_times = {key: self.spike_times[key] for key in spike_units_to_plot}
-
-        # plot acgs for the selected spike units
-        plot_acg(spike_times, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms, ax=ax, **kwargs)
+        spike_times = self._get_spike_times_for_units(spike_units_to_plot)
+        plot_acg(spike_times, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms, **kwargs)
 
     def report_spike_units(self):
         """ Report the spike units. """
@@ -150,6 +162,25 @@ class SynaptiConn():
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D numpy array. Got {type(value)} instead.')
             if not np.issubdtype(value.dtype, np.floating):
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
+
+    def _validate_spike_units_to_plot(self, spike_units_to_plot, spike_unit_labels):
+        """ Validate and filter spike units to plot based on available labels. """
+
+        if spike_units_to_plot is None:
+            raise SpikeTimesError('Please provide spike units to plot.')
+
+        if not isinstance(spike_units_to_plot, np.ndarray):
+            spike_units_to_plot = np.array(spike_units_to_plot)
+
+        spike_units_to_plot = spike_units_to_plot[np.isin(spike_units_to_plot, spike_unit_labels)]
+        if len(spike_units_to_plot) == 0:
+            raise SpikeTimesError('No valid spike units to plot.')
+
+        return spike_units_to_plot
+
+    def _get_spike_times_for_units(self, spike_units_to_plot):
+        """Retrieve spike times for the selected units."""
+        return {key: self.spike_times[key] for key in spike_units_to_plot}
 
     def _reset_parameters(self):
         """ Reset the parameters of the object. """
