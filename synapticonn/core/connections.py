@@ -29,7 +29,7 @@ class SynaptiConn():
 
     # ----- CLASS VARIABLES
     # flag to check spike time conversion to milliseconds
-    time_conversion = False
+    converted_to_ms = False
 
     ###########################################################################
     ###########################################################################
@@ -69,7 +69,7 @@ class SynaptiConn():
     def _check_spike_time_conversion(self):
         """ Check that spike time values are in millisecond format. """
 
-        if SynaptiConn.time_conversion:
+        if SynaptiConn.converted_to_ms:
             try:
                 # check for spike times type incase it was changed
                 # with object re-initialization
@@ -101,7 +101,7 @@ class SynaptiConn():
             converted_keys_str = ', '.join(map(str, converted_keys))
             print(f"Warning: Spike times for unit(s) {converted_keys_str} were converted to milliseconds.")
 
-        SynaptiConn.time_conversion = True
+        SynaptiConn.converted_to_ms = True
 
     def _check_negative_spike_times(self):
         """ Check for negative spike times. """
@@ -120,9 +120,12 @@ class SynaptiConn():
 
         for key, value in self.spike_times.items():
             if not isinstance(value, np.ndarray):
-                raise ValueError(f'Spike times for unit {key} must be a numpy array.')
+                raise ValueError(f'Spike times for unit {key} must be a 1D numpy array. Got {type(value)} instead.')
             if not np.issubdtype(value.dtype, np.floating):
-                raise ValueError(f'Spike times for unit {key} must be an array of floats.')
+                raise ValueError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
+
+
+
 
 
 # self.cross_correlograms_data = self.compute_crosscorrelogram()
