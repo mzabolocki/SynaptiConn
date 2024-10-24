@@ -59,11 +59,10 @@ class SynaptiConn():
         self._check_negative_spike_times()
         self._check_spike_times_values()
 
-    def set_bin_settings(self, bin_size_ms=1, max_lag_ms=100, clear=True):
+    def set_bin_settings(self, bin_size_ms=1, max_lag_ms=100):
         """ Set the settings of the object.
 
         Useful for changing the bin size and maximum lag after initialization.
-        Optionally, it can clear the current binning parameters.
 
         Parameters
         ----------
@@ -71,15 +70,11 @@ class SynaptiConn():
             Bin size of the cross-correlogram (in milliseconds) or auto-correlograms.
         max_lag_ms : float
             Maximum lag to compute the cross-correlogram (in milliseconds).
-        clear : bool
-            Whether to reset the binning parameters of the object.
         """
-        if clear:
-            self.bin_size_ms = None
-            self.max_lag_ms = None
-        else:
-            self.bin_size_ms = bin_size_ms
-            self.max_lag_ms = max_lag_ms
+
+        self.bin_size_ms = bin_size_ms
+        self.max_lag_ms = max_lag_ms
+        self._run_initial_spike_time_checks()
 
     def _reset_parameters(self):
         """ Reset the parameters of the object. """

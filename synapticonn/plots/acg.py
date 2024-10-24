@@ -77,4 +77,3 @@ def plot_acg(spike_times, bin_size_ms=1, max_lag_ms=100, show_axes=True, ax=None
             ax[count].set_ylabel('Spike counts/bin')
 
     return ax
-
