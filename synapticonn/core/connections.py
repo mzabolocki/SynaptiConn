@@ -48,6 +48,15 @@ class SynaptiConn():
         # internal checks
         self._run_initial_spike_time_checks()
 
+    def _reset_parameters(self):
+        """ Reset the parameters of the object. """
+
+        self.spike_times = None
+        self.bin_size_ms = None
+        self.max_lag_ms = None
+        self.recording_length = None
+        self.srate = None
+
     def _run_initial_spike_time_checks(self):
         """ Run all the spike-time-related checks at initialization. """
         self._check_spike_time_conversion()
