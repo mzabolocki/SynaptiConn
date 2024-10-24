@@ -136,17 +136,16 @@ class SynaptiConn():
                               spike_pairs: list = None, **kwargs):
         """ Plot the cross-correlogram. """
 
-        spike_units = np.unique(spike_pairs)
-        spike_units = self._validate_spike_units_to_plot(spike_units, spike_unit_labels)  # check for valid spike-units
-
         # **WARNING : removing spike pairs that do not contain spike units
+        spike_units = self._validate_spike_units_to_plot(np.unique(spike_pairs), spike_unit_labels)  # check for valid spike-units
         spike_pairs = [pair for pair in spike_pairs if pair[0] in spike_units and pair[1] in spike_units]
-        print(f'Plotting cross-correlogram for available spike units: {spike_units}')
-        print(f'Plotting cross-correlogram for spike pairs: {spike_pairs}')
+        print(f'Plotting cross-correlogram for available spike pairs: {spike_pairs}')
 
+        # return cross-correlogram data
         spike_times = self._get_spike_times_for_units(spike_units)
         crosscorrelogram_data = compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms)
-        # plot_ccg(crosscorrelogram_data, **kwargs)
+
+        plot_ccg(crosscorrelogram_data, **kwargs)
 
     @requires_sampling_rate
     @requires_recording_length

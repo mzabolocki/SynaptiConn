@@ -21,7 +21,11 @@ from synapticonn.utils.errors import PlottingError
 
 
 def check_ax(func):
-    """ Decorator to check axes for spike-unit labels before plotting multiple subplots. """
+    """ Decorator to check axes for spike-unit labels before plotting multiple subplots.
+
+    Note: this decorator is used for plotting multiple subplots. However, 
+    to ccg plots, this decorator is not used.
+    """
     def wrapper(spike_times, *args, **kwargs):
 
         n_units = len(spike_times)
@@ -42,6 +46,25 @@ def check_ax(func):
 
         return func(spike_times, *args, **kwargs)
 
+    return wrapper
+
+
+def check_ccg_ax(func):
+    """ Decorator to check axes for spike-unit labels before plotting multiple subplots."""
+    def wrapper(cross_correlograms_data, **kwargs):
+
+        ax = kwargs.get('ax', None)
+        figsize = kwargs.pop('figsize', (25, 25))
+
+        if ax is None:
+            n_pairs = len(list(cross_correlograms_data['cross_correllations'].keys()))
+            n_cols = min(n_pairs, 5)  # limit to 5 rows
+            n_rows = math.ceil(n_pairs / n_cols)
+
+            _, ax = plt.subplots(n_rows, n_cols, figsize=figsize)
+            kwargs['ax'] = ax.flatten() if isinstance(ax, np.ndarray) else [ax]
+
+        return func(cross_correlograms_data, **kwargs)
     return wrapper
 
 
