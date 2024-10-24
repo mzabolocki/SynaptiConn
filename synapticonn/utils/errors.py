@@ -11,3 +11,6 @@ class SamplingRateError(SpikeTimesError):
 
 class RecordingLengthError(SpikeTimesError):
     """Error for if there is a problem with the recording length."""
+
+class PlottingError(SpikeTimesError):
+    """Error for if there is a problem with plotting."""

@@ -13,6 +13,8 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 
+from synapticonn.utils.errors import PlottingError
+
 
 ####################################################
 ####################################################
@@ -20,23 +22,44 @@ import matplotlib.pyplot as plt
 
 def check_ax(func):
     """ Decorator to check axes for spike-unit labels before plotting multiple subplots. """
-    def wrapper(spike_train_ms, *args, **kwargs):
+    def wrapper(spike_times, *args, **kwargs):
 
-        n_units = len(spike_train_ms)
+        n_units = len(spike_times)
         n_cols = min(n_units, 5)  # limit to 5 columns
         n_rows = math.ceil(n_units / n_cols)
 
         ax = kwargs.get('ax', None)
+        figsize = kwargs.get('figsize', (15, 5 * n_rows))
 
-        # determine the number of rows and columns for the subplots
         if ax is None:
-
-            fig, ax = plt.subplots(n_rows, n_cols, figsize=kwargs.get('figsize', (15, 5 * n_rows)))
+            fig, ax = plt.subplots(n_rows, n_cols, figsize=figsize)
             ax = ax.flatten() if isinstance(ax, np.ndarray) else [ax]
+        elif ax is not None:
+            pass
 
-            kwargs['ax'] = ax
-            kwargs.pop('figsize')
+        kwargs['ax'] = ax
+        kwargs.pop('figsize', None)
 
-        return func(spike_train_ms, *args, **kwargs)
+        return func(spike_times, *args, **kwargs)
+
+    return wrapper
+
+
+def check_ax_length(func):
+    """ Decorator to check axes length before plotting multiple subplots. """
+    def wrapper(spike_times, *args, **kwargs):
+
+        ax = kwargs.get('ax', None)
+
+        if ax is not None:
+            if not isinstance(ax, np.ndarray):  # single axes case
+                ax = [ax]
+            if len(ax) < len(spike_times):
+                msg = ("Number of axes must be equal to the number of units.")
+                raise PlottingError(msg)
+
+        kwargs['ax'] = ax
+
+        return func(spike_times, *args, **kwargs)
 
     return wrapper
