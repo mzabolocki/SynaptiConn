@@ -25,6 +25,8 @@ class SynaptiConn():
         Bin size of the cross-correlogram (in milliseconds).
     max_lag_ms : float
         Maximum lag to compute the cross-correlogram (in milliseconds).
+    recording_length : float
+        Length of the recording (in seconds).
     srate : float
         Sampling rate of the spike times (in Hz).
     """
@@ -56,6 +58,37 @@ class SynaptiConn():
         self._check_spike_time_conversion()
         self._check_negative_spike_times()
         self._check_spike_times_values()
+
+    def set_bin_settings(self, bin_size_ms=1, max_lag_ms=100, clear=True):
+        """ Set the settings of the object.
+
+        Useful for changing the bin size and maximum lag after initialization.
+        Optionally, it can clear the current binning parameters.
+
+        Parameters
+        ----------
+        bin_size_ms : float
+            Bin size of the cross-correlogram (in milliseconds) or auto-correlograms.
+        max_lag_ms : float
+            Maximum lag to compute the cross-correlogram (in milliseconds).
+        clear : bool
+            Whether to reset the binning parameters of the object.
+        """
+        if clear:
+            self.bin_size_ms = None
+            self.max_lag_ms = None
+        else:
+            self.bin_size_ms = bin_size_ms
+            self.max_lag_ms = max_lag_ms
+
+    def _reset_parameters(self):
+        """ Reset the parameters of the object. """
+
+        self.spike_times = None
+        self.bin_size_ms = None
+        self.max_lag_ms = None
+        self.recording_length = None
+        self.srate = None
 
     @staticmethod
     def extract_spike_unit_labels(func):
@@ -196,14 +229,6 @@ class SynaptiConn():
         """
         return {key: self.spike_times[key] for key in spike_units_to_plot}
 
-    def _reset_parameters(self):
-        """ Reset the parameters of the object. """
-
-        self.spike_times = None
-        self.bin_size_ms = None
-        self.max_lag_ms = None
-        self.recording_length = None
-        self.srate = None
 
 
 # self.cross_correlograms_data = self.compute_crosscorrelogram()
