@@ -37,7 +37,8 @@ def plot_ccg(cross_correlograms_data, labels=None, ax=None, **kwargs):
     Parameters
     ----------
     cross_correlograms_data : dict
-        Dictionary containing 'cross_correlations' and 'bins'.
+        Dictionary containing 'cross_correlations' and 'bins' values.
+        Can be outputted from `compute_crosscorrelogram` function in `crosscorrelograms.py`.
     bin_size_ms : float, optional
         Bin size of the cross-correlogram (in milliseconds). Default is 1 ms.
     max_lag_ms : float, optional

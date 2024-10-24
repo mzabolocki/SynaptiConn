@@ -7,6 +7,8 @@ import pandas as pd
 from synapticonn.utils.errors import SpikeTimesError
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
 from synapticonn.plots.acg import plot_acg
+from synapticonn.plots.ccg import plot_ccg
+from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 
 
 ###############################################################################
@@ -142,9 +144,9 @@ class SynaptiConn():
         print(f'Plotting cross-correlogram for available spike units: {spike_units}')
         print(f'Plotting cross-correlogram for spike pairs: {spike_pairs}')
 
-        # filter for available spike pairs
-        filtered_spike_times = [self.spike_times[spike_id] for spike_id in spike_units]
-
+        spike_times = self._get_spike_times_for_units(spike_units)
+        crosscorrelogram_data = compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms)
+        # plot_ccg(crosscorrelogram_data, **kwargs)
 
     @requires_sampling_rate
     @requires_recording_length

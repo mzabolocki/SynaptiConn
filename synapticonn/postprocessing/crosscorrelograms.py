@@ -14,16 +14,15 @@ from synapticonn.utils.errors import SpikeTimesError
 ##########################################################
 
 
-def compute_crosscorrelogram(spike_times_set, labels, bin_size_ms, max_lag_ms):
+def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms):
     """ Compute the cross-correlogram between all pairs of spike trains.
 
     Parameters
     ----------
-    spike_times_set: list
-        List of spike times for each unit.
-        No labels are required for this function.
-    labels : list
-        List of labels for each unit.
+    spike_times : dict
+        Dictionary containing spike times for each unit. Indexed by unit ID.
+    spike_pairs : list
+        List of tuples containing the unit IDs of the spike trains to compare.
     bin_size_ms : float
         Bin size of the cross-correlogram (in milliseconds).
     max_lag_ms : float
@@ -36,21 +35,22 @@ def compute_crosscorrelogram(spike_times_set, labels, bin_size_ms, max_lag_ms):
         of spike trains. Indexed by unit ID pairs
     """
 
-    if len(spike_times_set) <= 1:
-        raise SpikeTimesError('The spike train set must contain at least two',
-                              'spike trains to compute cross-correlograms.')
-
     cross_corr_dict = {}
     bins_dict = {}
-    for i, spike_train_1 in enumerate(spike_times_set):
-        for j, spike_train_2 in enumerate(spike_times_set):
-            cross_corr, bins = _compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_size_ms, max_lag_ms)
-            cross_corr_dict[f'{labels[i]}_{labels[j]}'] = cross_corr
-            bins_dict[f'{labels[i]}_{labels[j]}'] = bins
+    for pair in spike_pairs:
 
-    cross_correlograms_data = {'cross_correllations': cross_corr_dict, 'bins': bins_dict}
+        # spk unit labels
+        pair_1 = pair[0]
+        pair_2 = pair[1]
 
-    return cross_correlograms_data
+        # get spike times for each unit
+        cross_corr, bins = _compute_crosscorrelogram_dual_spiketrains(spike_times[pair_1], spike_times[pair_2], bin_size_ms, max_lag_ms)
+        cross_corr_dict[f'{pair_1}_{pair_2}'] = cross_corr
+        bins_dict[f'{pair_1}_{pair_2}'] = bins
+
+    crosscorrelogram_data = {'cross_correllations': cross_corr_dict, 'bins': bins_dict}
+
+    return crosscorrelogram_data
 
 
 def _compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_size_ms, max_lag_ms):
@@ -84,4 +84,3 @@ def _compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin
     cross_corr, _ = np.histogram(time_diffs, bins)
 
     return cross_corr, bins
-
