@@ -48,14 +48,13 @@ class SynaptiConn():
         # internal checks
         self._run_initial_spike_time_checks()
 
-    def report_spike_units(self):
-        """ Report the spike units. """
+    def _run_initial_spike_time_checks(self):
+        """ Run all the spike-time-related checks at initialization. """
 
-        labels = list(self.spike_times.keys())
-        n_spks = [len(self.spike_times[label]) for label in labels]
-        spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks}
-
-        return spk_unit_summary
+        self._check_spike_times_type()
+        self._check_spike_time_conversion()
+        self._check_negative_spike_times()
+        self._check_spike_times_values()
 
     @staticmethod
     def extract_spike_unit_labels(func):
@@ -77,22 +76,14 @@ class SynaptiConn():
         spike_units_to_plot = spike_units_to_plot[np.isin(spike_units_to_plot, spike_unit_labels)]
         print(f'Plotting autocorrelogram for spike units: {spike_units_to_plot}')
 
-    def _reset_parameters(self):
-        """ Reset the parameters of the object. """
+    def report_spike_units(self):
+        """ Report the spike units. """
 
-        self.spike_times = None
-        self.bin_size_ms = None
-        self.max_lag_ms = None
-        self.recording_length = None
-        self.srate = None
+        labels = list(self.spike_times.keys())
+        n_spks = [len(self.spike_times[label]) for label in labels]
+        spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks}
 
-    def _run_initial_spike_time_checks(self):
-        """ Run all the spike-time-related checks at initialization. """
-
-        self._check_spike_times_type()
-        self._check_spike_time_conversion()
-        self._check_negative_spike_times()
-        self._check_spike_times_values()
+        return spk_unit_summary
 
     @requires_sampling_rate
     @requires_recording_length
@@ -153,6 +144,15 @@ class SynaptiConn():
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D numpy array. Got {type(value)} instead.')
             if not np.issubdtype(value.dtype, np.floating):
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
+
+    def _reset_parameters(self):
+        """ Reset the parameters of the object. """
+
+        self.spike_times = None
+        self.bin_size_ms = None
+        self.max_lag_ms = None
+        self.recording_length = None
+        self.srate = None
 
 
 # self.cross_correlograms_data = self.compute_crosscorrelogram()
