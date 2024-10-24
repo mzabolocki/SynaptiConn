@@ -57,6 +57,26 @@ class SynaptiConn():
 
         return spk_unit_summary
 
+    @staticmethod
+    def extract_spike_unit_labels(func):
+        """ Decorator to extract spike unit labels from spike_times dictionary. """
+
+        def wrapper(self, *args, **kwargs):
+            spike_unit_labels = list(self.spike_times.keys())
+            return func(self, spike_unit_labels, *args, **kwargs)
+        return wrapper
+
+    @extract_spike_unit_labels
+    def plot_autocorrelogram(self, spike_unit_labels, spike_units_to_plot=None):
+        """ Plot the autocorrelogram. """
+
+        assert spike_units_to_plot is not None, 'Please provide spike units to plot.'
+
+        # find the spike units to plot in spike_unit_labels
+        spike_units_to_plot = np.array(spike_units_to_plot)
+        spike_units_to_plot = spike_units_to_plot[np.isin(spike_units_to_plot, spike_unit_labels)]
+        print(f'Plotting autocorrelogram for spike units: {spike_units_to_plot}')
+
     def _reset_parameters(self):
         """ Reset the parameters of the object. """
 
@@ -133,8 +153,6 @@ class SynaptiConn():
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D numpy array. Got {type(value)} instead.')
             if not np.issubdtype(value.dtype, np.floating):
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
-
-
 
 
 # self.cross_correlograms_data = self.compute_crosscorrelogram()
