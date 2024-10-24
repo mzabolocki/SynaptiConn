@@ -6,6 +6,7 @@ Modules for generating crosscorrelograms.
 
 import numpy as np
 
+from synapticonn.postprocessing.correlogram_utils import make_bins
 
 ##########################################################
 ##########################################################
@@ -79,30 +80,8 @@ def _compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin
             if -max_lag_ms <= diff <= max_lag_ms:
                 time_diffs.append(diff)
 
-    bins = _make_bins(max_lag_ms, bin_size_ms)
+    bins = make_bins(max_lag_ms, bin_size_ms)
     cross_corr, _ = np.histogram(time_diffs, bins)
 
     return cross_corr, bins
 
-
-def _make_bins(max_lag_ms, bin_size_ms):
-    """ Make bins for correlograms.
-
-    Parameters
-    ----------
-    max_lag_ms : float
-        Maximum lag to compute the correlograms (in milliseconds).
-    bin_size_ms : float
-        Bin size of the correlograms (in milliseconds).
-
-    Returns
-    -------
-    bins : array-like
-        Bin edges for the correlograms.
-    """
-
-    bins = np.arange(-max_lag_ms, max_lag_ms + bin_size_ms, bin_size_ms)
-
-    assert len(bins) >= 1, "No bins created. Increase max_lag_ms or decrease bin_size_ms."
-
-    return bins

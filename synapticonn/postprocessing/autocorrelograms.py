@@ -5,6 +5,7 @@ Modules for generating autocorrelograms.
 
 import numpy as np
 
+from synapticonn.postprocessing.correlogram_utils import make_bins
 
 ##########################################################
 ##########################################################
@@ -37,7 +38,7 @@ def compute_autocorrelogram(spike_train_ms, bin_size_ms=1, max_lag_ms=100):
     spike_diffs = spike_diffs[np.abs(spike_diffs) <= max_lag_ms]
 
     # compute histogram (binning the differences with given bin size)
-    bins = _make_bins(max_lag_ms, bin_size_ms)
+    bins = make_bins(max_lag_ms, bin_size_ms)
     autocorr, bin_edges = np.histogram(spike_diffs, bins=bins)
 
     # remove the zero-lag bin (since it's the same spike)
@@ -48,27 +49,3 @@ def compute_autocorrelogram(spike_train_ms, bin_size_ms=1, max_lag_ms=100):
     lags = bin_edges[:-1] + bin_size_ms / 2
 
     return lags, autocorr
-
-
-def _make_bins(max_lag_ms, bin_size_ms):
-    """ Make bins for correlograms.
-
-    Parameters
-    ----------
-    max_lag_ms : float
-        Maximum lag to compute the correlograms (in milliseconds).
-    bin_size_ms : float
-        Bin size of the correlograms (in milliseconds).
-
-    Returns
-    -------
-    bins : array-like
-        Bin edges for the correlograms.
-    """
-
-    bins = np.arange(-max_lag_ms, max_lag_ms + bin_size_ms, bin_size_ms)
-
-    assert len(bins) >= 1, "No bins created. Increase max_lag_ms or decrease bin_size_ms."
-
-    return bins
-
