@@ -4,6 +4,7 @@
 import numpy as np
 import pandas as pd
 
+from synapticonn.utils.errors import SpikeTimesError
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
 
 
@@ -74,7 +75,7 @@ class SynaptiConn():
                 # check for spike times type incase it was changed
                 # with object re-initialization
                 self._check_spike_times_values()
-            except ValueError:
+            except SpikeTimesError:
                 # if spike times are not in milliseconds, then convert
                 # if this does not work, _run_initial_spike_time_checks
                 # will raise an error
@@ -85,7 +86,7 @@ class SynaptiConn():
         converted_keys = []
         for key, spks in self.spike_times.items():
             if len(spks) == 0:
-                raise ValueError(f"Spike times for unit {key} are empty.")
+                raise SpikeTimesError(f"Spike times for unit {key} are empty.")
 
             max_spk_time = np.max(spks)
             recording_length_ms = self.recording_length * 1000
@@ -95,7 +96,7 @@ class SynaptiConn():
                 self.spike_times[key] = (spks / self.srate) * 1000
                 converted_keys.append(key)
             elif max_spk_time > self.recording_length:
-                raise ValueError(f"Spike times for unit {key} exceed the recording length after conversion.")
+                raise SpikeTimesError(f"Spike times for unit {key} exceed the recording length after conversion.")
 
         if converted_keys:
             converted_keys_str = ', '.join(map(str, converted_keys))
@@ -108,7 +109,7 @@ class SynaptiConn():
 
         for key, spks in self.spike_times.items():
             if not np.all(spks >= 0):
-                raise ValueError(f'Spike times for unit {key} must be non-negative.')
+                raise SpikeTimesError(f'Spike times for unit {key} must be non-negative.')
 
     def _check_spike_times_type(self):
         """ Check the spike times type for correctness. """
@@ -120,13 +121,14 @@ class SynaptiConn():
 
         for key, value in self.spike_times.items():
             if not isinstance(value, np.ndarray):
-                raise ValueError(f'Spike times for unit {key} must be a 1D numpy array. Got {type(value)} instead.')
+                raise SpikeTimesError(f'Spike times for unit {key} must be a 1D numpy array. Got {type(value)} instead.')
             if not np.issubdtype(value.dtype, np.floating):
-                raise ValueError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
+                raise SpikeTimesError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
 
 
 
 
+# make unique error handles for spike time values etc.
 
 # self.cross_correlograms_data = self.compute_crosscorrelogram()
 # repeat this for ACGs also ...
