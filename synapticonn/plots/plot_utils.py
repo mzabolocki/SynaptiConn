@@ -9,6 +9,7 @@ They are not expected to be used outside of this module or used
 directly by the user.
 """
 
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -19,28 +20,21 @@ import matplotlib.pyplot as plt
 
 def check_ax(func):
     """ Decorator to check axes for spike-unit labels before plotting multiple subplots. """
-    def wrapper(*args, **kwargs):
+    def wrapper(spike_train_ms, *args, **kwargs):
 
         ax = kwargs.get('ax', None)
-        figsize = kwargs.pop('figsize', (25, 25))
-        labels = kwargs.get('labels', None)
+        n_units = len(spike_train_ms)
 
-        # if labels are provided, make a grid of subplots
-        if labels is not None:
-            if ax is None:
-                num_rows = int(np.ceil(len(labels)))
-                num_cols = int(np.ceil(len(labels)))
-                _, ax = plt.subplots(num_rows, num_cols, figsize=figsize)
-                kwargs['ax'] = ax
-            else:
-                # ensure the shape of ax matches the number of labels
-                if (ax.shape[0] != len(labels)) or (ax.shape[1] != len(labels)):
-                    raise ValueError("Number of axes must match the number of labels.")
+        # determine the number of rows and columns for the subplots
+        if ax is None:
+            n_cols = min(n_units, 5)  # limit to 5 columns
+            n_rows = math.ceil(n_units / n_cols)
 
-        # if labels are not provided, return a single axis
-        elif labels is None:
-            if ax is None:
-                ax = plt.gca()
+            fig, ax = plt.subplots(n_rows, n_cols, figsize=(15, 5 * n_rows))
+            ax = ax.flatten() if isinstance(ax, np.ndarray) else [ax]
 
-        return func(*args, **kwargs)
+            kwargs['ax'] = ax
+
+        return func(spike_train_ms, *args, **kwargs)
+
     return wrapper

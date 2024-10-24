@@ -31,16 +31,17 @@ plt.style.use(style_path)  # set globally
 @savefig
 @apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
 @check_dependency(plt, 'matplotlib')
-@check_spiketrain_ndim
-@check_spiketrain_millisecond
+# @check_spiketrain_ndim
+# @check_spiketrain_millisecond
 @check_ax
 def plot_acg(spike_train_ms, bin_size_ms=1, max_lag_ms=100, show_axes=True, ax=None, **kwargs):
     """Plot an autocorrelogram for a single spike train.
 
     Parameters
     ----------
-    spike_train_ms : array-like
+    spike_train_ms : dict
         Spike times (in milliseconds).
+        Each key is a unit ID and each value is a list of spike times.
     bin_size_ms : float
         Bin size of the autocorrelogram (in milliseconds).
         Default is 1 ms.
@@ -60,14 +61,22 @@ def plot_acg(spike_train_ms, bin_size_ms=1, max_lag_ms=100, show_axes=True, ax=N
         Axis with the autocorrelogram plot.
     """
 
-    lags, autocorr = compute_autocorrelogram(spike_train_ms, bin_size_ms, max_lag_ms)
+    if not isinstance(spike_train_ms, dict):
+        msg = ("Spike train must be a dictionary. "
+               "Each key is a unit ID. "
+               "Each row is the corresponding spk times.")
+        raise ValueError(msg)
 
-    ax.bar(lags, autocorr, width=bin_size_ms, align='edge', **kwargs)
+    for count, (unit_id, spk_times) in enumerate(spike_train_ms.items()):
+        lags, autocorr = compute_autocorrelogram(spk_times, bin_size_ms, max_lag_ms)
 
-    if show_axes:
-        ax.set_xlabel('Time lag (ms)')
-        ax.set_ylabel('Spike counts/bin')
+        ax[count].bar(lags, autocorr, width=bin_size_ms, align='edge', **kwargs)
+        ax[count].set_title(f'Unit {unit_id}')
+
+        if show_axes:
+            ax[count].set_xlabel('Time lag (ms)')
+            ax[count].set_ylabel('Spike counts/bin')
 
     return ax
 
-
+# change the naming of the param to match the core class

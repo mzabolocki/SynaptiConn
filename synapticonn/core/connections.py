@@ -6,6 +6,7 @@ import pandas as pd
 
 from synapticonn.utils.errors import SpikeTimesError
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
+from synapticonn.plots.acg import plot_acg
 
 
 ###############################################################################
@@ -66,15 +67,20 @@ class SynaptiConn():
         return wrapper
 
     @extract_spike_unit_labels
-    def plot_autocorrelogram(self, spike_unit_labels, spike_units_to_plot=None):
+    def plot_autocorrelogram(self, spike_unit_labels, spike_units_to_plot=None, ax=None, **kwargs):
         """ Plot the autocorrelogram. """
 
-        assert spike_units_to_plot is not None, 'Please provide spike units to plot.'
+        assert spike_units_to_plot is not None, 'Please provide spike units to plot.'  # TO DO: add the error message
 
         # find the spike units to plot in spike_unit_labels
-        spike_units_to_plot = np.array(spike_units_to_plot)
-        spike_units_to_plot = spike_units_to_plot[np.isin(spike_units_to_plot, spike_unit_labels)]
+        spike_units_to_plot = np.array(spike_units_to_plot)  # TO DO: only change to array if not already
+        spike_units_to_plot = spike_units_to_plot[np.isin(spike_units_to_plot, spike_unit_labels)]  # TO DO: wrapper for this?
         print(f'Plotting autocorrelogram for spike units: {spike_units_to_plot}')
+
+        spike_times = {key: self.spike_times[key] for key in spike_units_to_plot}
+
+        # plot acgs for the selected spike units
+        plot_acg(spike_times, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms, ax=ax, **kwargs)
 
     def report_spike_units(self):
         """ Report the spike units. """
