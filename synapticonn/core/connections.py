@@ -48,6 +48,15 @@ class SynaptiConn():
         # internal checks
         self._run_initial_spike_time_checks()
 
+    def report_spike_units(self):
+        """ Report the spike units. """
+
+        labels = list(self.spike_times.keys())
+        n_spks = [len(self.spike_times[label]) for label in labels]
+        spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks}
+
+        return spk_unit_summary
+
     def _reset_parameters(self):
         """ Reset the parameters of the object. """
 
@@ -127,8 +136,6 @@ class SynaptiConn():
 
 
 
-
-# make unique error handles for spike time values etc.
 
 # self.cross_correlograms_data = self.compute_crosscorrelogram()
 # repeat this for ACGs also ...
