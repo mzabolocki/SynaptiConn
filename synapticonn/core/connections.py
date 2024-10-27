@@ -146,6 +146,7 @@ class SynaptiConn():
         # **WARNING : removing spike pairs that do not contain spike units
         spike_units = self._validate_spike_units_to_plot(np.unique(spike_pairs), spike_unit_labels)  # check for valid spike-units
         spike_pairs = [pair for pair in spike_pairs if pair[0] in spike_units and pair[1] in spike_units]
+        spike_pairs = list(set(spike_pairs))  # remove duplicates
         print(f'Plotting cross-correlogram for available spike pairs: {spike_pairs}')
 
         # return cross-correlogram data
