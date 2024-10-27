@@ -3,6 +3,7 @@
 
 import numpy as np
 
+from functools import wraps
 from typing import List, Optional, Dict, Any
 
 from synapticonn.utils.errors import SpikeTimesError
@@ -109,11 +110,16 @@ class SynaptiConn():
 
     @staticmethod
     def extract_spike_unit_labels(func):
-        """ Decorator to extract spike unit labels from spike_times dictionary. """
+        """Decorator to inject spike unit labels from spike_times dictionary if not already provided."""
 
+        @wraps(func)
         def wrapper(self, *args, **kwargs):
-            spike_unit_labels = list(self.spike_times.keys())
-            return func(self, spike_unit_labels, *args, **kwargs)
+            # check if spike_unit_labels is provided in args or kwargs
+            if 'spike_unit_labels' not in kwargs and len(args) < func.__code__.co_argcount - 1:
+                # if not present in kwargs and missing in positional args, add to kwargs
+                kwargs['spike_unit_labels'] = list(self.spike_times.keys())
+            return func(self, *args, **kwargs)
+
         return wrapper
 
 
