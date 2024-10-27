@@ -2,7 +2,8 @@
 
 
 import numpy as np
-import pandas as pd
+
+from typing import List, Optional, Dict, Any
 
 from synapticonn.utils.errors import SpikeTimesError
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
@@ -73,7 +74,7 @@ class SynaptiConn():
         return spk_unit_summary
 
 
-    def set_bin_settings(self, bin_size_ms=1, max_lag_ms=100):
+    def set_bin_settings(self, bin_size_ms: float = 1, max_lag_ms: float = 100):
         """ Set the settings of the object.
 
         Useful for changing the bin size and maximum lag after initialization.
@@ -117,15 +118,15 @@ class SynaptiConn():
 
 
     @extract_spike_unit_labels
-    def plot_autocorrelogram(self, spike_unit_labels: list,
-                             spike_units: list = None, **kwargs):
+    def plot_autocorrelogram(self, spike_unit_labels: List[str],
+                             spike_units: List[int] = None, **kwargs):
         """ Plot the autocorrelogram.
 
         Parameters
         ----------
-        spike_unit_labels : list
+        spike_unit_labels : List[str]
             List of spike unit labels.
-        spike_units : list
+        spike_units : List[int]
             List of spike units to plot.
         **kwargs
             Additional keyword arguments passed to `plot_acg`.
@@ -136,7 +137,7 @@ class SynaptiConn():
         The bin size and maximum lag are set by the object parameters.
         """
 
-        spike_units_to_collect = self._validate_spike_units_to_plot(spike_units, spike_unit_labels)
+        spike_units_to_collect = self._get_valid_spike_units(spike_units, spike_unit_labels)
         print(f'Plotting autocorrelogram for spike units: {spike_units_to_collect}')
 
         spike_times = self._get_spike_times_for_units(spike_units_to_collect)
@@ -144,49 +145,50 @@ class SynaptiConn():
 
 
     @extract_spike_unit_labels
-    def return_crosscorrelogram_data(self, spike_unit_labels: list,
-                                     spike_pairs: list = None):
-        """ Return the cross-correlogram data.
+    def return_crosscorrelogram_data(self, spike_unit_labels: List[str], spike_pairs: Optional[List[tuple]] = None):
+        """ Compute and return the cross-correlogram data for valid spike pairs.
 
         Parameters
         ----------
-        spike_unit_labels : list
-            List of spike unit labels.
-        spike_pairs : list
-            List of spike pairs to compute the cross-correlogram.
+        spike_unit_labels : List[str]
+            List of spike unit labels (in strings).
+        spike_pairs : Optional[List[tuple]]
+            List of spike pairs to compute the cross-correlogram data.
 
         Returns
         -------
-        crosscorrelogram_data : dict
-            Dictionary containing cross-correlograms and bins for all pairs
+        crosscorrelogram_data : Dict[str, Any]
+            Dictionary containing cross-correlograms and bins for all pairs of spike trains.
         """
 
-        # **WARNING : removing spike pairs that do not contain spike units
-        spike_units = self._validate_spike_units_to_plot(np.unique(spike_pairs), spike_unit_labels)  # check for valid spike-units
-        spike_pairs = [pair for pair in spike_pairs if pair[0] in spike_units and pair[1] in spike_units]
-        spike_pairs = list(set(spike_pairs))  # remove duplicates
-        print(f'Plotting cross-correlogram for available spike pairs: {spike_pairs}')
+        # validate spike pairs
+        valid_spike_units = self._get_valid_spike_units(np.unique(spike_pairs), spike_unit_labels)
+        filtered_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units and pair[1] in valid_spike_units]
+        filtered_spike_pairs = list(set(filtered_spike_pairs))  # remove duplicates
 
-        # return cross-correlogram data
-        spike_times = self._get_spike_times_for_units(spike_units)
-        crosscorrelogram_data = compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms)
+        if not filtered_spike_pairs:
+            raise ValueError("No valid spike pairs found for the given spike unit labels.")
+
+        # retrieve spike times and compute cross-correlogram data
+        spike_times = self._get_spike_times_for_units(valid_spike_units)
+        crosscorrelogram_data = compute_crosscorrelogram(
+            spike_times, filtered_spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms
+        )
 
         return crosscorrelogram_data
 
 
     @extract_spike_unit_labels
-    def plot_crosscorrelogram(self, spike_unit_labels: list,
-                              spike_pairs: list = None,
-                              **kwargs):
-        """ Plot the cross-correlogram.
+    def plot_crosscorrelogram(self, spike_unit_labels: List[str], spike_pairs: Optional[List[tuple]] = None, **kwargs: Any):
+        """ Plot the cross-correlogram for valid spike pairs.
 
         Parameters
         ----------
-        spike_unit_labels : list
-            List of spike unit labels.
-        spike_pairs : list
-            List of spike pairs to compute the cross-correlogram.
-        **kwargs
+        spike_unit_labels : List[str]
+            List of spike unit labels (in strings).
+        spike_pairs : Optional[List[tuple]]
+            List of spike pairs to plot.
+        **kwargs : Any
             Additional keyword arguments passed to `plot_ccg`.
         """
 
@@ -259,16 +261,21 @@ class SynaptiConn():
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
 
 
-    def _validate_spike_units_to_plot(self, spike_units_to_plot: list = None,
-                                      spike_unit_labels: list = None):
+    def _get_valid_spike_units(self, spike_units_to_plot: Optional[List[int]] = None,
+                               spike_unit_labels: Optional[List[int]] = None):
         """ Validate and filter spike units to plot based on available labels.
 
         Parameters
         ----------
-        spike_units_to_plot : list
+        spike_units_to_plot : Optional[List[int]]
             List of spike units to plot.
-        spike_unit_labels : list
+        spike_unit_labels : Optional[List[int]]
             List of spike unit labels.
+
+        Returns
+        -------
+        spike_units_to_plot : List[int]
+            List of valid spike units to plot.
         """
 
         if spike_units_to_plot is None:
@@ -284,22 +291,17 @@ class SynaptiConn():
         return spike_units_to_plot
 
 
-    def _get_spike_times_for_units(self, spike_units_to_collect: list = None):
+    def _get_spike_times_for_units(self, spike_units_to_collect: List[int] = None):
         """ Retrieve spike times for the selected units.
 
         Parameters
         ----------
-        spike_units_to_collect : list
+        spike_units_to_collect : List[int]
             List of spike units to collect.
+
+        Returns
+        -------
+        spike_times : Dict[int, Any]
+            Dictionary containing spike times for the selected units.
         """
         return {key: self.spike_times[key] for key in spike_units_to_collect}
-
-
-
-# self.cross_correlograms_data = self.compute_crosscorrelogram()
-# repeat this for ACGs also ...
-# check the types for the inputs here
-# report summary on load?
-# option to set spike train set
-# check the quality of the acgs etc.
-# option to drop these if below the threshold cut-offs and keep a log of this???
