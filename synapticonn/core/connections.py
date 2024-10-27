@@ -187,10 +187,6 @@ class SynaptiConn():
             spike_times, filtered_spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms
         )
 
-        # attach bin size and max lag to the data
-        crosscorrelogram_data['bin_size_ms'] = self.bin_size_ms
-        crosscorrelogram_data['max_lag_ms'] = self.max_lag_ms
-
         return crosscorrelogram_data
 
 
