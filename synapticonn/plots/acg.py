@@ -66,8 +66,8 @@ def plot_acg(spike_times, bin_size_ms=1, max_lag_ms=100, show_axes=True, ax=None
                "Each row is the corresponding spk times.")
         raise ValueError(msg)
 
-    for count, (unit_id, spk_times) in enumerate(spike_times.items()):
-        lags, autocorr = compute_autocorrelogram(spk_times, bin_size_ms, max_lag_ms)
+    for count, (unit_id, single_spike_times) in enumerate(spike_times.items()):
+        lags, autocorr = compute_autocorrelogram(single_spike_times, bin_size_ms, max_lag_ms)
 
         ax[count].bar(lags, autocorr, width=bin_size_ms, align='edge', **kwargs)
         ax[count].set_title(f'Unit {unit_id}')

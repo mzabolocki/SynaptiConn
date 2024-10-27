@@ -144,10 +144,22 @@ class SynaptiConn():
 
 
     @extract_spike_unit_labels
-    def plot_crosscorrelogram(self, spike_unit_labels: list,
-                              spike_pairs: list = None,
-                              **kwargs):
-        """ Plot the cross-correlogram. """
+    def return_crosscorrelogram_data(self, spike_unit_labels: list,
+                                     spike_pairs: list = None):
+        """ Return the cross-correlogram data.
+
+        Parameters
+        ----------
+        spike_unit_labels : list
+            List of spike unit labels.
+        spike_pairs : list
+            List of spike pairs to compute the cross-correlogram.
+
+        Returns
+        -------
+        crosscorrelogram_data : dict
+            Dictionary containing cross-correlograms and bins for all pairs
+        """
 
         # **WARNING : removing spike pairs that do not contain spike units
         spike_units = self._validate_spike_units_to_plot(np.unique(spike_pairs), spike_unit_labels)  # check for valid spike-units
@@ -159,6 +171,26 @@ class SynaptiConn():
         spike_times = self._get_spike_times_for_units(spike_units)
         crosscorrelogram_data = compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms)
 
+        return crosscorrelogram_data
+
+
+    @extract_spike_unit_labels
+    def plot_crosscorrelogram(self, spike_unit_labels: list,
+                              spike_pairs: list = None,
+                              **kwargs):
+        """ Plot the cross-correlogram.
+
+        Parameters
+        ----------
+        spike_unit_labels : list
+            List of spike unit labels.
+        spike_pairs : list
+            List of spike pairs to compute the cross-correlogram.
+        **kwargs
+            Additional keyword arguments passed to `plot_ccg`.
+        """
+
+        crosscorrelogram_data = self.return_crosscorrelogram_data(spike_unit_labels, spike_pairs)
         plot_ccg(crosscorrelogram_data, **kwargs)
 
 
