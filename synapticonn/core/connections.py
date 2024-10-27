@@ -78,8 +78,7 @@ class SynaptiConn():
     def report_correlogram_settings(self):
         """ Report the bin settings. """
 
-        bin_settings = {'bin_size_ms': self.bin_size_ms, 'max_lag_ms': self.max_lag_ms}
-        return bin_settings
+        return f"Bin size: {self.bin_size_ms} ms, Max lag: {self.max_lag_ms} ms"
 
 
     def set_bin_settings(self, bin_size_ms: float = 1, max_lag_ms: float = 100):
