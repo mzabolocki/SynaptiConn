@@ -66,7 +66,7 @@ class SynaptiConn():
     def report_spike_units(self):
         """ Report the spike units. """
 
-        labels = list(self.spike_times.keys())
+        labels = self.get_spike_unit_labels()
         n_spks = [len(self.spike_times[label]) for label in labels]
         spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks}
 
@@ -89,6 +89,11 @@ class SynaptiConn():
         self.bin_size_ms = bin_size_ms
         self.max_lag_ms = max_lag_ms
         self._run_initial_spike_time_checks()
+
+    def get_spike_unit_labels(self):
+        """ Retrieve the spike unit labels. """
+
+        return list(self.spike_times.keys())
 
 
     def _reset_parameters(self):
@@ -140,7 +145,8 @@ class SynaptiConn():
 
     @extract_spike_unit_labels
     def plot_crosscorrelogram(self, spike_unit_labels: list,
-                              spike_pairs: list = None, **kwargs):
+                              spike_pairs: list = None,
+                              **kwargs):
         """ Plot the cross-correlogram. """
 
         # **WARNING : removing spike pairs that do not contain spike units
