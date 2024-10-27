@@ -75,6 +75,13 @@ class SynaptiConn():
         return spk_unit_summary
 
 
+    def report_correlogram_settings(self):
+        """ Report the bin settings. """
+
+        bin_settings = {'bin_size_ms': self.bin_size_ms, 'max_lag_ms': self.max_lag_ms}
+        return bin_settings
+
+
     def set_bin_settings(self, bin_size_ms: float = 1, max_lag_ms: float = 100):
         """ Set the settings of the object.
 
@@ -110,7 +117,7 @@ class SynaptiConn():
 
     @staticmethod
     def extract_spike_unit_labels(func):
-        """Decorator to inject spike unit labels from spike_times dictionary if not already provided."""
+        """ Decorator to inject spike unit labels from spike_times dictionary if not already provided. """
 
         @wraps(func)
         def wrapper(self, *args, **kwargs):
@@ -180,6 +187,10 @@ class SynaptiConn():
         crosscorrelogram_data = compute_crosscorrelogram(
             spike_times, filtered_spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms
         )
+
+        # attach bin size and max lag to the data
+        crosscorrelogram_data['bin_size_ms'] = self.bin_size_ms
+        crosscorrelogram_data['max_lag_ms'] = self.max_lag_ms
 
         return crosscorrelogram_data
 
