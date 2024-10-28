@@ -7,7 +7,6 @@ Modules for generating crosscorrelograms.
 import numpy as np
 
 from synapticonn.postprocessing.correlogram_utils import make_bins
-from synapticonn.utils.errors import SpikeTimesError
 
 
 ##########################################################
