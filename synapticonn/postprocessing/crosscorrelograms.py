@@ -43,7 +43,7 @@ def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms):
         pair_2 = pair[1]
 
         # get spike times for each unit
-        cross_corr, bins = _compute_crosscorrelogram_dual_spiketrains(spike_times[pair_1], spike_times[pair_2], bin_size_ms, max_lag_ms)
+        cross_corr, bins = compute_crosscorrelogram_dual_spiketrains(spike_times[pair_1], spike_times[pair_2], bin_size_ms, max_lag_ms)
         cross_corr_dict[f'{pair_1}_{pair_2}'] = cross_corr
         bins_dict[f'{pair_1}_{pair_2}'] = bins
 
@@ -52,7 +52,7 @@ def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms):
     return crosscorrelogram_data
 
 
-def _compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_size_ms, max_lag_ms):
+def compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_size_ms, max_lag_ms):
     """ Compute the cross-correlogram between two spike trains.
 
     Parameters
