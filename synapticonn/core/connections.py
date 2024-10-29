@@ -295,14 +295,14 @@ class SynaptiConn():
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
 
 
-    def _get_valid_spike_units(self, spike_units_to_plot: list = None,
+    def _get_valid_spike_units(self, spike_units: list = None,
                                spike_unit_labels: list = None):
         """ Validate and filter spike units to plot based on available labels.
 
         Parameters
         ----------
-        spike_units_to_plot : list
-            List of spike units to plot.
+        spike_units : list
+            List of spike units to select for.
         spike_unit_labels : list
             List of spike unit labels.
 
@@ -312,15 +312,15 @@ class SynaptiConn():
             List of valid spike units to plot.
         """
 
-        if spike_units_to_plot is None:
+        if spike_units is None:
             raise SpikeTimesError('Please provide spike units to plot.')
 
-        if not isinstance(spike_units_to_plot, np.ndarray):
-            spike_units_to_plot = np.array(spike_units_to_plot)
+        if not isinstance(spike_units, np.ndarray):
+            spike_units = np.array(spike_units)
 
-        spike_units_to_plot = spike_units_to_plot[np.isin(spike_units_to_plot, spike_unit_labels)]
-        if len(spike_units_to_plot) == 0:
+        spike_units = spike_units[np.isin(spike_units, spike_unit_labels)]
+        if len(spike_units) == 0:
             raise SpikeTimesError('No valid spike units to plot.')
 
-        return spike_units_to_plot
+        return spike_units
 
