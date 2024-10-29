@@ -10,6 +10,7 @@ from typing import List, Optional, Dict, Any
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
 from synapticonn.plots.acg import plot_acg
 from synapticonn.plots.ccg import plot_ccg
+from synapticonn.analysis.synaptic_strength import calculate_synaptic_strength
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.utils.errors import SpikeTimesError
 
@@ -136,6 +137,83 @@ class SynaptiConn():
         self.max_lag_ms = None
         self.recording_length = None
         self.srate = None
+
+
+    @staticmethod
+    def extract_spike_unit_labels(func):
+        """ Decorator to inject spike unit labels from spike_times dictionary if not already provided. """
+
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            # check if spike_unit_labels is provided in args or kwargs
+            if 'spike_unit_labels' not in kwargs and len(args) < func.__code__.co_argcount - 1:
+                # if not present in kwargs and missing in positional args, add to kwargs
+                kwargs['spike_unit_labels'] = list(self.spike_times.keys())
+            return func(self, *args, **kwargs)
+
+        return wrapper
+
+
+    @extract_spike_unit_labels
+    def synaptic_strength(self, spike_unit_labels: list, spike_pairs: list = None,
+                          num_iterations: int = 1000, max_lag_ms: float = 25.0,
+                          bin_size_ms: float = 0.5, jitter_range_ms = 10.0,
+                          half_window_ms: float = 5, n_jobs: int = -1) -> dict:
+        """ Compute the synaptic strength for the given spike pairs.
+
+        Parameters
+        ----------
+        spike_unit_labels : list
+            List of spike unit labels.
+        spike_pairs : list
+            List of spike pairs to compute synaptic strength.
+            These are tuples of pre- and post-synaptic neuron IDs.
+            Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.
+        num_iterations : int
+            Number of iterations to compute the synaptic strength.
+        max_lag_ms : float
+            Maximum lag to compute the synaptic strength (in milliseconds).
+        bin_size_ms : float
+            Bin size of the synaptic strength (in milliseconds).
+        jitter_range_ms : float
+            Jitter range to compute the synaptic strength (in milliseconds).
+        half_window_ms : float
+            Half window size for the synaptic strength (in milliseconds).
+        n_jobs: int
+            Number of parallel jobs to run. Default is -1 (all cores).
+            Use this to speed up computation.
+
+        Returns
+        -------
+        synaptic_strength_pairs : dict
+            Dictionary containing synaptic strength data for all pairs of spike trains.
+            This contains the mean, standard deviation, and confidence intervals of the synaptic strength
+            following jittering and bootstrapping.
+
+        References
+        ----------
+        [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27.
+        """
+
+        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
+
+        self.pair_synaptic_strength = {}
+        for pre_synaptic_neuron_id, post_synaptic_neuron_id in valid_spike_pairs:
+
+            # retrieve spike times for the pre- and post-synaptic neurons
+            pre_synaptic_spktimes = self.get_spike_times_for_units([pre_synaptic_neuron_id]).get(pre_synaptic_neuron_id)
+            post_synaptic_spktimes = self.get_spike_times_for_units([post_synaptic_neuron_id]).get(post_synaptic_neuron_id)
+
+            # calculate synaptic strength
+            synaptic_strength_data = calculate_synaptic_strength(
+                pre_synaptic_spktimes, post_synaptic_spktimes,
+                jitter_range_ms=jitter_range_ms, num_iterations=num_iterations,
+                max_lag_ms=max_lag_ms, bin_size_ms=bin_size_ms,
+                half_window_ms=half_window_ms, n_jobs=n_jobs)
+
+            self.pair_synaptic_strength[(pre_synaptic_neuron_id, post_synaptic_neuron_id)] = synaptic_strength_data
+
+        return self.pair_synaptic_strength
 
 
     @extract_spike_unit_labels
@@ -338,18 +416,3 @@ class SynaptiConn():
             raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
 
         return valid_spike_pairs, invalid_spike_pairs
-
-
-    @staticmethod
-    def extract_spike_unit_labels(func):
-        """ Decorator to inject spike unit labels from spike_times dictionary if not already provided. """
-
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            # check if spike_unit_labels is provided in args or kwargs
-            if 'spike_unit_labels' not in kwargs and len(args) < func.__code__.co_argcount - 1:
-                # if not present in kwargs and missing in positional args, add to kwargs
-                kwargs['spike_unit_labels'] = list(self.spike_times.keys())
-            return func(self, *args, **kwargs)
-
-        return wrapper
