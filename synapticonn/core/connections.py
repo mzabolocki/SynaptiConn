@@ -111,6 +111,22 @@ class SynaptiConn():
         return list(self.spike_times.keys())
 
 
+    def get_spike_times_for_units(self, spike_units_to_collect: list = None) -> dict:
+        """ Retrieve spike times for the selected units.
+
+        Parameters
+        ----------
+        spike_units_to_collect : list
+            List of spike units to collect.
+
+        Returns
+        -------
+        spike_times : dict
+            Dictionary containing spike times for the selected units.
+        """
+        return {key: self.spike_times[key] for key in spike_units_to_collect}
+
+
     def _reset_parameters(self):
         """ Reset the parameters of the object. """
 
@@ -159,7 +175,7 @@ class SynaptiConn():
         spike_units_to_collect = self._get_valid_spike_units(spike_units, spike_unit_labels)
         print(f'Plotting autocorrelogram for spike units: {spike_units_to_collect}')
 
-        spike_times = self._get_spike_times_for_units(spike_units_to_collect)
+        spike_times = self.get_spike_times_for_units(spike_units_to_collect)
         plot_acg(spike_times, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms, **kwargs)
 
 
@@ -189,7 +205,7 @@ class SynaptiConn():
             raise ValueError("No valid spike pairs found for the given spike unit labels.")
 
         # retrieve spike times and compute cross-correlogram data
-        spike_times = self._get_spike_times_for_units(valid_spike_units)
+        spike_times = self.get_spike_times_for_units(valid_spike_units)
         crosscorrelogram_data = compute_crosscorrelogram(
             spike_times, filtered_spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms
         )
@@ -309,18 +325,3 @@ class SynaptiConn():
 
         return spike_units_to_plot
 
-
-    def _get_spike_times_for_units(self, spike_units_to_collect: list = None):
-        """ Retrieve spike times for the selected units.
-
-        Parameters
-        ----------
-        spike_units_to_collect : list
-            List of spike units to collect.
-
-        Returns
-        -------
-        spike_times : dict
-            Dictionary containing spike times for the selected units.
-        """
-        return {key: self.spike_times[key] for key in spike_units_to_collect}
