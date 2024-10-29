@@ -6,3 +6,4 @@ pandas
 matplotlib
 ipympl
 openpyxl
+joblib  # for parallel processing

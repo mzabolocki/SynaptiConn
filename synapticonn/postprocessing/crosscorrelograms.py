@@ -72,14 +72,16 @@ def compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_
         The cross-correlogram.
     """
 
-    time_diffs = []
-    for spike1 in spike_train_1:
-        for spike2 in spike_train_2:
-            diff = spike2 - spike1
-            if -max_lag_ms <= diff <= max_lag_ms:
-                time_diffs.append(diff)
+    # convert to numpy arrays
+    spike_train_1 = np.array(spike_train_1)
+    spike_train_2 = np.array(spike_train_2)
+
+    time_diffs = spike_train_2[:, np.newaxis] - spike_train_1
+
+    mask = (time_diffs >= -max_lag_ms) & (time_diffs <= max_lag_ms)
+    valid_diffs = time_diffs[mask]
 
     bins = make_bins(max_lag_ms, bin_size_ms)
-    cross_corr, _ = np.histogram(time_diffs, bins)
+    cross_corr, _ = np.histogram(valid_diffs, bins)
 
     return cross_corr, bins
