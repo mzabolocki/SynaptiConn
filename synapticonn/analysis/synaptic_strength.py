@@ -15,7 +15,7 @@ from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogra
 def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
                                 jitter_range_ms=10, num_iterations=1000,
                                 max_lag_ms=25, bin_size_ms=0.5,
-                                half_window_ms=5, verbose=True):
+                                half_window_ms=5):
     """ Calculate the synaptic strength between two spike trains.
 
     Parameters
@@ -40,26 +40,29 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     half_window_ms : float, optional
         The half-width of the window around the zero-lag time (in milliseconds).
         Default is 5 ms.
-    verbose : bool, optional
-        Whether to print the synaptic strength value.
 
     Returns
     -------
-    synaptic_strength : float
-        The synaptic strength value.
+    synaptic_strength_data : dict
+        Dictionary containing the original cross-correlogram counts,
+        the jittered cross-correlogram counts, the synaptic strength value,
+        and the confidence intervals.
 
     CCG notes
     ---------
-    In CCG analysis, if one unit fires before the other, the peak of the CCG will be positive.
-    This peak will be centred around the zero-lag time. This delay is typically 1-5 ms for excitatory
-    synapses, but can vary depending on the type of synapse and the distance between the cells.
+    In CCG analysis, if one unit fires before the other, the peak of the CCG
+    will be positive. This peak will be centred around the zero-lag time.
+    This delay is typically 1-5 ms for excitatory synapses, but can vary
+    depending on the type of synapse and the distance between the cells.
     True monosynaptic connections will have a peak at zero lag.
 
-    If the time-lag is less than zero, this indicates that the post-synaptic cell is
-    firing before the pre-synaptic cell. In such cases, the direction of causality could be reversed,
-    and change depending on which cell is considered the pre-synaptic cell. This is why it is
-    important to consider the direction of causality when interpreting the CCG results. This bidirectional
-    can help confirm the presence of a monosynaptic connections.
+    If the time-lag is less than zero, this indicates that the post-synaptic
+    cell is firing before the pre-synaptic cell. In such cases, the direction
+    of causality could be reversed, and change depending on which cell is
+    considered the pre-synaptic cell. This is why it is important to consider
+    the direction of causality when interpreting the CCG results.
+    This bidirectional can help confirm the presence of a monosynaptic
+    connections.
 
     Module notes
     ------------
@@ -82,24 +85,49 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     assert pre_spike_train is not None, "Pre-synaptic spike train is required."
     assert post_spike_train is not None, "Post-synaptic spike train is required."
 
-    # --- jittered ccg
-    # here, the original ccg between pre- and post-synaptic cells is computed.
-    # a single spike train is jittered across multiple iterations to generate
-    # a distribution of jittered cross-correlograms. This process is repeated
-    # across a number of iterations to estimate the confidence intervals [1].
+    # return jittered ccg
     synaptic_strength_data = _return_jittered_ccg(pre_spike_train, post_spike_train,
-                                                  num_iterations=num_iterations,
-                                                  max_lag_ms=max_lag_ms,
-                                                  bin_size_ms=bin_size_ms,
-                                                  jitter_range_ms=jitter_range_ms)
+                                                  num_iterations, max_lag_ms,
+                                                  bin_size_ms, jitter_range_ms)
 
-    # ---- synaptic strength
-    # here, the synaptic strength is calculated as the Z-score of the peak bin count
+    # calculate the synaptic strength as the Z-score of the peak bin count
     # within a specified window in the original CCG, relative to the mean and standard
-    # this window is centred around the zero-lag time.
-    ccg_bins = synaptic_strength_data['ccg_bins']
-    original_ccg_counts = synaptic_strength_data['original_ccg_counts']
-    jittered_ccg_counts = synaptic_strength_data['jittered_ccg_counts']
+    # this window is centred around the zero-lag time
+    synaptic_strength_data.update(
+        _return_synaptic_strength_zscore(synaptic_strength_data['ccg_bins'],
+                                         synaptic_strength_data['original_ccg_counts'],
+                                         synaptic_strength_data['jittered_ccg_counts'],
+                                         half_window_ms, bin_size_ms))
+
+    return synaptic_strength_data
+
+
+def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
+                                     jittered_ccg_counts, half_window_ms=5,
+                                     bin_size_ms=0.5):
+    """ Calculate the synaptic strength as the Z-score of the peak bin
+    count within a specified window in the original CCG.
+
+    Parameters
+    ----------
+    ccg_bins : np.ndarray
+        The time bins for the cross-correlogram.
+    original_ccg_counts : np.ndarray
+        The original cross-correlogram counts.
+    jittered_ccg_counts : np.ndarray
+        The jittered cross-correlogram counts.
+    half_window_ms : float, optional
+        The half-width of the window around the zero-lag time (in milliseconds).
+        Default is 5 ms.
+    bin_size_ms : float, optional
+        The size of each bin in the cross-correlogram (in milliseconds).
+        Default is 0.5 ms.
+
+    Returns
+    -------
+    synaptic_strength_zscore : dict
+        Dictionary containing the synaptic strength value, and the confidence intervals.
+    """
 
     # define the window around the zero-lag time
     window_bins = int((half_window_ms*2) / (2 * bin_size_ms))
@@ -120,33 +148,13 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     else:
         synaptic_strength = np.inf  # if no variance in jittered counts, Z is undefined or infinite
 
-    # --- confidence intervals
-    # confidence interval calculations on jittered ccg
+    # calculate confidence intervals
     high_ci = np.percentile(jittered_window_counts, 99, axis=0)
     low_ci = np.percentile(jittered_window_counts, 1, axis=0)
 
-    if verbose:
-        print(" ========= PARAMETERS ========= ")
-        print(f"Jitter range: {jitter_range_ms} ms")
-        print(f"Number of iterations: {num_iterations}")
-        print(f"Max lag: {max_lag_ms} ms")
-        print(f"Bin size: {bin_size_ms} ms")
-        print(f"Half window: {half_window_ms} ms")
+    synaptic_strength_zscore = {'synaptic_strength': synaptic_strength, 'high_ci': high_ci, 'low_ci': low_ci}
 
-        print(" ========= WINDOW LENGTH ========= ")
-        print(f'Window bins: {window_bins} | Window length: {half_window_ms*2} ms')
-        print(f'Max time lag for centred window: {ccg_bins[window_slice][0]}')
-        print(f'Min time lag for centred window: {ccg_bins[window_slice][-1]}')
-
-        print(" ========= SYNAPTIC STRENGTH ========= ")
-        print(f'Synaptic strength: {synaptic_strength}')
-
-    # --- attach data
-    synaptic_strength_data['high_ci'] = high_ci
-    synaptic_strength_data['low_ci'] = low_ci
-    synaptic_strength_data['synaptic_strength'] = synaptic_strength
-
-    return synaptic_strength_data
+    return synaptic_strength_zscore
 
 
 def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
@@ -179,7 +187,7 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     original_ccg_counts, ccg_bins = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, post_spike_train, bin_size_ms, max_lag_ms)
 
     # jitter a single spike train across multiple iterations
-    jittered_ccgs = np.zeros((num_iterations, len(ccg_counts)))
+    jittered_ccgs = np.zeros((num_iterations, len(original_ccg_counts)))
     for i in range(num_iterations):
         jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_ms)
         jittered_ccg_counts, _ = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, jittered_post_spike_train, bin_size_ms, max_lag_ms)
@@ -192,7 +200,7 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
 
 
 def _apply_jitter(spike_train, jitter_range_ms):
-    """Apply random jitter to a spike train within a specified range.
+    """ Apply random jitter to a spike train within a specified range.
 
     Parameters
     ----------
@@ -222,14 +230,3 @@ def _apply_jitter(spike_train, jitter_range_ms):
     sorted_jittered_spike_train = np.sort(jittered_spike_train)
 
     return sorted_jittered_spike_train
-
-
-#############################
-#############################
-
-
-# TO DO :: add back in 
-# # CI (1% and 99%)
-# upper_conf = np.percentile(jittered_ccgs, 99, axis=0)
-# lower_conf = np.percentile(jittered_ccgs, 1, axis=0)
-    
