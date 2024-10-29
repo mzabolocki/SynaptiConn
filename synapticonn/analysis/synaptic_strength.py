@@ -11,10 +11,49 @@ from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogra
 ##########################################################
 ##########################################################
 
+def calculate_synaptic_strength(pre_spike_train, post_spike_train, jitter_range_ms=10,
+                                num_iterations=1000, max_lag_ms=25, bin_size_ms=0.5,
+                                half_window_ms=5, verbose=True):
 
-def calculate_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
-                           max_lag_ms=25, bin_size_ms=0.5, jitter_range_ms=10):
-    """ Calculate the jittered cross-correlogram and confidence intervals.
+    # return jittered ccg
+    original_ccg_bins, original_ccg_counts, jittered_ccg_counts = _return_jittered_ccg(pre_spike_train,
+                                                                                       post_spike_train,
+                                                                                       num_iterations=num_iterations,
+                                                                                       max_lag_ms=max_lag_ms,
+                                                                                       bin_size_ms=bin_size_ms,
+                                                                                       jitter_range_ms=jitter_range_ms)
+
+    # identify the number of bins within the window, centered around zero lag
+    window_bins = int((half_window_ms*2) / (2 * bin_size_ms))
+
+    # slice the CCG bins within the window
+    mid_bin = len(ccg_bins) // 2  # the center bin corresponds to zero lag
+    window_slice = slice(mid_bin - window_bins, mid_bin + window_bins + 1)
+
+    # identify the peak bin count within the window in the original CCG
+    x_real = np.max(ccg_counts[window_slice])
+
+    # compute mean and standard deviation of the jittered CCGs within the same window
+    jittered_window_counts = jittered_ccgs[:, window_slice]
+    m_jitter = np.mean(jittered_window_counts)
+    s_jitter = np.std(jittered_window_counts)
+
+    # calculate the synaptic stength as the Z-score
+    if s_jitter > 0:
+        synaptic_strength = (x_real - m_jitter) / s_jitter
+    else:
+        synaptic_strength = np.inf  # if no variance in jittered counts, Z is undefined or infinite
+
+    if verbose:
+        print(f'Window bins: {window_bins} | Window length: {half_window_ms*2} ms')
+        print(f'Max time lag for centred window: {ccg_bins[window_slice][0]}')
+        print(f'Min time lag for centred window: {ccg_bins[window_slice][-1]}')
+        print(f'Synaptic strength: {synaptic_strength}')
+
+
+def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
+                         max_lag_ms=25, bin_size_ms=0.5, jitter_range_ms=10):
+    """ Return the jittered cross-correlogram.
 
     Parameters
     ----------
@@ -34,12 +73,8 @@ def calculate_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=100
 
     Returns
     -------
-    ccg_bins : np.ndarray
-        The bin edges for the cross-correlogram.
-    ccg_counts : np.ndarray
-        The counts for the actual cross-correlogram.
-    jittered_ccgs : np.ndarray
-        The counts for the jittered cross-correlograms.
+    jittered_ccg_data : dict
+        Dictionary containing the original cross-correlogram counts and the jittered cross-correlogram counts.
 
     CCG notes
     ---------
@@ -73,19 +108,22 @@ def calculate_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=100
     """
 
     # compute cross-correlogram for dual spike trains
-    ccg_counts, ccg_bins = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, post_spike_train, max_lag_ms, bin_size_ms)
+    original_ccg_counts, ccg_bins = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, post_spike_train, bin_size_ms, max_lag_ms)
 
     # jitter a single spike train across multiple iterations
-    jittered_ccgs = np.zeros((num_iterations, len(ccg_bins)))
+    jittered_ccgs = np.zeros((num_iterations, len(ccg_counts)))
     for i in range(num_iterations):
-        jittered_post_spike_train = apply_jitter(post_spike_train, jitter_range_ms)
-        _, jittered_ccg_counts = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, jittered_post_spike_train, max_lag_ms, bin_size_ms)
+        jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_ms)
+        jittered_ccg_counts, jittered_ccg_bins = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, jittered_post_spike_train, bin_size_ms, max_lag_ms)
         jittered_ccgs[i, :] = jittered_ccg_counts
 
-    return ccg_bins, ccg_counts, jittered_ccgs
+    # note :: ccg bins are the same for both original and jittered ccgs
+    jittered_ccg_data = {'ccg_bins': ccg_bins, 'original_ccg_counts': ccg_counts, 'jittered_ccg_counts': jittered_ccgs}
+
+    return jittered_ccg_data
 
 
-def apply_jitter(spike_train, jitter_range_ms):
+def _apply_jitter(spike_train, jitter_range_ms):
     """Apply random jitter to a spike train within a specified range.
 
     Parameters
@@ -127,44 +165,3 @@ def apply_jitter(spike_train, jitter_range_ms):
 # upper_conf = np.percentile(jittered_ccgs, 99, axis=0)
 # lower_conf = np.percentile(jittered_ccgs, 1, axis=0)
     
-
-# def compute_synaptic_strength(ccg_actual, jittered_ccgs, window_ms, bin_size_ms):
-#     """Compute the standardized value (Z) to assess the strength of the synaptic interaction.
-
-#     Parameters
-#     ----------
-#     ccg_actual : array_like
-#         The cross-correlogram of the actual spike trains.
-#     jittered_ccgs : array_like
-#         2D array where each row is a jittered cross-correlogram (shape: num_repeats x num_bins).
-#     window_ms : float
-#         The window in milliseconds around zero within which to find the peak bin count.
-#     bin_size_ms : float
-#         The size of each bin in milliseconds.
-
-#     Returns
-#     -------
-#     float
-#         The standardized Z-value representing the strength of the synaptic interaction.
-#     """
-
-#     # Calculate the indices corresponding to the desired window around zero
-#     half_window_bins = int(window_ms / (2 * bin_size_ms))
-#     mid_bin = len(ccg_actual) // 2  # The center bin corresponds to zero lag
-#     window_slice = slice(mid_bin - half_window_bins, mid_bin + half_window_bins + 1)
-
-#     # Identify the peak bin count within the window in the actual CCG
-#     x_real = np.max(ccg_actual[window_slice])
-
-#     # Compute mean and standard deviation of the jittered CCGs within the same window
-#     jittered_window_counts = jittered_ccgs[:, window_slice]
-#     m_jitter = np.mean(jittered_window_counts)
-#     s_jitter = np.std(jittered_window_counts)
-
-#     # Calculate the Z-score
-#     if s_jitter > 0:
-#         Z = (x_real - m_jitter) / s_jitter
-#     else:
-#         Z = np.inf  # If no variance in jittered counts, Z is undefined or infinite
-
-#     return Z
