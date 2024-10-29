@@ -197,20 +197,8 @@ class SynaptiConn():
             Dictionary containing cross-correlograms and bins for all pairs of spike trains.
         """
 
-        # validate spike pair inputs
         valid_spike_units = self._get_valid_spike_unit_labels(spike_pairs, spike_unit_labels)
-
-        # filter out invalid spike pairs
-        invalid_spike_pairs = [pair for pair in spike_pairs if pair[0] not in valid_spike_units or pair[1] not in valid_spike_units]
-        valid_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units and pair[1] in valid_spike_units]
-
-        if invalid_spike_pairs:
-            warnings.warn(
-                f"Invalid spike pairs found: {invalid_spike_pairs}. These pairs will be ignored.",
-                UserWarning
-            )
-        if not valid_spike_pairs:
-            raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
+        valid_spike_pairs, invalid_spike_pairs = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
 
         # retrieve spike times and compute cross-correlogram data
         spike_times = self.get_spike_times_for_units(valid_spike_units)
@@ -332,3 +320,35 @@ class SynaptiConn():
 
         return spike_unit_labels
 
+    def _filter_spike_pairs(self, spike_pairs: list = None, spike_unit_labels: list = None):
+        """ Filter spike pairs for valid spike units.
+
+        Parameters
+        ----------
+        spike_pairs : list
+            List of spike pairs.
+        spike_unit_labels : list
+            List of spike unit labels.
+
+        Returns
+        -------
+        valid_spike_pairs : list
+            List of valid spike pairs.
+        invalid_spike_pairs : list
+            List of invalid spike pairs.
+        """
+
+        valid_spike_units = self._get_valid_spike_unit_labels(spike_pairs, spike_unit_labels)
+
+        invalid_spike_pairs = [pair for pair in spike_pairs if pair[0] not in valid_spike_units or pair[1] not in valid_spike_units]
+        valid_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units and pair[1] in valid_spike_units]
+
+        if invalid_spike_pairs:
+            warnings.warn(
+                f"Invalid spike pairs found: {invalid_spike_pairs}. These pairs will be ignored.",
+                UserWarning
+            )
+        if not valid_spike_pairs:
+            raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
+
+        return valid_spike_pairs, invalid_spike_pairs
