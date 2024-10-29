@@ -91,8 +91,6 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     if (pre_spike_train is None) or (post_spike_train is None):
         raise SpikeTimesError("Pre- and post-synaptic spike trains are required.")
 
-    # check for warnings
-    # note :: these recommendations are based on the referenced protocol [1]
     if bin_size_ms > 0.5:
         warnings.warn("Bin size is greater than 0.5 ms. This may affect the accuracy of the synaptic strength value.", UserWarning)
     if max_lag_ms > 25:
@@ -104,15 +102,10 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
 
     #########################
 
-    # jitter a single spiketrain across num_iterations
-    # and return the ccg for each jittered spiketrain
     synaptic_strength_data = _return_jittered_ccg(pre_spike_train, post_spike_train,
                                                   num_iterations, max_lag_ms,
                                                   bin_size_ms, jitter_range_ms, n_jobs)
 
-    # calculate the synaptic strength as the Z-score of the peak bin count
-    # within a specified window in the original CCG, relative to the mean and standard
-    # this window is centred around the zero-lag time
     synaptic_strength_data.update(
         _return_synaptic_strength_zscore(synaptic_strength_data['ccg_bins'],
                                          synaptic_strength_data['original_ccg_counts'],
@@ -160,19 +153,19 @@ def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
     mid_bin = len(ccg_bins) // 2  # the center bin corresponds to zero lag
     window_slice = slice(mid_bin - window_bins, mid_bin + window_bins + 1)  # slice the window
 
-    # identify the peak bin count within the window in the original CCG
+    # identify the peak bin count within window
     x_real = np.max(original_ccg_counts[window_slice])
 
-    # compute mean and standard deviation of the jittered CCGs within the same window
+    # compute mean and standard deviation of the jittered CCGs
     jittered_window_counts = jittered_ccg_counts[:, window_slice]
     m_jitter = np.mean(jittered_window_counts)
     s_jitter = np.std(jittered_window_counts)
 
-    # calculate the synaptic stength as the Z-score
+    # calculate Z-score
     if s_jitter > 0:
         synaptic_strength = (x_real - m_jitter) / s_jitter
     else:
-        synaptic_strength = np.inf  # if no variance in jittered counts, Z is undefined or infinite
+        synaptic_strength = np.inf  # if no variance, Z is undefined or infinite
 
     # calculate confidence intervals
     high_ci = np.percentile(jittered_window_counts, 99, axis=0)
@@ -221,7 +214,6 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
 
     assert num_iterations > 2, "Number of iterations must be greater than zero."
 
-    # compute cross-correlogram for dual spike trains
     original_ccg_counts, ccg_bins = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, post_spike_train, bin_size_ms, max_lag_ms)
 
     # jitter a single spike train across multiple iterations
@@ -231,8 +223,6 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
         jittered_ccg_counts, _ = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, jittered_post_spike_train, bin_size_ms, max_lag_ms)
         return jittered_ccg_counts
 
-    # parrallelize the jittering process
-    # delay the function call to ensure that the seed is applied to each iteration
     jittered_ccgs_list = Parallel(n_jobs=n_jobs)(delayed(single_jitter_iteration)(i) for i in range(num_iterations))
     jittered_ccgs = np.vstack(jittered_ccgs_list)
 
@@ -284,7 +274,6 @@ def _apply_jitter(spike_train, jitter_range_ms, seed=None):
     jitter = np.random.uniform(-jitter_range_ms, jitter_range_ms, size=len(spike_train))
     jittered_spike_train = spike_train + jitter
 
-    # sort the jittered spike train
-    sorted_jittered_spike_train = np.sort(jittered_spike_train)
+    sorted_jittered_spike_train = np.sort(jittered_spike_train)  # sort to ensure temporal order
 
     return sorted_jittered_spike_train

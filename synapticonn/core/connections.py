@@ -49,8 +49,7 @@ class SynaptiConn():
                  bin_size_ms: float = 1,
                  max_lag_ms: float = 100,
                  recording_length: float = None,
-                 srate: float = None,
-                 n_jobs: int = -1):
+                 srate: float = None):
         """ Initialize the SynaptiConn object. """
 
         self.spike_times = spike_times
@@ -136,7 +135,6 @@ class SynaptiConn():
         self.max_lag_ms = None
         self.recording_length = None
         self.srate = None
-        self.n_jobs = -1  # default value
 
 
     @staticmethod
@@ -182,7 +180,7 @@ class SynaptiConn():
 
 
     @extract_spike_unit_labels
-    def return_crosscorrelogram_data(self, spike_unit_labels: list, spike_pairs: list = None, n_jobs: int = -1) -> dict:
+    def return_crosscorrelogram_data(self, spike_unit_labels: list, spike_pairs: list = None) -> dict:
         """ Compute and return the cross-correlogram data for valid spike pairs.
 
         Parameters
@@ -209,8 +207,7 @@ class SynaptiConn():
         # retrieve spike times and compute cross-correlogram data
         spike_times = self.get_spike_times_for_units(valid_spike_units)
         crosscorrelogram_data = compute_crosscorrelogram(
-            spike_times, filtered_spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms, n_jobs=self.n_jobs)
-        )
+            spike_times, filtered_spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms)
 
         return crosscorrelogram_data
 
