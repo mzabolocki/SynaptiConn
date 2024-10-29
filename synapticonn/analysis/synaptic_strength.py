@@ -3,6 +3,7 @@
 Modules for validating synaptic strength.
 """
 
+import warnings
 import numpy as np
 
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram_dual_spiketrains
@@ -83,10 +84,13 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27
     """
 
-    if pre_spike_train is None:
-        raise SpikeTimesError("Pre-synaptic spike train is required.")
-    if post_spike_train is None:
-        raise SpikeTimesError("Post-synaptic spike train is required.")
+    if (pre_spike_train is None) or (post_spike_train is None):
+        raise SpikeTimesError("Pre- and post-synaptic spike trains are required.")
+
+    if bin_size_ms > 0.5:
+        warnings.warn("Bin size is greater than 0.5 ms. This may affect the accuracy of the synaptic strength value.")
+    if max_lag_ms > 25:
+        warnings.warn("Maximum lag is greater than 25 ms. It is recommended to calculate synaptic strength within a 25 ms range.")
 
     # return jittered ccg
     synaptic_strength_data = _return_jittered_ccg(pre_spike_train, post_spike_train,
@@ -136,9 +140,7 @@ def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
     [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27
     """
 
-    assert len(original_ccg_counts) == len(jittered_ccg_counts), "Original and jittered CCG counts must have the same length."
-    assert half_window_ms > 0, "Half window must be greater than zero."
-    assert bin_size_ms > 0, "Bin size must be greater than zero."
+    assert len(original_ccg_counts) == (jittered_ccg_counts.shape[1]), "Original and jittered CCG counts must have the same length."
 
     # define the window around the zero-lag time
     window_bins = int((half_window_ms*2) / (2 * bin_size_ms))
@@ -202,6 +204,9 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
 
     assert num_iterations > 2, "Number of iterations must be greater than zero."
 
+    if num_iterations < 1000:
+        warnings.warn("Number of iterations is less than 1000. This may affect the accuracy of the synaptic strength value.")
+
     # compute cross-correlogram for dual spike trains
     original_ccg_counts, ccg_bins = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, post_spike_train, bin_size_ms, max_lag_ms)
 
@@ -256,10 +261,14 @@ def _apply_jitter(spike_train, jitter_range_ms, seed=None):
 
     assert jitter_range_ms > 0, "Jitter range must be greater than zero."
 
-    if seed is not None:
-        np.random.seed(seed)
+    if jitter_range_ms > 10:
+        warnings.warn("Jitter range is greater than 10 ms. This may affect the accuracy of the synaptic strength value.")
 
     # generate random jitter values for each spike
+
+    if seed is not None:
+        np.random.seed(seed)  # add seed for reproducibility
+
     jitter = np.random.uniform(-jitter_range_ms, jitter_range_ms, size=len(spike_train))
     jittered_spike_train = spike_train + jitter
 
