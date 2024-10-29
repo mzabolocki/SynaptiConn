@@ -181,15 +181,22 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     -------
     jittered_ccg_data : dict
         Dictionary containing the original cross-correlogram counts and the jittered cross-correlogram counts.
+
+    Notes
+    -----
+    For reproducibility, a seed is recommended to be set for each iteration.
+    This is to ensure that the same jittered spike train is generated for each iteration.
+    Hence, the synaptic strength value is consistent across multiple runs.
     """
 
     # compute cross-correlogram for dual spike trains
     original_ccg_counts, ccg_bins = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, post_spike_train, bin_size_ms, max_lag_ms)
 
     # jitter a single spike train across multiple iterations
+    # note :: a seed is applied to each iteration for reproducibility
     jittered_ccgs = np.zeros((num_iterations, len(original_ccg_counts)))
     for i in range(num_iterations):
-        jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_ms)
+        jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_ms, seed=i)
         jittered_ccg_counts, _ = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, jittered_post_spike_train, bin_size_ms, max_lag_ms)
         jittered_ccgs[i, :] = jittered_ccg_counts
 
@@ -199,8 +206,11 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     return jittered_ccg_data
 
 
-def _apply_jitter(spike_train, jitter_range_ms):
+def _apply_jitter(spike_train, jitter_range_ms, seed=None):
     """ Apply random jitter to a spike train within a specified range.
+
+    This is an internal function used to apply random jitter to a spike train.
+    It is not recommended to use this function directly.
 
     Parameters
     ----------
@@ -209,6 +219,8 @@ def _apply_jitter(spike_train, jitter_range_ms):
     jitter_range_ms : float
         The range (in milliseconds) within which to jitter each spike time.
         Each spike will be shifted by a random amount in the range [-jitter_range_ms, +jitter_range_ms].
+    seed : int, optional
+        Random seed for reproducibility. Default is 0.
 
     Returns
     -------
@@ -220,7 +232,13 @@ def _apply_jitter(spike_train, jitter_range_ms):
     The output spike train is sorted in ascending order.
     This is to ensure that the jittered spike times are in
     the correct temporal order.
+
+    A seed is recommended to be set for each iteration to ensure
+    reproducibility.
     """
+
+    if seed is not None:
+        np.random.seed(seed)
 
     # generate random jitter values for each spike
     jitter = np.random.uniform(-jitter_range_ms, jitter_range_ms, size=len(spike_train))
