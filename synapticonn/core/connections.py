@@ -172,7 +172,7 @@ class SynaptiConn():
         The bin size and maximum lag are set by the object parameters.
         """
 
-        spike_units_to_collect = self._get_valid_spike_units(spike_units, spike_unit_labels)
+        spike_units_to_collect = self._get_valid_spike_unit_labels(spike_units, spike_unit_labels)
         print(f'Plotting autocorrelogram for spike units: {spike_units_to_collect}')
 
         spike_times = self.get_spike_times_for_units(spike_units_to_collect)
@@ -197,12 +197,11 @@ class SynaptiConn():
         """
 
         # validate spike pairs
-        valid_spike_units = self._get_valid_spike_units(np.unique(spike_pairs), spike_unit_labels)
-        filtered_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units and pair[1] in valid_spike_units]
-        filtered_spike_pairs = list(set(filtered_spike_pairs))  # remove duplicates
+        valid_spike_units = self._get_valid_spike_unit_labels(np.unique(spike_pairs), spike_unit_labels)
+        filtered_spike_pairs = list(set([pair for pair in spike_pairs if pair[0] in valid_spike_units and pair[1] in valid_spike_units]))
 
         if not filtered_spike_pairs:
-            raise ValueError("No valid spike pairs found for the given spike unit labels.")
+            raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
 
         # retrieve spike times and compute cross-correlogram data
         spike_times = self.get_spike_times_for_units(valid_spike_units)
@@ -295,9 +294,9 @@ class SynaptiConn():
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
 
 
-    def _get_valid_spike_units(self, spike_units: list = None,
-                               spike_unit_labels: list = None):
-        """ Validate and filter spike units to plot based on available labels.
+    def _get_valid_spike_unit_labels(self, spike_units: list = None,
+                                     spike_unit_labels: list = None):
+        """ Validate and filter spike unit labels.
 
         Parameters
         ----------
@@ -308,7 +307,7 @@ class SynaptiConn():
 
         Returns
         -------
-        spike_units_to_plot : list
+        spike_unit_labels : list
             List of valid spike units to plot.
         """
 
@@ -318,9 +317,9 @@ class SynaptiConn():
         if not isinstance(spike_units, np.ndarray):
             spike_units = np.array(spike_units)
 
-        spike_units = spike_units[np.isin(spike_units, spike_unit_labels)]
-        if len(spike_units) == 0:
+        spike_unit_labels = spike_units[np.isin(spike_units, spike_unit_labels)]
+        if len(spike_unit_labels) == 0:
             raise SpikeTimesError('No valid spike units to plot.')
 
-        return spike_units
+        return spike_unit_labels
 

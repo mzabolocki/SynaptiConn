@@ -14,7 +14,7 @@ from synapticonn.postprocessing.correlogram_utils import make_bins
 ##########################################################
 
 
-def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms, n_jobs=-1):
+def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms):
     """ Compute the cross-correlogram between all pairs of spike trains.
 
     Parameters
@@ -27,8 +27,6 @@ def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms, 
         Bin size of the cross-correlogram (in milliseconds).
     max_lag_ms : float
         Maximum lag to compute the cross-correlogram (in milliseconds).
-    n_jobs : int
-        Number of parallel jobs to run. Default is -1 (use all available cores).
 
     Returns
     -------
@@ -46,9 +44,9 @@ def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms, 
         cross_corr, bins = compute_crosscorrelogram_dual_spiketrains(
             spike_times[pair_1], spike_times[pair_2], bin_size_ms, max_lag_ms
         )
-        return f'{pair_1}_{pair_2}', cross_corr, bins
+        return (pair_1, pair_2), cross_corr, bins
 
-    results = Parallel(n_jobs=n_jobs)(delayed(_process_pair)(pair) for pair in spike_pairs)
+    results = Parallel(n_jobs=-1)(delayed(_process_pair)(pair) for pair in spike_pairs)
 
     cross_corr_dict = {key: cross_corr for key, cross_corr, _ in results}
     bins_dict = {key: bins for key, _, bins in results}

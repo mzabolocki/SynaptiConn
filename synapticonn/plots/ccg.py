@@ -29,7 +29,7 @@ plt.style.use(style_path)  # set globally
 @savefig
 @apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
 @check_dependency(plt, 'matplotlib')
-# @check_ax_length
+@check_ax_length
 @check_ccg_ax
 def plot_ccg(cross_correlograms_data, ax=None, show_axes=True, **kwargs):
     """
@@ -53,9 +53,7 @@ def plot_ccg(cross_correlograms_data, ax=None, show_axes=True, **kwargs):
         Array of axes with the cross-correlogram plots.
     """
 
-    # handle labels
-    pair_identifiers = list(cross_correlograms_data['cross_correllations'].keys())
-    pair_identifiers = [str(pair_id) for pair_id in pair_identifiers]
+    pair_identifiers = (cross_correlograms_data['cross_correllations'].keys())
 
     # plot the cross-correlograms between all spike-unit pairs
     for count, pair_id in enumerate(pair_identifiers):
