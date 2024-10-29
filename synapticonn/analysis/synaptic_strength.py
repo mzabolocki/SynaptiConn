@@ -100,7 +100,8 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
 
     #########################
 
-    # return jittered ccg
+    # jitter a single spiketrain across num_iterations
+    # and return the ccg for each jittered spiketrain
     synaptic_strength_data = _return_jittered_ccg(pre_spike_train, post_spike_train,
                                                   num_iterations, max_lag_ms,
                                                   bin_size_ms, jitter_range_ms)
