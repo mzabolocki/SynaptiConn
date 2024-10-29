@@ -213,10 +213,10 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     # jitter a single spike train across multiple iterations
     # note :: a seed is applied to each iteration for reproducibility
     jittered_ccgs = np.zeros((num_iterations, len(original_ccg_counts)))
-    for i in range(num_iterations):
-        jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_ms, seed=i)
+    for iter in range(num_iterations):
+        jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_ms, seed=iter)
         jittered_ccg_counts, _ = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, jittered_post_spike_train, bin_size_ms, max_lag_ms)
-        jittered_ccgs[i, :] = jittered_ccg_counts
+        jittered_ccgs[iter, :] = jittered_ccg_counts
 
     # note :: ccg bins are the same for both original and jittered ccgs
     jittered_ccg_data = {'ccg_bins': ccg_bins, 'original_ccg_counts': original_ccg_counts, 'jittered_ccg_counts': jittered_ccgs}
