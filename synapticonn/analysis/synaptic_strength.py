@@ -6,6 +6,7 @@ Modules for validating synaptic strength.
 import numpy as np
 
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram_dual_spiketrains
+from synapticonn.utils.errors import SpikeTimesError
 
 
 ##########################################################
@@ -82,8 +83,10 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27
     """
 
-    assert pre_spike_train is not None, "Pre-synaptic spike train is required."
-    assert post_spike_train is not None, "Post-synaptic spike train is required."
+    if pre_spike_train is None:
+        raise SpikeTimesError("Pre-synaptic spike train is required.")
+    if post_spike_train is None:
+        raise SpikeTimesError("Post-synaptic spike train is required.")
 
     # return jittered ccg
     synaptic_strength_data = _return_jittered_ccg(pre_spike_train, post_spike_train,
@@ -127,7 +130,15 @@ def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
     -------
     synaptic_strength_zscore : dict
         Dictionary containing the synaptic strength value, and the confidence intervals.
+
+    References
+    ----------
+    [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27
     """
+
+    assert len(original_ccg_counts) == len(jittered_ccg_counts), "Original and jittered CCG counts must have the same length."
+    assert half_window_ms > 0, "Half window must be greater than zero."
+    assert bin_size_ms > 0, "Bin size must be greater than zero."
 
     # define the window around the zero-lag time
     window_bins = int((half_window_ms*2) / (2 * bin_size_ms))
@@ -189,6 +200,8 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     Hence, the synaptic strength value is consistent across multiple runs.
     """
 
+    assert num_iterations > 2, "Number of iterations must be greater than zero."
+
     # compute cross-correlogram for dual spike trains
     original_ccg_counts, ccg_bins = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, post_spike_train, bin_size_ms, max_lag_ms)
 
@@ -235,7 +248,13 @@ def _apply_jitter(spike_train, jitter_range_ms, seed=None):
 
     A seed is recommended to be set for each iteration to ensure
     reproducibility.
+
+    References
+    ----------
+    [1] https://numpy.org/doc/2.0/reference/random/generated/numpy.random.seed.html 
     """
+
+    assert jitter_range_ms > 0, "Jitter range must be greater than zero."
 
     if seed is not None:
         np.random.seed(seed)
