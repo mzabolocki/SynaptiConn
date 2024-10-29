@@ -6,6 +6,8 @@ Modules for validating synaptic strength.
 import warnings
 import numpy as np
 
+from joblib import Parallel, delayed
+
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram_dual_spiketrains
 from synapticonn.utils.errors import SpikeTimesError
 
@@ -17,7 +19,7 @@ from synapticonn.utils.errors import SpikeTimesError
 def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
                                 jitter_range_ms=10, num_iterations=1000,
                                 max_lag_ms=25, bin_size_ms=0.5,
-                                half_window_ms=5):
+                                half_window_ms=5, n_jobs=-1):
     """ Calculate the synaptic strength between two spike trains.
 
     Parameters
@@ -42,6 +44,8 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     half_window_ms : float, optional
         The half-width of the window around the zero-lag time (in milliseconds).
         Default is 5 ms.
+    n_jobs : int, optional
+        The number of jobs to run in parallel. Default is -1.
 
     Returns
     -------
@@ -104,7 +108,7 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     # and return the ccg for each jittered spiketrain
     synaptic_strength_data = _return_jittered_ccg(pre_spike_train, post_spike_train,
                                                   num_iterations, max_lag_ms,
-                                                  bin_size_ms, jitter_range_ms)
+                                                  bin_size_ms, jitter_range_ms, n_jobs)
 
     # calculate the synaptic strength as the Z-score of the peak bin count
     # within a specified window in the original CCG, relative to the mean and standard
@@ -180,7 +184,7 @@ def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
 
 
 def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
-                         max_lag_ms=25, bin_size_ms=0.5, jitter_range_ms=10):
+                         max_lag_ms=25, bin_size_ms=0.5, jitter_range_ms=10, n_jobs=-1):
     """ Return the jittered cross-correlogram.
 
     Parameters
@@ -198,6 +202,10 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     bin_size_ms : float, optional
         The size of each bin in the cross-correlogram (in milliseconds).
         Default is 0.5 ms.
+    n_jobs : int, optional
+        The number of jobs to run in parallel. Default is -1.
+        If -1, all CPUs are used. If 1, no parallel computing code is used at all,
+        which is useful for debugging. For n_jobs below -1, (n_cpus + 1 + n_jobs) are used.
 
     Returns
     -------
@@ -218,11 +226,15 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
 
     # jitter a single spike train across multiple iterations
     # note :: a seed is applied to each iteration for reproducibility
-    jittered_ccgs = np.zeros((num_iterations, len(original_ccg_counts)))
-    for iter_count in range(num_iterations):
-        jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_ms, seed=iter_count)
+    def single_jitter_iteration(seed):
+        jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_ms, seed=seed)
         jittered_ccg_counts, _ = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, jittered_post_spike_train, bin_size_ms, max_lag_ms)
-        jittered_ccgs[iter_count, :] = jittered_ccg_counts
+        return jittered_ccg_counts
+
+    # parrallelize the jittering process
+    # delay the function call to ensure that the seed is applied to each iteration
+    jittered_ccgs_list = Parallel(n_jobs=n_jobs)(delayed(single_jitter_iteration)(i) for i in range(num_iterations))
+    jittered_ccgs = np.vstack(jittered_ccgs_list)
 
     jittered_ccg_data = {'ccg_bins': ccg_bins, 'original_ccg_counts': original_ccg_counts, 'jittered_ccg_counts': jittered_ccgs}
 
