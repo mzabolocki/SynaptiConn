@@ -6,7 +6,6 @@ Modules for validating synaptic strength.
 import numpy as np
 
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram_dual_spiketrains
-from synapticonn.postprocessing.correlogram_utils import make_bins
 
 
 ##########################################################
@@ -41,6 +40,32 @@ def calculate_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=100
         The counts for the actual cross-correlogram.
     jittered_ccgs : np.ndarray
         The counts for the jittered cross-correlograms.
+
+    CCG notes
+    ---------
+    In CCG analysis, if one unit fires before the other, the peak of the CCG will be positive.
+    This peak will be centred around the zero-lag time. This delay is typically 1-5 ms for excitatory
+    synapses, but can vary depending on the type of synapse and the distance between the cells.
+    True monosynaptic connections will have a peak at zero lag.
+
+    If the time-lag is less than zero, this indicates that the post-synaptic cell is
+    firing before the pre-synaptic cell. In such cases, the direction of causality could be reversed,
+    and change depending on which cell is considered the pre-synaptic cell. This is why it is
+    important to consider the direction of causality when interpreting the CCG results. This bidirectional
+    can help confirm the presence of a monosynaptic connections.
+
+    Module notes
+    ------------
+    A single spike train is jittered across multiple iterations to generate
+    a distribution of jittered cross-correlograms. This process is repeated
+    across a number of iterations to estimate the confidence intervals [1].
+    This is introduced to test for the statistical significance of the actual
+    cross-correlogram [1].
+
+    It is recommended that the number of iterations be at least 1000 to
+    obtain a reliable estimate of the confidence intervals [1].
+
+    The jitter range is recommended to be within a 10 ms range [1].
 
     References
     ----------
