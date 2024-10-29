@@ -1,5 +1,6 @@
 """ Base model object, which is used to quantify monosynaptic connections between neurons. """
 
+import warnings
 
 import numpy as np
 
@@ -196,17 +197,25 @@ class SynaptiConn():
             Dictionary containing cross-correlograms and bins for all pairs of spike trains.
         """
 
-        # validate spike pairs
-        valid_spike_units = self._get_valid_spike_unit_labels(np.unique(spike_pairs), spike_unit_labels)
-        filtered_spike_pairs = list(set([pair for pair in spike_pairs if pair[0] in valid_spike_units and pair[1] in valid_spike_units]))
+        # validate spike pair inputs
+        valid_spike_units = self._get_valid_spike_unit_labels(spike_pairs, spike_unit_labels)
 
-        if not filtered_spike_pairs:
+        # filter out invalid spike pairs
+        invalid_spike_pairs = [pair for pair in spike_pairs if pair[0] not in valid_spike_units or pair[1] not in valid_spike_units]
+        valid_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units and pair[1] in valid_spike_units]
+
+        if invalid_spike_pairs:
+            warnings.warn(
+                f"Invalid spike pairs found: {invalid_spike_pairs}. These pairs will be ignored.",
+                UserWarning
+            )
+        if not valid_spike_pairs:
             raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
 
         # retrieve spike times and compute cross-correlogram data
         spike_times = self.get_spike_times_for_units(valid_spike_units)
         crosscorrelogram_data = compute_crosscorrelogram(
-            spike_times, filtered_spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms)
+            spike_times, valid_spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms)
 
         return crosscorrelogram_data
 
