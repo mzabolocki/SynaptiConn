@@ -205,12 +205,16 @@ class SynaptiConn():
             post_synaptic_spktimes = self.get_spike_times_for_units([post_synaptic_neuron_id]).get(post_synaptic_neuron_id)
 
             # calculate synaptic strength
-            synaptic_strength_data = calculate_synaptic_strength(
-                pre_synaptic_spktimes, post_synaptic_spktimes,
-                jitter_range_ms=jitter_range_ms, num_iterations=num_iterations,
-                max_lag_ms=max_lag_ms, bin_size_ms=bin_size_ms,
-                half_window_ms=half_window_ms, n_jobs=n_jobs)
+            synaptic_strength_data = calculate_synaptic_strength(pre_synaptic_spktimes,
+                                                                 post_synaptic_spktimes,
+                                                                 jitter_range_ms=jitter_range_ms,
+                                                                 num_iterations=num_iterations,
+                                                                 max_lag_ms=max_lag_ms,
+                                                                 bin_size_ms=bin_size_ms,
+                                                                 half_window_ms=half_window_ms,
+                                                                 n_jobs=n_jobs)
 
+            # store synaptic strength data
             self.pair_synaptic_strength[(pre_synaptic_neuron_id, post_synaptic_neuron_id)] = synaptic_strength_data
 
         return self.pair_synaptic_strength
