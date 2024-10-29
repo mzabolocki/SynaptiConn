@@ -138,21 +138,6 @@ class SynaptiConn():
         self.srate = None
 
 
-    @staticmethod
-    def extract_spike_unit_labels(func):
-        """ Decorator to inject spike unit labels from spike_times dictionary if not already provided. """
-
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            # check if spike_unit_labels is provided in args or kwargs
-            if 'spike_unit_labels' not in kwargs and len(args) < func.__code__.co_argcount - 1:
-                # if not present in kwargs and missing in positional args, add to kwargs
-                kwargs['spike_unit_labels'] = list(self.spike_times.keys())
-            return func(self, *args, **kwargs)
-
-        return wrapper
-
-
     @extract_spike_unit_labels
     def plot_autocorrelogram(self, spike_unit_labels: list,
                              spike_units: list = None, **kwargs):
@@ -198,7 +183,7 @@ class SynaptiConn():
         """
 
         valid_spike_units = self._get_valid_spike_unit_labels(spike_pairs, spike_unit_labels)
-        valid_spike_pairs, invalid_spike_pairs = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
+        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
 
         # retrieve spike times and compute cross-correlogram data
         spike_times = self.get_spike_times_for_units(valid_spike_units)
@@ -320,6 +305,7 @@ class SynaptiConn():
 
         return spike_unit_labels
 
+
     def _filter_spike_pairs(self, spike_pairs: list = None, spike_unit_labels: list = None):
         """ Filter spike pairs for valid spike units.
 
@@ -352,3 +338,18 @@ class SynaptiConn():
             raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
 
         return valid_spike_pairs, invalid_spike_pairs
+
+
+    @staticmethod
+    def extract_spike_unit_labels(func):
+        """ Decorator to inject spike unit labels from spike_times dictionary if not already provided. """
+
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            # check if spike_unit_labels is provided in args or kwargs
+            if 'spike_unit_labels' not in kwargs and len(args) < func.__code__.co_argcount - 1:
+                # if not present in kwargs and missing in positional args, add to kwargs
+                kwargs['spike_unit_labels'] = list(self.spike_times.keys())
+            return func(self, *args, **kwargs)
+
+        return wrapper
