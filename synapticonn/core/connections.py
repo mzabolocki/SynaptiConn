@@ -8,11 +8,11 @@ from functools import wraps
 from typing import List, Optional, Dict, Any
 
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
-from synapticonn.plots.acg import plot_acg
-from synapticonn.plots.ccg import plot_ccg
+from synapticonn.plots import plot_acg, plot_ccg
 from synapticonn.analysis.synaptic_strength import calculate_synaptic_strength
+from synapticonn.analysis.connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
-from synapticonn.utils.errors import SpikeTimesError
+from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError
 
 
 ###############################################################################
@@ -140,6 +140,7 @@ class SynaptiConn():
 
 
     # TO DO :: move to utils? or a helper function?
+    # add in the ACG checks to the module here
     @staticmethod
     def extract_spike_unit_labels(func):
         """ Decorator to inject spike unit labels from spike_times dictionary if not already provided. """
@@ -219,6 +220,39 @@ class SynaptiConn():
             self.pair_synaptic_strength[(pre_synaptic_neuron_id, post_synaptic_neuron_id)] = synaptic_strength_data
 
         return self.pair_synaptic_strength
+
+
+    def monosynaptic_connection_types(self, threshold: float = None) -> dict:
+        """ Categorize monosynaptic connection types based on synaptic strength data output.
+
+        Parameters
+        ----------
+        threshold : float
+            Threshold value for categorizing connection types. Default is None.
+
+        Returns
+        -------
+        connection_types : dict
+            Dictionary containing connection types for all pairs of spike trains.
+
+        Notes
+        -----
+        Based on [1], for excitatory connections, a threshold of  5 is recommended.
+        For inhibitory connections, a threshold of  -5 is recommended. Thresholds
+        can be adjusted based on the synaptic strength data.
+
+        References
+        ----------
+        [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27.
+        """
+
+        if hasattr(self, 'pair_synaptic_strength'):
+            connection_types = {}
+            for pair, synaptic_strength_data in self.pair_synaptic_strength.items():
+                connection_types[pair] = get_putative_connection_type(synaptic_strength_data['synaptic_strength'], threshold=threshold)
+            return connection_types
+        else:
+            raise ConnectionTypeError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
 
     @extract_spike_unit_labels
