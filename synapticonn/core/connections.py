@@ -9,8 +9,8 @@ from typing import List, Optional, Dict, Any
 
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
 from synapticonn.plots import plot_acg, plot_ccg
-from synapticonn.analysis.synaptic_strength import calculate_synaptic_strength
-from synapticonn.analysis.connection_type import get_putative_connection_type
+from synapticonn.monosynaptic_connections.synaptic_strength import calculate_synaptic_strength
+from synapticonn.monosynaptic_connections.connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError
 
@@ -139,8 +139,7 @@ class SynaptiConn():
         self.srate = None
 
 
-    # TO DO :: move to utils? or a helper function?
-    # add in the ACG checks to the module here
+    # TO DO :: move to utils?
     @staticmethod
     def extract_spike_unit_labels(func):
         """ Decorator to inject spike unit labels from spike_times dictionary if not already provided. """
@@ -254,6 +253,14 @@ class SynaptiConn():
         else:
             raise ConnectionTypeError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
+
+    # def monosynaptic_connection_features(self):
+    #     """ Extract connection features from synaptic strength data. """
+
+    #     if hasattr(self, 'pair_synaptic_strength'):
+
+    #     else:
+    #         raise ConnectionTypeError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
     @extract_spike_unit_labels
     def plot_autocorrelogram(self, spike_unit_labels: list,
