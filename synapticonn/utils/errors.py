@@ -14,3 +14,6 @@ class RecordingLengthError(SpikeTimesError):
 
 class PlottingError(SpikeTimesError):
     """Error for if there is a problem with plotting."""
+
+class ConnectionTypeError(SpikeTimesError):
+    """Error for if there is a problem with the connection type analysis."""

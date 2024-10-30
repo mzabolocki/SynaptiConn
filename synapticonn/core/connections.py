@@ -139,6 +139,7 @@ class SynaptiConn():
         self.srate = None
 
 
+    # TO DO :: move to utils? or a helper function?
     @staticmethod
     def extract_spike_unit_labels(func):
         """ Decorator to inject spike unit labels from spike_times dictionary if not already provided. """
