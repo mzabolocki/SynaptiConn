@@ -12,7 +12,7 @@ from synapticonn.plots import plot_acg, plot_ccg
 from synapticonn.monosynaptic_connections.synaptic_strength import calculate_synaptic_strength
 from synapticonn.monosynaptic_connections.connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
-from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError
+from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError
 
 
 ###############################################################################
@@ -129,15 +129,27 @@ class SynaptiConn():
         return {key: self.spike_times[key] for key in spike_units_to_collect}
 
 
-    def _reset_parameters(self):
-        """ Reset the parameters of the object. """
+    def set_spike_times(self, spike_times: dict):
+        """ Set the spike times for the object.
 
-        self.spike_times = None
-        self.bin_size_ms = None
-        self.max_lag_ms = None
-        self.recording_length = None
-        self.srate = None
+        Parameters
+        ----------
+        spike_times : dict
+            Dictionary containing spike times for each unit.
+            Indexed by unit ID.
+        """
 
+        self.spike_times = spike_times
+        self._run_initial_spike_time_checks()
+
+
+    def reset_pair_synaptic_strength(self):
+        """ Reset the synaptic strength data. """
+
+        if hasattr(self, 'pair_synaptic_strength'):
+            del self.pair_synaptic_strength
+        else:
+            raise DataError("No synaptic strength data found.")
 
     # TO DO :: move to utils?
     @staticmethod
@@ -215,7 +227,6 @@ class SynaptiConn():
                                                                  half_window_ms=half_window_ms,
                                                                  n_jobs=n_jobs)
 
-            # store synaptic strength data
             self.pair_synaptic_strength[(pre_synaptic_neuron_id, post_synaptic_neuron_id)] = synaptic_strength_data
 
         return self.pair_synaptic_strength
@@ -261,6 +272,7 @@ class SynaptiConn():
 
     #     else:
     #         raise ConnectionTypeError("No synaptic strength data found. Please run the synaptic_strength method first.")
+
 
     @extract_spike_unit_labels
     def plot_autocorrelogram(self, spike_unit_labels: list,
