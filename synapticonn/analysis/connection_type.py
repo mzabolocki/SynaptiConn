@@ -34,14 +34,7 @@ def get_putative_connection_type(synaptic_strength, threshold=5):
     if threshold < 5:
         warnings.warn("Threshold is < 5. Recommended to use a threshold of >= 5 for excitatory connections.")
 
-    if synaptic_strength < threshold:
-        connection_type = None
-    elif synaptic_strength >= threshold:
-        connection_type = "excitatory monosynaptic"
-    else:
-        raise ConnectionTypeError("Connection type not recognized.")
-
-    return connection_type
+    return "excitatory monosynaptic" if synaptic_strength >= threshold else None
 
 
 def get_inh_connection_type(synaptic_strength, threshold=5):
@@ -64,11 +57,4 @@ def get_inh_connection_type(synaptic_strength, threshold=5):
     if threshold > -5:
         warnings.warn("Threshold is > -5. Recommended to use a threshold of <= -5 for inhibitory connections.")
 
-    if synaptic_strength > threshold:
-        connection_type = None
-    elif synaptic_strength <= threshold:
-        connection_type = "inhibitory monosynaptic"
-    else:
-        raise ConnectionTypeError("Connection type not recognized.")
-
-    return connection_type
+    return "inhibitory monosynaptic" if synaptic_strength <= threshold else None
