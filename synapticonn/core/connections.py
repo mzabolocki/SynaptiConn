@@ -39,7 +39,7 @@ class SynaptiConn():
     Notes
     -----
     If spike trains are not in milliseconds, a conversion from seconds to milliseconds is attempted.
-    
+
     Recording length is used to check if spike times exceed the recording duration. This is in 
     milliseconds to match the spike times.
     """

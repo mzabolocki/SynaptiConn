@@ -4,50 +4,93 @@ Modules for computing and plotting autocorrelogram metrics.
 """
 
 
+import warnings
 import numpy as np
-from scipy.stats import zscore
 
 
 ####################################################
 ####################################################
 
 
-def isi_violations(spike_train_ms, min_isi, reference_duration): 
-    """ Interspike-interval (ISI) violations."""
-
-    isi_violations = np.diff(spike_train_ms)
-    num_spikes = len(spike_train_ms)
-
-    num_violations = sum(isi_violations < reference_duration)
-    violation_time = 2 * num_spikes * (reference_duration - min_isi)
-
-    total_rate = num_spikes / spike_train_ms[-1]
-
-    violation_rate = num_violations / violation_time
-
-    fprate = violation_rate / total_rate
-
-    return fprate, num_violations
-
-
-def refractory_period_violations(spike_train_ms, bin_size_ms=1, max_lag_ms=100):
-    """Compute the number of refractory period violations in an autocorrelogram.
+def compute_isi_violations(spike_train_ms, recording_length_ms, isi_threshold_ms=1.5, min_isi_ms=0):
+    """Compute the number of interspike interval (ISI) violations in a spike train.
 
     Parameters
     ----------
-    spike_train_ms : array-like
-        Spike times (in milliseconds).
-    bin_size_ms : float
-        Bin size of the autocorrelogram (in milliseconds).
-        Default is 1 ms.
-    max_lag_ms : float
-        Maximum lag to compute the autocorrelogram (in milliseconds).
-        Default is 100 ms.
+    spike_train_ms : numpy.ndarray
+        Spike train in milliseconds.
+    recording_length_ms : float
+        Length of the recording in milliseconds.
+    isi_threshold_ms : float
+        Minimum interspike interval in milliseconds.
+        This is the minimum time that must elapse between two spikes.
+        By default, this is set to 1.5 ms, which is the refractory period of most neurons.
+    min_isi_ms : float
+        Minimum possible interspike interval in milliseconds.
+        This is the artifical refractory period enforced by the
+        recording system or the spike sorting algorithm.
 
-    Returns
-    -------
-    refractory_violations : int
-        Number of refractory period violations.
+    Notes
+    -----
+    **TO DO** ++ explain the added calculations and the potential biases?
+
+    References
+    ----------
+    Based on hte metrics orginally implemented in the SpikeInterface package
+    (https://github.com/SpikeInterface/spikeinterface/blob/main/src/spikeinterface/qualitymetrics/misc_metrics.py).
+    This was based on metrics originally implemented in Ultra Mega Sort [UMS]_.
+
+    This implementation is based on one of the original implementations written in Matlab by Nick Steinmetz
+    (https://github.com/cortex-lab/sortingQuality) and converted to Python by Daniel Denman.
+
+    Documentation / resources
+    --------------------------
+    For future documentation on isi violations, see:
+    https://allensdk.readthedocs.io/en/latest/_static/examples/nb/ecephys_quality_metrics.html#ISI-violations
+
+    This documentation by Allen Brain provided information on what thresholds may be considered 
+    acceptable for ISI violations.
     """
 
-    
+    assert isi_threshold_ms > 0, "The ISI threshold must be greater than 0."
+
+    if (isi_threshold_ms > 1.5):
+        warnings.warn("The ISI threshold is set to a value greater than the refractory period of most neurons.")
+
+    isi_violations = {'isi_violations_ratio': np.nan, 'isi_violations_rate': np.nan,
+                      'isi_violations_count': np.nan, 'isi_violation_of_total_spikes': np.nan}
+
+    isi_threshold_s = isi_threshold_ms / 1000
+    min_isi_s = min_isi_ms / 1000
+    recording_length_s = recording_length_ms / 1000
+
+    isi_violations_count = {}
+    isi_violations_ratio = {}
+
+    # convert spike train to seconds
+    if len(spike_train_ms) > 0:
+        spike_train_s = spike_train_ms / 1000
+    else:
+        # if no spikes in the spike train, return nan
+        return isi_violations
+
+    isis = np.diff(spike_train_s)
+    num_spikes = len(spike_train_s)
+    num_violations = np.sum(isis < isi_threshold_s)
+
+    violation_time = 2 * num_spikes * (isi_threshold_s - min_isi_s)
+
+    if num_spikes > 0:
+        total_rate = num_spikes / recording_length_s
+        violation_rate = num_violations / violation_time
+        isi_violations_ratio = violation_rate / total_rate
+        isi_violations_rate = num_violations / recording_length_s
+        isi_violations_count = num_violations
+        isi_violation_of_total = num_violations / num_spikes
+
+    isi_violations['isi_violations_ratio'] = isi_violations_ratio
+    isi_violations['isi_violations_rate'] = isi_violations_rate
+    isi_violations['isi_violations_count'] = isi_violations_count
+    isi_violations['isi_violation_of_total_spikes'] = isi_violation_of_total
+
+    return isi_violations

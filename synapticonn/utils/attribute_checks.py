@@ -23,11 +23,11 @@ def requires_sampling_rate(func):
 
 
 def requires_recording_length(func):
-    """ Decorator to ensure that 'recording_length' is provided in the instance. """
+    """ Decorator to ensure that 'recording_length_ms' is provided in the instance. """
 
     def wrapper(self, *args, **kwargs):
-        if getattr(self, 'recording_length', None) is None:
-            raise RecordingLengthError('The recording length must be provided.')
+        if getattr(self, 'recording_length_ms', None) is None:
+            raise RecordingLengthError('The recording length must be provided. Units are to be in milliseconds.')
 
         return func(self, *args, **kwargs)
 
