@@ -25,16 +25,23 @@ class SynaptiConn():
     Parameters
     ----------
     spike_trains : dict
-        Dictionary containing spike times for each unit.
+        Dictionary containing spike times for each unit (in milliseconds).
         Indexed by unit ID.
     bin_size_ms : float
         Bin size of the cross-correlogram (in milliseconds).
     max_lag_ms : float
         Maximum lag to compute the cross-correlogram (in milliseconds).
-    recording_length : float
+    recording_length_ms : float
         Length of the recording (in seconds).
     srate : float
         Sampling rate of the spike times (in Hz).
+
+    Notes
+    -----
+    If spike trains are not in milliseconds, a conversion from seconds to milliseconds is attempted.
+    
+    Recording length is used to check if spike times exceed the recording duration. This is in 
+    milliseconds to match the spike times.
     """
 
 
@@ -50,14 +57,14 @@ class SynaptiConn():
     def __init__(self, spike_times: dict = None,
                  bin_size_ms: float = 1,
                  max_lag_ms: float = 100,
-                 recording_length: float = None,
+                 recording_length_ms: float = None,
                  srate: float = None):
         """ Initialize the SynaptiConn object. """
 
         self.spike_times = spike_times
         self.bin_size_ms = bin_size_ms
         self.max_lag_ms = max_lag_ms
-        self.recording_length = recording_length
+        self.recording_length_ms = recording_length_ms
         self.srate = srate
 
         # internal checks
@@ -71,7 +78,7 @@ class SynaptiConn():
         self._check_spike_time_conversion()
         self._check_negative_spike_times()
         self._check_spike_times_values()
-        self._check_recording_length()
+        self._check_recording_length_ms()
 
 
     def report_spike_units(self):
@@ -372,13 +379,12 @@ class SynaptiConn():
                 raise SpikeTimesError(f"Spike times for unit {key} are empty.")
 
             max_spk_time = np.max(spks)
-            recording_length_ms = self.recording_length * 1000
 
             # check if spike times need to be converted to milliseconds
-            if max_spk_time > recording_length_ms:
+            if max_spk_time > self.recording_length_ms:
                 self.spike_times[key] = (spks / self.srate) * 1000
                 converted_keys.append(key)
-            elif max_spk_time > self.recording_length:
+            elif max_spk_time > self.recording_length_ms:
                 raise SpikeTimesError(f"Spike times for unit {key} exceed the recording length after conversion.")
 
         if converted_keys:
@@ -388,15 +394,16 @@ class SynaptiConn():
         SynaptiConn.converted_to_ms = True
 
 
-    def _check_recording_length(self):
+    def _check_recording_length_ms(self):
         """ Check the recording length is >= max spike time. """
-
-        recording_length_ms = self.recording_length * 1000  # ms conversion to match spk times
 
         for key, spks in self.spike_times.items():
             max_spk_time = np.max(spks)
-            if max_spk_time > recording_length_ms:
-                raise RecordingLengthError(f"Spike times for unit {key} exceed the recording length.")
+            if max_spk_time > self.recording_length_ms:
+                msg = (f"Spike times for unit {key} exceed the recording length. "
+                       f"Max spike time: {max_spk_time}, Recording length: {self.recording_length_ms}. "
+                       "Check that the recording length is correct and in milliseconds.")
+                raise RecordingLengthError(msg)
 
 
     def _check_negative_spike_times(self):
