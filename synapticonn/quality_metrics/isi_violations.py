@@ -1,6 +1,6 @@
-""" acg_metrics.py.
+""" isi_violations.py.
 
-Modules for computing and plotting autocorrelogram metrics.
+Modules for computing interspike interval (ISI) violations in a spike train.
 """
 
 
@@ -58,7 +58,7 @@ def compute_isi_violations(spike_train_ms, recording_length_ms, isi_threshold_ms
         warnings.warn("The ISI threshold is set to a value greater than the refractory period of most neurons.")
 
     isi_violations = {'isi_violations_ratio': np.nan, 'isi_violations_rate': np.nan,
-                      'isi_violations_count': np.nan, 'isi_violation_of_total_spikes': np.nan}
+                      'isi_violations_count': np.nan, 'isi_violations_of_total_spikes': np.nan}
 
     isi_threshold_s = isi_threshold_ms / 1000
     min_isi_s = min_isi_ms / 1000
@@ -86,11 +86,11 @@ def compute_isi_violations(spike_train_ms, recording_length_ms, isi_threshold_ms
         isi_violations_ratio = violation_rate / total_rate
         isi_violations_rate = num_violations / recording_length_s
         isi_violations_count = num_violations
-        isi_violation_of_total = num_violations / num_spikes
+        isi_violations_of_total = num_violations / num_spikes
 
     isi_violations['isi_violations_ratio'] = isi_violations_ratio
     isi_violations['isi_violations_rate'] = isi_violations_rate
     isi_violations['isi_violations_count'] = isi_violations_count
-    isi_violations['isi_violation_of_total_spikes'] = isi_violation_of_total
+    isi_violations['isi_violations_of_total_spikes'] = isi_violations_of_total
 
     return isi_violations

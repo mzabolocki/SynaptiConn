@@ -3,6 +3,7 @@
 import warnings
 
 import numpy as np
+import pandas as pd
 
 from functools import wraps
 from typing import List, Optional, Dict, Any
@@ -12,6 +13,7 @@ from synapticonn.plots import plot_acg, plot_ccg
 from synapticonn.monosynaptic_connections.synaptic_strength import calculate_synaptic_strength
 from synapticonn.monosynaptic_connections.connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
+from synapticonn.quality_metrics import compute_isi_violations, compute_presence_ratio, compute_firing_rates
 from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError, RecordingLengthError
 
 
@@ -173,6 +175,72 @@ class SynaptiConn():
             return func(self, *args, **kwargs)
 
         return wrapper
+
+
+    def spike_unit_quality(self,
+                           isi_threshold_ms=1.5,
+                           min_isi_ms=0,
+                           presence_ratio_bin_duration_ms=60000,
+                           presence_ratio_mean_fr_ratio_thresh=0.0) -> pd.DataFrame:
+        """ Compute spike isolation quality metrics.
+
+        Parameters
+        ----------
+        isi_threshold_ms : float
+            Threshold for the interspike interval (ISI) violations.
+        min_isi_ms : float
+            Minimum ISI value (in milliseconds).
+        presence_ratio_bin_duration_ms : float
+            Duration of each bin in milliseconds for the presence ratio.
+        presence_ratio_mean_fr_ratio_thresh : float
+            Minimum mean firing rate ratio threshold for the presence ratio.
+            This is the minimum mean firing rate that must be present in a bin
+            for the unit to be considered "present" in that bin.
+            By default, this is set to 0.0. This means that the unit must have
+            at least one spike in each bin to be considered "present."
+
+        Returns
+        -------
+        quality_metrics : pd.DataFrame
+            DataFrame containing the quality metrics for each spike unit.
+
+        Notes
+        -----
+        Quality metrics include:
+        - isi_violations_ratio: Fraction of ISIs that violate the threshold.
+        - isi_violations_rate: Rate of ISIs that violate the threshold.
+        - isi_violations_count: Number of ISIs that violate the threshold.
+        - isi_violations_of_total_spikes: Fraction of ISIs that violate the threshold out of total spikes.
+        - presence_ratio: Fraction of time during a session in which a unit is spiking.
+        - mean_firing_rate: Mean firing rate of the unit.
+        - recording_length_sec: Length of the recording in seconds.
+        - n_spikes: Number of spikes for the unit.
+
+        For further information on the quality metric calculations,
+        see the respective functions in the quality_metrics module.
+        """
+
+        quality_metrics = {}
+        for key, spks in self.spike_times.items():
+
+            # isi violations
+            isi_violations = compute_isi_violations(spks, self.recording_length_ms,
+                                                    isi_threshold_ms, min_isi_ms)
+
+            # presence ratio
+            presence_ratio = compute_presence_ratio(spks, self.recording_length_ms,
+                                                    bin_duration_ms=presence_ratio_bin_duration_ms,
+                                                    mean_fr_ratio_thresh=presence_ratio_mean_fr_ratio_thresh,
+                                                    srate=self.srate)
+
+            # unit firing rates
+            firing_rates = compute_firing_rates(spks, self.recording_length_ms)
+
+            quality_metrics[key] = isi_violations
+            quality_metrics[key].update(presence_ratio)
+            quality_metrics[key].update(firing_rates)
+
+        return pd.DataFrame(quality_metrics).T
 
 
     @extract_spike_unit_labels
