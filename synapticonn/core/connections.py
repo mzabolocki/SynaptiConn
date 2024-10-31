@@ -12,7 +12,7 @@ from synapticonn.plots import plot_acg, plot_ccg
 from synapticonn.monosynaptic_connections.synaptic_strength import calculate_synaptic_strength
 from synapticonn.monosynaptic_connections.connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
-from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError
+from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError, RecordingLengthError
 
 
 ###############################################################################
@@ -71,6 +71,7 @@ class SynaptiConn():
         self._check_spike_time_conversion()
         self._check_negative_spike_times()
         self._check_spike_times_values()
+        self._check_recording_length()
 
 
     def report_spike_units(self):
@@ -385,6 +386,17 @@ class SynaptiConn():
             print(f"Warning: Spike times for unit(s) {converted_keys_str} were converted to milliseconds.")
 
         SynaptiConn.converted_to_ms = True
+
+
+    def _check_recording_length(self):
+        """ Check the recording length is >= max spike time. """
+
+        recording_length_ms = self.recording_length * 1000  # ms conversion to match spk times
+
+        for key, spks in self.spike_times.items():
+            max_spk_time = np.max(spks)
+            if max_spk_time > recording_length_ms:
+                raise RecordingLengthError(f"Spike times for unit {key} exceed the recording length.")
 
 
     def _check_negative_spike_times(self):
