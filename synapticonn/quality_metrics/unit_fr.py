@@ -33,4 +33,4 @@ def compute_firing_rates(spike_train_ms, recording_length_ms):
 
     unit_fr = total_spikes / recording_length_ms * 1000  # in Hz
 
-    return {"recording_length_sec": recording_length_ms/1000, "n_spikes": total_spikes, "firing_rate": unit_fr}
+    return {"recording_length_sec": recording_length_ms/1000, "n_spikes": total_spikes, "firing_rate_hz": unit_fr}
