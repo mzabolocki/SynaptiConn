@@ -1,6 +1,8 @@
 """ Base model object, which is used to quantify monosynaptic connections between neurons. """
 
 import warnings
+import logging
+import pathlib
 
 import numpy as np
 import pandas as pd
@@ -15,6 +17,19 @@ from synapticonn.monosynaptic_connections.connection_type import get_putative_co
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.quality_metrics import compute_isi_violations, compute_presence_ratio, compute_firing_rates
 from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError, RecordingLengthError
+
+
+###############################################################################
+###############################################################################
+
+
+log_folder = pathlib.Path('logs', 'removed_spike_units')
+log_folder.mkdir(parents=True, exist_ok=True)
+logging.basicConfig(filename=(pathlib.Path('logs', 'removed_spike_units', 'low_quality_units_removed.log').absolute()),
+                    filemode='w',
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    level=logging.INFO,
+                    force=True)
 
 
 ###############################################################################
@@ -50,6 +65,13 @@ class SynaptiConn():
     # ----- CLASS VARIABLES
     # flag to check spike time conversion to milliseconds
     converted_to_ms = False
+    # spike unit filtering
+    spike_unit_filtering = False
+
+    # quality metric keys
+    quality_metric_keys = ['isi_violations_ratio', 'isi_violations_rate', 'isi_violations_count',
+                            'isi_violations_of_total_spikes', 'presence_ratio', 'firing_rate_hz',
+                            'recording_length_sec', 'n_spikes']
 
 
     ###########################################################################
@@ -243,10 +265,73 @@ class SynaptiConn():
         return pd.DataFrame(quality_metrics).T
 
 
+    def filter_spike_units(self, quality_metrics: pd.DataFrame, query: str = None, log: bool = False, overwrite: bool = False) -> pd.DataFrame:
+        """ Filter spike units based on quality metrics.
+
+        Parameters
+        ----------
+        quality_metrics : pd.DataFrame
+            DataFrame containing the quality metrics for each spike unit.
+            This is the dataframe outputted from the spike_unit_quality method
+            and will be used to filter spike units.
+        query : str
+            Query to filter spike units based on the quality metrics.
+            This query should be a valid pandas query
+        log : bool
+            Whether to log the filtered spike units. Default is False.
+        overwrite : bool
+            Whether to overwrite the existing spike_times dictionary with the filtered units.
+            Default is False.
+
+        Returns
+        -------
+        filtered_units_df : pd.DataFrame
+            DataFrame containing the filtered spike units based on the query.
+
+        Notes
+        -----
+        The quality_metrics dataframe is outputted from the spike_unit_quality method.
+        """
+
+        assert isinstance(query, str), f"Query must be a string. Got {type(query)} instead."
+        assert isinstance(quality_metrics, pd.DataFrame), "Quality metrics must be a DataFrame. Got {type(quality_metrics)} instead."
+
+        # check if spike units have already been filtered
+        if SynaptiConn.spike_unit_filtering:
+            if not overwrite:
+                msg = ("Spike units have already been filtered. Please re-initialize the object "
+                       "or 'set_spike_times' to set the spike_times dict for re-filtering. If this was intentional, "
+                       "please set the 'overwrite' parameter to True.")
+                warnings.warn(msg)
+            if overwrite:
+                SynaptiConn.spike_unit_filtering = False
+
+        if not set(self.quality_metric_keys).issubset(quality_metrics.columns):
+            msg = ("Quality metrics DataFrame is missing required columns. "
+                   f"Required columns: {self.quality_metric_keys}. Please run the spike_unit_quality method.")
+            raise DataError(msg)
+
+        filtered_units_df = quality_metrics.query(query)
+
+        # remove filtered units from the spike times dictionary
+        self.spike_times = {key: self.spike_times[key] for key in filtered_units_df.index}
+
+        # log option to track removed units
+        if log:
+            for key, row in quality_metrics.iterrows():
+                log_msg = f'unit_id: {key} - unit removed from original dataframe with query {query}'
+                logging.info(log_msg)
+        logging.shutdown()
+
+        SynaptiConn.spike_unit_filtering = True
+
+        return filtered_units_df
+
+
     @extract_spike_unit_labels
     def synaptic_strength(self, spike_unit_labels: list, spike_pairs: list = None,
                           num_iterations: int = 1000, max_lag_ms: float = 25.0,
-                          bin_size_ms: float = 0.5, jitter_range_ms = 10.0,
+                          bin_size_ms: float = 0.5, jitter_range_ms: float = 10.0,
                           half_window_ms: float = 5, n_jobs: int = -1) -> dict:
         """ Compute the synaptic strength for the given spike pairs.
 

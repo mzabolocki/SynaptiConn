@@ -38,6 +38,7 @@ build/
 dist/
 todo.txt
 docs/_build/
+logs/
 
 # Exports
 figure_exports/**
