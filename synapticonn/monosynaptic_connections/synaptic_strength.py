@@ -167,11 +167,12 @@ def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
     else:
         synaptic_strength = np.inf  # if no variance, Z is undefined or infinite
 
-    # calculate confidence intervals
+    # calculate confidence intervals within the jittered CCG window
     high_ci = np.percentile(jittered_window_counts, 99, axis=0)
     low_ci = np.percentile(jittered_window_counts, 1, axis=0)
 
-    synaptic_strength_zscore = {'synaptic_strength': synaptic_strength, 'high_ci': high_ci, 'low_ci': low_ci}
+    synaptic_strength_zscore = {'synaptic_strength': synaptic_strength, 'jittered_window_counts': jittered_window_counts,
+                                'window_high_ci': high_ci, 'window_low_ci': low_ci, 'window_slice': window_slice}
 
     return synaptic_strength_zscore
 
@@ -226,7 +227,12 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     jittered_ccgs_list = Parallel(n_jobs=n_jobs)(delayed(single_jitter_iteration)(i) for i in range(num_iterations))
     jittered_ccgs = np.vstack(jittered_ccgs_list)
 
-    jittered_ccg_data = {'ccg_bins': ccg_bins, 'original_ccg_counts': original_ccg_counts, 'jittered_ccg_counts': jittered_ccgs}
+    # calculat confidence intervals on the jittered CCGs
+    high_ci = np.percentile(jittered_ccgs, 99, axis=0)
+    low_ci = np.percentile(jittered_ccgs, 1, axis=0)
+
+    jittered_ccg_data = {'ccg_bins': ccg_bins, 'original_ccg_counts': original_ccg_counts,
+                         'jittered_ccg_counts': jittered_ccgs, 'high_ci': high_ci, 'low_ci': low_ci}
 
     return jittered_ccg_data
 
