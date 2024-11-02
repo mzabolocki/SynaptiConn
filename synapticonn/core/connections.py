@@ -11,7 +11,7 @@ from functools import wraps
 from typing import List, Optional, Dict, Any
 
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
-from synapticonn.plots import plot_acg, plot_ccg
+from synapticonn.plots import plot_acg, plot_ccg, plot_synaptic_strength
 from synapticonn.monosynaptic_connections.synaptic_strength import calculate_synaptic_strength
 from synapticonn.monosynaptic_connections.connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
@@ -384,6 +384,22 @@ class SynaptiConn():
             self.pair_synaptic_strength[(pre_synaptic_neuron_id, post_synaptic_neuron_id)] = synaptic_strength_data
 
         return self.pair_synaptic_strength
+
+
+    def plot_synaptic_strength(self, spike_pair: tuple = None, **kwargs):
+        """ Plot the synaptic strength for the given spike pair.
+
+        Note, this method requires the synaptic strength data to be computed first.
+        It only plots the synaptic strength for a single pair of spike trains.
+        """
+
+        assert spike_pair is not None, "Please provide a valid spike pair to plot."
+        assert isinstance(spike_pair, tuple), "Spike pair must be a tuple."
+
+        if not hasattr(self, 'pair_synaptic_strength'):
+            raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
+
+        plot_synaptic_strength(self.pair_synaptic_strength, spike_pair, **kwargs)
 
 
     def monosynaptic_connection_types(self, threshold: float = None) -> dict:

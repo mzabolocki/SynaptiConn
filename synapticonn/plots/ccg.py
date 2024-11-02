@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from synapticonn.utils.mod_utils import check_dependency
 from synapticonn.plots.style import apply_plot_style
 from synapticonn.plots.save import savefig
-from synapticonn.plots.plot_utils import check_ccg_ax, check_ax_length
+from synapticonn.plots.plot_utils import check_ccg_ax, check_spktime_ax_length
 from synapticonn.plots.aesthetics import CCG_COLORS
 
 
@@ -29,7 +29,7 @@ plt.style.use(style_path)  # set globally
 @savefig
 @apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
 @check_dependency(plt, 'matplotlib')
-@check_ax_length
+@check_spktime_ax_length
 @check_ccg_ax
 def plot_ccg(cross_correlograms_data, ax=None, show_axes=True, **kwargs):
     """

@@ -68,7 +68,7 @@ def check_ccg_ax(func):
     return wrapper
 
 
-def check_ax_length(func):
+def check_spktime_ax_length(func):
     """ Decorator to check axes length before plotting multiple subplots. """
     def wrapper(spike_times, *args, **kwargs):
 
