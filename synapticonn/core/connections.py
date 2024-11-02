@@ -23,19 +23,6 @@ from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataE
 ###############################################################################
 
 
-log_folder = pathlib.Path('logs', 'removed_spike_units')
-log_folder.mkdir(parents=True, exist_ok=True)
-logging.basicConfig(filename=(pathlib.Path('logs', 'removed_spike_units', 'low_quality_units_removed.log').absolute()),
-                    filemode='w',
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    level=logging.INFO,
-                    force=True)
-
-
-###############################################################################
-###############################################################################
-
-
 class SynaptiConn():
     """ Base class for quantifying monosynaptic connections between neurons.
 
@@ -311,17 +298,23 @@ class SynaptiConn():
                    f"Required columns: {self.quality_metric_keys}. Please run the spike_unit_quality method.")
             raise DataError(msg)
 
+        # filter units based on query
         filtered_units_df = quality_metrics.query(query)
 
         # remove filtered units from the spike times dictionary
         self.spike_times = {key: self.spike_times[key] for key in filtered_units_df.index}
 
-        # log option to track removed units
+        # if log, track removed units
         if log:
-            for key, row in quality_metrics.iterrows():
+
+            self._setup_log(log_folder_name='removed_spike_units',
+                            log_fname='low_quality_units_removed.log')
+
+            removed_units = quality_metrics[~quality_metrics.index.isin(filtered_units_df.index)]
+
+            for key, row in removed_units.iterrows():
                 log_msg = f'unit_id: {key} - unit removed from original dataframe with query {query}'
                 logging.info(log_msg)
-        logging.shutdown()
 
         SynaptiConn.spike_unit_filtering = True
 
@@ -506,6 +499,27 @@ class SynaptiConn():
 
         crosscorrelogram_data = self.return_crosscorrelogram_data(spike_unit_labels, spike_pairs)
         plot_ccg(crosscorrelogram_data, **kwargs)
+
+
+    def _setup_log(self, log_folder_name: str = 'removed_spike_units',
+                   log_fname: str = 'low_quality_units_removed.log'):
+        """ Setup logging for specific class methods.
+
+        Parameters
+        ----------
+        log_folder_name : str
+            Name of the log folder to store the log file.
+        log_fname : str
+            Name of the log file.
+        """
+
+        log_folder = pathlib.Path('logs', log_folder_name)
+        log_folder.mkdir(parents=True, exist_ok=True)
+        log_path = pathlib.Path(log_folder, log_fname).absolute()
+        logging.basicConfig(filename=log_path,
+                            format='%(asctime)s - %(levelname)s - %(message)s',
+                            level=logging.INFO,
+                            force=True)
 
 
     @requires_sampling_rate
