@@ -11,7 +11,7 @@ import numpy as np
 
 
 def compute_peak_amp(ccg):
-    """ Compute the peak amplitude of the CCG.
+    """ Compute the peak amplitude (count per bin) of the CCG.
 
     Parameters
     ----------
@@ -27,4 +27,4 @@ def compute_peak_amp(ccg):
     # find the peak of the cross-correlogram
     peak = np.max(ccg)
 
-    return {'ccg_peak_amp': peak}
+    return {'ccg_peak_count_per_bin': peak}
