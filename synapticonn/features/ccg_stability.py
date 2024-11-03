@@ -37,7 +37,7 @@ def compute_ccg_bootstrap(ccg, n_bootstraps=1000):
     # calculate confidence intervals (e.g., 95%)
     bootstrap_std = np.std(bootstrap_means)
 
-    return {'bootstrap_std': bootstrap_std, 'n_bootstraps': n_bootstraps}
+    return {'bootstrap_std': bootstrap_std}
 
 
 def compute_ccg_cv(ccg):

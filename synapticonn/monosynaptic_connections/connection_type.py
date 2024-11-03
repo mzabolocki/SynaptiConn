@@ -45,7 +45,13 @@ def _get_exc_putative_connection_type(synaptic_strength, threshold=5):
 
     if threshold < 5:
         warnings.warn("Threshold is < 5. Recommended to use a threshold of >= 5 for excitatory connections.")
-    return "excitatory monosynaptic" if synaptic_strength >= threshold else 'undefined'
+
+    if synaptic_strength >= threshold:
+        label = "excitatory monosynaptic"
+    elif synaptic_strength < threshold:
+        label = 'undefined'
+
+    return {'putative_exc_connection_type': label}
 
 
 def _get_inh_putative_connection_type(synaptic_strength, threshold=5):
@@ -53,4 +59,10 @@ def _get_inh_putative_connection_type(synaptic_strength, threshold=5):
 
     if threshold > -5:
         warnings.warn("Threshold is > -5. Recommended to use a threshold of <= -5 for inhibitory connections.")
-    return "inhibitory monosynaptic" if synaptic_strength <= threshold else 'undefined'
+
+    if synaptic_strength <= threshold:
+        label = "inhibitory monosynaptic"
+    elif synaptic_strength > threshold:
+        label = 'undefined'
+
+    return {'putative_inh_connection_type': label}
