@@ -83,6 +83,27 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
 
     The jitter range is recommended to be within a 10 ms range [1].
 
+    Synaptic strength notes
+    -----------------------
+    If a given unit consistently fires after a second unit, indicated by a peak in the CCG,
+    there is high chance that these cells are functionally linked either directly through an excitatory
+    synaptic connection or indirectly through a third neuron providing a common input.
+
+    To compute synaptic strength, the firing of a single unit in a pair was jittered across a
+    number of iterations (num_iterations) within a time range (jitter_range_ms).
+    These were used to calculate a confidence interval (CI) between 1% and 99%. If the real
+    CCG peak passed the 99% CI, the corresponding functional connection would be considered
+    significant and not random.
+
+    A z-score was then performed using the following equation:
+
+    ```Z = x_real - mean_jitter / std_jitter```
+
+    This was used to calculate the synaptic strength value. If the Z-score was greater
+    than a positive threshold, the connection was considered significant. This was by
+    default set to 5. If the z-score was less than the negative threshold, the connection
+    was considered inhibitory. This was by default set to -5.
+
     References
     ----------
     [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27
