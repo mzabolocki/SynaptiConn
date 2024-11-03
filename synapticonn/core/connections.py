@@ -7,8 +7,7 @@ import pathlib
 import numpy as np
 import pandas as pd
 
-from functools import wraps
-from typing import List, Optional, Dict, Any
+from typing import Any
 
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
 from synapticonn.plots import plot_acg, plot_ccg, plot_synaptic_strength
@@ -18,6 +17,7 @@ from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogra
 from synapticonn.quality_metrics import compute_isi_violations, compute_presence_ratio, compute_firing_rates
 from synapticonn.features import compute_peak_timing, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
 from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError, RecordingLengthError
+from synapticonn.core.utils import setup_log, extract_spike_unit_labels
 
 
 ###############################################################################
@@ -171,21 +171,6 @@ class SynaptiConn():
         else:
             raise DataError("No synaptic strength data found.")
 
-    # TO DO :: move to utils?
-    @staticmethod
-    def extract_spike_unit_labels(func):
-        """ Decorator to inject spike unit labels from spike_times dictionary if not already provided. """
-
-        @wraps(func)
-        def wrapper(self, *args, **kwargs):
-            # check if spike_unit_labels is provided in args or kwargs
-            if 'spike_unit_labels' not in kwargs and len(args) < func.__code__.co_argcount - 1:
-                # if not present in kwargs and missing in positional args, add to kwargs
-                kwargs['spike_unit_labels'] = list(self.spike_times.keys())
-            return func(self, *args, **kwargs)
-
-        return wrapper
-
 
     def spike_unit_quality(self,
                            isi_threshold_ms=1.5,
@@ -310,8 +295,8 @@ class SynaptiConn():
         # if log, track removed units
         if log:
 
-            self._setup_log(log_folder_name='removed_spike_units',
-                            log_fname='low_quality_units_removed.log')
+            setup_log(log_folder_name='removed_spike_units',
+                      log_fname='low_quality_units_removed.log')
 
             removed_units = quality_metrics[~quality_metrics.index.isin(filtered_units_df.index)]
 
@@ -531,27 +516,6 @@ class SynaptiConn():
 
         crosscorrelogram_data = self.return_crosscorrelogram_data(spike_unit_labels, spike_pairs)
         plot_ccg(crosscorrelogram_data, **kwargs)
-
-
-    def _setup_log(self, log_folder_name: str = 'removed_spike_units',
-                   log_fname: str = 'low_quality_units_removed.log'):
-        """ Setup logging for specific class methods.
-
-        Parameters
-        ----------
-        log_folder_name : str
-            Name of the log folder to store the log file.
-        log_fname : str
-            Name of the log file.
-        """
-
-        log_folder = pathlib.Path('logs', log_folder_name)
-        log_folder.mkdir(parents=True, exist_ok=True)
-        log_path = pathlib.Path(log_folder, log_fname).absolute()
-        logging.basicConfig(filename=log_path,
-                            format='%(asctime)s - %(levelname)s - %(message)s',
-                            level=logging.INFO,
-                            force=True)
 
 
     @requires_sampling_rate
