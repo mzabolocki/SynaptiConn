@@ -20,10 +20,10 @@ from synapticonn.utils.errors import PlottingError
 ####################################################
 
 
-def check_ax(func):
+def check_acg_ac(func):
     """ Decorator to check axes for spike-unit labels before plotting multiple subplots.
 
-    Note: this decorator is used for plotting multiple subplots. However, 
+    Note: this decorator is used for plotting multiple acg subplots. However, 
     to ccg plots, this decorator is not used.
     """
     def wrapper(spike_times, *args, **kwargs):
