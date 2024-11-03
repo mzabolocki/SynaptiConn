@@ -1,1 +1,1 @@
-"""Sub-module for core functions."""
+""" Sub-module for core functions. """
