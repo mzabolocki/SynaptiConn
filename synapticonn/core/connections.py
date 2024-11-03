@@ -15,7 +15,7 @@ from synapticonn.monosynaptic_connections.synaptic_strength import calculate_syn
 from synapticonn.monosynaptic_connections.connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.quality_metrics import compute_isi_violations, compute_presence_ratio, compute_firing_rates
-from synapticonn.features import compute_peak_timing, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
+from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
 from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError, RecordingLengthError
 from synapticonn.core.utils import setup_log, extract_spike_unit_labels
 
@@ -429,7 +429,7 @@ class SynaptiConn():
         if hasattr(self, 'pair_synaptic_strength'):
             connection_features = {}
             for pair, synaptic_strength_data in self.pair_synaptic_strength.items():
-                peak_time = compute_peak_timing(synaptic_strength_data['original_ccg_counts'], self.bin_size_ms)
+                peak_time = compute_peak_latency(synaptic_strength_data['original_ccg_counts'], self.bin_size_ms)
                 peak_amp = compute_peak_amp(synaptic_strength_data['original_ccg_counts'])
                 std_bootstrap = compute_ccg_bootstrap(synaptic_strength_data['original_ccg_counts'], n_bootstraps=n_boothstraps)
                 cv_ccg = compute_ccg_cv(synaptic_strength_data['original_ccg_counts'])
