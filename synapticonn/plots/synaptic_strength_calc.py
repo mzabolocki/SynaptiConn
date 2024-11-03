@@ -51,12 +51,10 @@ def plot_synaptic_strength(pair_synaptic_strength_data, spike_pair, ax=None, bbo
     """
 
     # unpack the data
-    ccg_bins = pair_synaptic_strength_data[spike_pair]['ccg_bins']
-    ccg_data = pair_synaptic_strength_data[spike_pair]['original_ccg_counts']
-    jittered_ccg_counts = pair_synaptic_strength_data[spike_pair]['jittered_ccg_counts']
-    high_ci = pair_synaptic_strength_data[spike_pair]['high_ci']
-    low_ci = pair_synaptic_strength_data[spike_pair]['low_ci']
-    window_slice = pair_synaptic_strength_data[spike_pair]['window_slice']
+    data = pair_synaptic_strength_data[spike_pair]
+    ccg_bins, ccg_data = data['ccg_bins'], data['original_ccg_counts']
+    jittered_ccg_counts = data['jittered_ccg_counts']
+    high_ci, low_ci, window_slice = data['high_ci'], data['low_ci'], data['window_slice']
 
     if ax is None:
         fig, ax = plt.subplots(1, 2, figsize=(15, 5), sharex=True, sharey=True)

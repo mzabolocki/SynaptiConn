@@ -20,7 +20,7 @@ from synapticonn.utils.errors import PlottingError
 ####################################################
 
 
-def check_acg_ac(func):
+def acg_ax(func):
     """ Decorator to check axes for spike-unit labels before plotting multiple subplots.
 
     Note: this decorator is used for plotting multiple acg subplots. However, 
@@ -49,7 +49,7 @@ def check_acg_ac(func):
     return wrapper
 
 
-def check_ccg_ax(func):
+def ccg_ax(func):
     """ Decorator to check axes for spike-unit labels before plotting multiple subplots."""
     def wrapper(cross_correlograms_data, **kwargs):
 
