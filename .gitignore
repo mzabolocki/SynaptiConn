@@ -68,3 +68,6 @@ coverage.xml
 .pytest_cache/
 .mypy_cache
 .venv
+
+# Examples / dev
+examples/batch_processing/notebooks/**
