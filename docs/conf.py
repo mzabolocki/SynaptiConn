@@ -8,6 +8,7 @@
 
 # ----------------------------------------------------------------------------
 
+import sys
 import os
 from os.path import dirname as up
 
@@ -16,6 +17,10 @@ from datetime import date
 import sphinx_gallery
 import sphinx_bootstrap_theme
 from sphinx_gallery.sorting import FileNameSortKey, ExplicitOrder
+
+# -- Path setup --------------------------------------------------------------
+# Add project root to sys.path
+sys.path.insert(0, os.path.abspath(".."))
 
 
 # -- Project information -----------------------------------------------------
