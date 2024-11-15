@@ -88,12 +88,7 @@ copybutton_prompt_text = "$ "
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.
-html_theme = 'alabaster'
-html_theme_options = {
-    'fixed_sidebar': False,
-    'sidebar_width': '0px',
-}
-
+html_theme = 'bootstrap'  # https://sphinx-themes.org/#themes
 # Set the theme path explicitly
 #   This isn't always needed, but is useful so bulding docs doesn't fail on
 #   operating systems which don't have bootstrap on theme path
