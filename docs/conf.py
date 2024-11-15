@@ -40,6 +40,7 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx_gallery.gen_gallery',
+    'sphinx.ext.napoleon',  # support for NumPy and Google style docstrings
     'sphinx_copybutton',
     'numpydoc',
 ]
