@@ -1,0 +1,28 @@
+/* Adjust sidebar font size and spacing */
+
+.wy-nav-side ul li a {
+    font-size: 14px;
+    padding: 8px 16px;
+}
+
+
+/* Fix overflow issues */
+
+.wy-nav-side {
+    overflow-y: auto;
+}
+
+
+/* Make sidebar width larger */
+
+.wy-nav-side {
+    width: 250px;
+}
+
+
+/* Adjust width of main content area */
+
+.wy-nav-content-wrap {
+    margin-left: 260px;
+    /* Adjust based on sidebar width */
+}

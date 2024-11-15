@@ -116,3 +116,10 @@ html_theme_options = {
 # Settings for whether to copy over and show link rst source pages
 html_copy_source = False
 html_show_sourcelink = False
+
+# Include custom static files
+html_static_path = ['_static']
+
+# Add custom CSS file
+def setup(app):
+    app.add_css_file("custom.css")
