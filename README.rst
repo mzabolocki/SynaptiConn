@@ -67,7 +67,7 @@ Documentation
 The 'synapticonn' package includes a full set of code documentation.
 
 To see the documentation for the candidate release, see
-`here <mzabolocki.github.io/SynaptiConn/>`_.
+`here <https://mzabolocki.github.io/SynaptiConn/>`_.
 
 
 
