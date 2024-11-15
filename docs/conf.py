@@ -92,14 +92,7 @@ html_theme_options = {
     'navbar_sidebarrel': False,
     'navbar_links': [
         ("API", "api"),
-        ("FAQ", "faq"),
-        ("Glossary", "glossary"),
-        ("Motivations", "auto_motivations/index"),
-        ("Tutorials", "auto_tutorials/index"),
-        ("Examples", "auto_examples/index"),
-        ("Visualizers", "visualizers"),
-        ("Reference", "reference"),
-        ("GitHub", "https://github.com/fooof-tools/fooof", True),
+        ("GitHub", "https://github.com/mzabolocki/SynaptiConn", True),
     ],
 
     # Set the page width to not be restricted to hardset value
