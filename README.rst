@@ -2,6 +2,12 @@
 SynaptiConn
 =========================
 
+<!-- ![pic1](banner_logo.png) -->
+<p align="center">
+  <img width="60%" src="docs/img/synapti_conn_logo_v2.png">
+</p>
+
+
 Overview
 --------
 Inferring monosynaptic connections using single-unit spike-train cross-correlation analysis.
