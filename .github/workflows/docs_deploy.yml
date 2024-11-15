@@ -27,6 +27,8 @@ jobs:
           sphinx-build -b html docs/ docs/_build/html
 
       - name: deploy to gh pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ghp-import -n -p docs/_build/html
+          ghp-import -n -p -f docs/_build/html
 
