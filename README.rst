@@ -80,7 +80,7 @@ It requires the following dependencies:
 - `numpy <https://github.com/numpy/numpy>`_
 - `scipy <https://github.com/scipy/scipy>`_ >= 0.19
 - `matplotlib <https://github.com/matplotlib/matplotlib>`_ is needed to visualize data and model fits
-- `pandas <https://github.com/pandas-dev/pandas>`_ is needed for exporting model fit results to dataframes
+- `pandas <https://github.com/pandas-dev/pandas>`_ is needed for exporting connection features to dataframes
 
 We recommend using the `Anaconda <https://www.anaconda.com/distribution/>`_ distribution to manage these requirements.
 
