@@ -124,8 +124,8 @@ html_show_sourcelink = False
 
 # Configurations for sphinx gallery
 sphinx_gallery_conf = {
-    'examples_dirs': ['../examples', '../tutorials', '../motivations'],
-    'gallery_dirs': ['auto_examples', 'auto_tutorials', 'auto_motivations'],
+    # 'examples_dirs': ['../examples', '../tutorials', '../motivations'],
+    # 'gallery_dirs': ['auto_examples', 'auto_tutorials', 'auto_motivations'],
     # 'subsection_order' : ExplicitOrder(['../examples/processing',
     #                                     '../examples/manage',
     #                                     '../examples/models',
