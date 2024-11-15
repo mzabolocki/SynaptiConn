@@ -19,7 +19,7 @@ jobs:
 
       - name: install dependencies
         run: |
-          pip install sphinx ghp-import
+          pip install -r requirements_docs.txt
 
       - name: build docs
         run: |
