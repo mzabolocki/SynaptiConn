@@ -58,8 +58,10 @@ numpydoc_show_class_members = False
 
 # Set to generate sphinx docs for class members (methods)
 autodoc_default_options = {
-    'members': None,
-    'inherited-members': None,
+    'members': True,
+    'undoc-members': True,        # Include members without docstrings
+    'inherited-members': True,    # Include inherited methods and attributes
+    'show-inheritance': True,     # Show class inheritance
 }
 
 # generate autosummary even if no references
