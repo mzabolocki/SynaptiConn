@@ -13,7 +13,7 @@ Table of Contents
    :local:
    :depth: 2
 
-.. currentmodule:: specparam
+.. currentmodule:: synapticonn
 
 Model Objects
 -------------
