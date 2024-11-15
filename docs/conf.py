@@ -134,7 +134,7 @@ sphinx_gallery_conf = {
     #                                     '../examples/analyses',
     #                                     '../motivations/concepts',
     #                                     '../motivations/measurements']),
-    'within_subsection_order': FileNameSortKey,
+    # 'within_subsection_order': FileNameSortKey,
     'default_thumb_file': 'img/synapti_conn_logo_v2.png',
     'backreferences_dir': 'generated',   # Where to drop linking files between examples & API
     'doc_module': ('synapticonn',),
