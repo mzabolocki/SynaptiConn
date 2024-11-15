@@ -5,7 +5,7 @@ SynaptiConn
 .. image:: docs/img/synapti_conn_logo_v2.png
    :alt: SynaptiConn
    :align: right
-   :width: 300px
+   :width: 180px
 
 Overview
 --------
