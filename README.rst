@@ -2,7 +2,7 @@
 SynaptiConn
 =========================
 
-|ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions| |Publication|
+|ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
 
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
    :target: https://www.repostatus.org/#active
@@ -31,8 +31,8 @@ SynaptiConn
 
 .. image:: docs/img/synapti_conn_logo_v2.png
    :alt: SynaptiConn
-   :align: right
-   :width: 180px
+   :align: center
+   :width: 200px
 
 Overview
 --------
