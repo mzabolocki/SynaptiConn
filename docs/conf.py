@@ -88,7 +88,11 @@ copybutton_prompt_text = "$ "
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.
-html_theme = 'bootstrap'
+html_theme = 'alabaster'
+html_theme_options = {
+    'fixed_sidebar': False,
+    'sidebar_width': '0px',
+}
 
 # Set the theme path explicitly
 #   This isn't always needed, but is useful so bulding docs doesn't fail on
@@ -116,10 +120,3 @@ html_theme_options = {
 # Settings for whether to copy over and show link rst source pages
 html_copy_source = False
 html_show_sourcelink = False
-
-# Include custom static files
-html_static_path = ['_static']
-
-# Add custom CSS file
-def setup(app):
-    app.add_css_file("custom.css")
