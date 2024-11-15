@@ -19,3 +19,4 @@ Model Objects
 -------------
 
 Objects that manage spike-train data and fit the model to determine monosynaptic connections.
+
