@@ -48,5 +48,5 @@ To see the documentation for the candidate release, see
 
 
 
-## References
-1. https://star-protocols.cell.com/protocols/3438
+.. ## References
+.. 1. https://star-protocols.cell.com/protocols/3438
