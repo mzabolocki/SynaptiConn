@@ -106,14 +106,14 @@ html_theme_options = {
     'body_max_width': None,
 
     # Bootswatch (http://bootswatch.com/) theme to apply.
-    'bootswatch_theme': "flatly",
+    'bootswatch_theme': "morph",
 
     # Render the current pages TOC in the navbar
     'navbar_pagenav': False,
 
-    # Render the next and previous page links in navbar
-    'fixed_sidebar': False,
-    'sidebar_width': '0px',
+    # # Render the next and previous page links in navbar
+    # 'fixed_sidebar': False,
+    # 'sidebar_width': '0px',
 }
 
 # Settings for whether to copy over and show link rst source pages
