@@ -2,11 +2,10 @@
 SynaptiConn
 =========================
 
-<!-- ![pic1](banner_logo.png) -->
-<p align="center">
-  <img width="60%" src="docs/img/synapti_conn_logo_v2.png">
-</p>
-
+.. image:: docs/img/synapti_conn_logo_v2.png
+   :alt: SynaptiConn
+   :align: center
+   :width: 200px
 
 Overview
 --------
