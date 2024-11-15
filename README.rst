@@ -38,6 +38,29 @@ Overview
 --------
 Inferring monosynaptic connections using single-unit spike-train cross-correlation analysis.
 
+Installation
+------------
+
+To install the stable version of SynaptiConn, you can use pip:
+
+SynaptiConn (stable version)
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code-block:: bash
+
+    pip install synapticonn
+
+The development version of SynaptiConn can be installed by cloning the repository and 
+installing using pip:
+
+**Development version**
+
+.. code-block:: bash
+
+    git clone https://github.com/mzabolocki/SynaptiConn
+    cd SynaptiConn
+    pip install .
+
 
 Documentation
 --------
