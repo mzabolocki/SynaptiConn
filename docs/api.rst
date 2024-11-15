@@ -28,4 +28,4 @@ The SynaptiConn object is the base object for the model, and can be used to infe
 .. autosummary::
    :toctree: generated/
 
-   SynaptiConn
+   synapticonn.core.connections.SynaptiConn
