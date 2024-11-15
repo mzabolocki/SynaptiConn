@@ -18,10 +18,10 @@ import sphinx_gallery
 import sphinx_bootstrap_theme
 from sphinx_gallery.sorting import FileNameSortKey, ExplicitOrder
 
-# -- Path setup --------------------------------------------------------------
-# Add project root to sys.path
-sys.path.insert(0, os.path.abspath(".."))
-print("Python path:", sys.path)
+# # -- Path setup --------------------------------------------------------------
+# # Add project root to sys.path
+# sys.path.insert(0, os.path.abspath(".."))
+# print("Python path:", sys.path)
 
 # -- Project information -----------------------------------------------------
 
