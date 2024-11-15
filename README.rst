@@ -1,11 +1,10 @@
 =========================
 SynaptiConn
-=========================
-
 .. image:: docs/img/synapti_conn_logo_v2.png
    :alt: SynaptiConn
-   :align: center
+   :align: right
    :width: 200px
+=========================
 
 Overview
 --------
