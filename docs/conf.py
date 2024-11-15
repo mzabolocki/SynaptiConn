@@ -106,7 +106,7 @@ html_theme_options = {
     'body_max_width': None,
 
     # Bootswatch (http://bootswatch.com/) theme to apply.
-    'bootswatch_theme': "morph",
+    'bootswatch_theme': "flatly",
 
     # Render the current pages TOC in the navbar
     'navbar_pagenav': False,
