@@ -22,6 +22,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements_docs.txt
 
+      - name: install project
+        run: |
+          pip install -e .
+
+      - name: debug imports
+        run: |
+          python -c "import sys; print('sys.path:', sys.path)"
+          python -c "import synapticonn; print('synapticonn imported from:', synapticonn.__file__)"
+
       - name: build docs
         run: |
           sphinx-build -b html docs/ docs/_build/html
@@ -31,3 +40,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           ghp-import -n -p -f docs/_build/html
+
+      - name: print working directory
+        run: |
+          echo "current directory: $(pwd)"
+          ls -la
