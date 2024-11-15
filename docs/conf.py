@@ -110,24 +110,24 @@ html_copy_source = False
 html_show_sourcelink = False
 
 
-# -- Extension configuration -------------------------------------------------
+# # -- Extension configuration -------------------------------------------------
 
-# Configurations for sphinx gallery
-sphinx_gallery_conf = {
-    'examples_dirs': ['../examples', '../tutorials', '../motivations'],
-    'gallery_dirs': ['auto_examples', 'auto_tutorials', 'auto_motivations'],
-    'subsection_order' : ExplicitOrder(['../examples/processing',
-                                        '../examples/manage',
-                                        '../examples/models',
-                                        '../examples/plots',
-                                        '../examples/sims',
-                                        '../examples/analyses',
-                                        '../motivations/concepts',
-                                        '../motivations/measurements']),
-    'within_subsection_order': FileNameSortKey,
-    'default_thumb_file': 'img/spectrum.png',
-    'backreferences_dir': 'generated',   # Where to drop linking files between examples & API
-    'doc_module': ('specparam',),
-    'reference_url': {'specparam': None},
-    'remove_config_comments': True,
-}
+# # Configurations for sphinx gallery
+# sphinx_gallery_conf = {
+#     'examples_dirs': ['../examples', '../tutorials', '../motivations'],
+#     'gallery_dirs': ['auto_examples', 'auto_tutorials', 'auto_motivations'],
+#     'subsection_order' : ExplicitOrder(['../examples/processing',
+#                                         '../examples/manage',
+#                                         '../examples/models',
+#                                         '../examples/plots',
+#                                         '../examples/sims',
+#                                         '../examples/analyses',
+#                                         '../motivations/concepts',
+#                                         '../motivations/measurements']),
+#     'within_subsection_order': FileNameSortKey,
+#     'default_thumb_file': 'img/spectrum.png',
+#     'backreferences_dir': 'generated',   # Where to drop linking files between examples & API
+#     'doc_module': ('specparam',),
+#     'reference_url': {'specparam': None},
+#     'remove_config_comments': True,
+# }
