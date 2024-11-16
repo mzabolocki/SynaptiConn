@@ -36,7 +36,14 @@ SynaptiConn
 
 Overview
 --------
-Inferring monosynaptic connections using single-unit spike-train cross-correlation analysis.
+SynaptiConn is a python package for inferring monosynaptic connections from single-unit spike-train data.
+The package provides a set of tools for analyzing spike-train data, including spike-train cross-correlation analysis, and for inferring monosynaptic connections using a model-based approach.
+The package is designed to be user-friendly and flexible, and can be used to analyze spike-train data from a variety of experimental paradigms.
+
+Monosynaptic connections, both excitatory and inhibitory connections, are determined with a model-based approach that fits a set of connection features to the observed spike-train cross-correlation.
+Using a Bayesian model selection approach, the package can determine the most likely set of connections that underlie the observed cross-correlation.
+
+Please Star the project to support us and Watch to always stay up-to-date!
 
 Installation
 ------------
@@ -81,6 +88,8 @@ It requires the following dependencies:
 - `scipy <https://github.com/scipy/scipy>`_ >= 0.19
 - `matplotlib <https://github.com/matplotlib/matplotlib>`_ is needed to visualize data and model fits
 - `pandas <https://github.com/pandas-dev/pandas>`_ is needed for exporting connection features to dataframes
+- `joblib <https://github.com/joblib/joblib>`_ is needed for parallel processing
+- `openpyxl <https://github.com/theorchard/openpyxl>`_ is needed for exporting connection features to excel files
 
 We recommend using the `Anaconda <https://www.anaconda.com/distribution/>`_ distribution to manage these requirements.
 
