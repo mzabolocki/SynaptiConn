@@ -38,6 +38,8 @@ class SynaptiConn(SpikeManager):
         Length of the recording (in seconds).
     srate : float
         Sampling rate of the spike times (in Hz).
+    spike_id_type : type
+        Data type of the spike IDs.
 
     Notes
     -----
