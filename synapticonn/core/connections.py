@@ -112,19 +112,50 @@ class SynaptiConn(SpikeManager):
             del self.pair_synaptic_strength
         else:
             raise DataError("No synaptic strength data found.")
-        
-    
-    def fit(self, spike_pairs: List[Tuple] = None):
+
+
+    def fit(self, spike_pairs: List[Tuple] = None,
+            synaptic_strength_threshold: float = 5,
+            verbose: bool = True,
+            **kwargs) -> dict:
         """ Compute monosynaptic connections between neurons for a given set of spike times.
 
-        """
-        
-        assert spike_pairs is not None, "Please provide a list of spike pairs to compute the connections."
 
-        if not isinstance(spike_pairs, List[Tuple]):
+        Attributes set
+        --------------
+        pair_synaptic_strength : dict
+            Dictionary containing the synaptic strength for each pair of neurons.
+            This is stored in the object for future reference, and can be accessed using the 'pair_synaptic_strength' attribute.
+            This is used to compute the connection types and features, and perform visualizations.
+
+        Raises
+        ------
+        SpikeTimesError
+            If spike pairs are not provided.
+        DataError
+            If no synaptic strength data is found.
+        """
+
+        # check if spike pairs are provided
+        if spike_pairs is None:
+            raise ValueError("Please provide a list of spike pairs to compute the connections.")
+
+        # check if spike pairs are of a valid type
+        if not isinstance(spike_pairs, List):
+            raise SpikeTimesError("Spike pairs must be a list of tuples.")
+        elif not all(isinstance(pair, Tuple) for pair in spike_pairs):
             raise SpikeTimesError("Spike pairs must be a list of tuples.")
 
+        # compute and set the synaptic strength for the given spike pairs
+        synaptic_strength_data = self.synaptic_strength(spike_pairs=spike_pairs, **kwargs)
 
+        # isolate the mono-synaptic connections
+        connection_types = self.monosynaptic_connection_types(synaptic_strength_threshold)
+
+        if verbose:
+            logging.info(f"Monosynaptic connections: {connection_types}")
+
+        return connection_types
 
 
     @extract_spike_unit_labels
@@ -167,6 +198,13 @@ class SynaptiConn(SpikeManager):
             This contains the mean, standard deviation, and confidence intervals of the synaptic strength
             following jittering and bootstrapping.
 
+        Attributes set
+        --------------
+        pair_synaptic_strength : dict
+            Dictionary containing the synaptic strength for each pair of neurons.
+            This is stored in the object for future reference, and can be accessed using the 'pair_synaptic_strength' attribute.
+            This is used to compute the connection types and features, and perform visualizations.
+
         References
         ----------
         [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27.
@@ -186,6 +224,9 @@ class SynaptiConn(SpikeManager):
         Analysis is based on [1]. For excitatory connections, a threshold of 5 is recommended.
         """
 
+        # check if the method is implemented
+        # note that only the 'ccg' method is currently implemented
+        # and for future versions, this will be expanded to include other types of correlation methods
         if self.method != 'ccg':
             raise NotImplementedError("Only the 'ccg' method is currently implemented. Please choose this method.")
 
@@ -211,25 +252,6 @@ class SynaptiConn(SpikeManager):
             self.pair_synaptic_strength[(pre_synaptic_neuron_id, post_synaptic_neuron_id)] = synaptic_strength_data
 
         return self.pair_synaptic_strength
-
-
-    def plot_synaptic_strength(self, spike_pair: tuple = None, **kwargs):
-        """ Plot the synaptic strength for the given spike pair.
-
-        Note, this method requires the synaptic strength data to be computed first.
-        It only plots the synaptic strength for a single pair of spike trains.
-        """
-
-        assert spike_pair is not None, "Please provide a valid spike pair to plot."
-        assert isinstance(spike_pair, tuple), "Spike pair must be a tuple."
-
-        if not hasattr(self, 'pair_synaptic_strength'):
-            raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
-
-        if self.method == 'ccg':
-            plot_ccg_synaptic_strength(self.pair_synaptic_strength, spike_pair, **kwargs)
-        else:
-            raise NotImplementedError("Only the 'ccg' method is currently implemented. Please choose this method.")
 
 
     def monosynaptic_connection_types(self, synaptic_strength_threshold: float = None) -> dict:
@@ -269,10 +291,10 @@ class SynaptiConn(SpikeManager):
                                                                       threshold=synaptic_strength_threshold)
             return connection_types
         else:
-            raise ConnectionTypeError("No synaptic strength data found. Please run the synaptic_strength method first.")
+            raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
 
-    def monosynaptic_connection_features(self, n_boothstraps: int = 1000) --> dict:
+    def monosynaptic_connection_features(self, n_boothstraps: int = 1000) -> dict:
         """ Extract connection features from synaptic strength data.
 
         Parameters
@@ -302,7 +324,29 @@ class SynaptiConn(SpikeManager):
 
             return connection_features
         else:
-            raise ConnectionTypeError("No synaptic strength data found. Please run the synaptic_strength method first.")
+            raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
+
+
+    def plot_synaptic_strength(self, spike_pair: tuple = None, **kwargs):
+        """ Plot the synaptic strength for the given spike pair.
+
+        Note, this method requires the synaptic strength data to be computed first.
+        It only plots the synaptic strength for a single pair of spike trains.
+        """
+
+        assert spike_pair is not None, "Please provide a valid spike pair to plot."
+        assert isinstance(spike_pair, tuple), "Spike pair must be a tuple."
+
+        if not hasattr(self, 'pair_synaptic_strength'):
+            raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
+
+        # check if the method is implemented
+        # note that only the 'ccg' method is currently implemented
+        # and for future versions, this will be expanded to include other types of correlation methods
+        if self.method == 'ccg':
+            plot_ccg_synaptic_strength(self.pair_synaptic_strength, spike_pair, **kwargs)
+        else:
+            raise NotImplementedError("Only the 'ccg' method is currently implemented. Please choose this method.")
 
 
     @extract_spike_unit_labels
