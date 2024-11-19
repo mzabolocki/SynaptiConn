@@ -2,7 +2,6 @@
 
 import warnings
 import logging
-import pathlib
 
 import numpy as np
 import pandas as pd
