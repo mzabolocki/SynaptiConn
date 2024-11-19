@@ -10,8 +10,8 @@ from typing import Any
 
 from synapticonn.core.spike_times import SpikeManager
 from synapticonn.plots import plot_acg, plot_ccg, plot_synaptic_strength
-from synapticonn.monosynaptic_connections.synaptic_strength import calculate_synaptic_strength
-from synapticonn.monosynaptic_connections.connection_type import get_putative_connection_type
+from synapticonn.monosynaptic_connections.ccg_synaptic_strength import calculate_synaptic_strength
+from synapticonn.monosynaptic_connections.ccg_connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
 from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError
@@ -105,10 +105,15 @@ class SynaptiConn(SpikeManager):
 
 
     @extract_spike_unit_labels
-    def synaptic_strength(self, spike_unit_labels: list, spike_pairs: list = None,
-                          num_iterations: int = 1000, max_lag_ms: float = 25.0,
-                          bin_size_ms: float = 0.5, jitter_range_ms: float = 10.0,
-                          half_window_ms: float = 5, n_jobs: int = -1) -> dict:
+    def synaptic_strength(self, spike_unit_labels: list,
+                          spike_pairs: list = None,
+                          method: str = 'ccg',
+                          num_iterations: int = 1000,
+                          max_lag_ms: float = 25.0,
+                          bin_size_ms: float = 0.5,
+                          jitter_range_ms: float = 10.0,
+                          half_window_ms: float = 5,
+                          n_jobs: int = -1) -> dict:
         """ Compute the synaptic strength for the given spike pairs.
 
         Parameters
@@ -119,6 +124,14 @@ class SynaptiConn(SpikeManager):
             List of spike pairs to compute synaptic strength.
             These are tuples of pre- and post-synaptic neuron IDs.
             Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.
+        method : str
+            Type of synaptic strength to compute. Default is 'ccg'.
+            This performs the following:
+                1. a peak detection on the cross-correlogram to estimate the synaptic strength
+                2. a statistical analysis to estimate the confidence intervals
+                3. a jittering analysis to estimate the jittered synaptic strength.
+            In future versions, this will be expanded to include other types of correlation methods,
+            such as cross-correlation, mutual information, etc.
         num_iterations : int
             Number of iterations to compute the synaptic strength.
         max_lag_ms : float
@@ -143,7 +156,24 @@ class SynaptiConn(SpikeManager):
         References
         ----------
         [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27.
+
+        Notes
+        -----
+        This method computes the synaptic strength for all pairs of spike trains. Currently, 
+        only the cross-correlogram method is implemented. In future versions, this will be expanded
+        to include other types of correlation methods, such as cross-correlation, mutual information, etc.
+
+        The 'ccg' method computes the synaptic strength using the cross-correlogram. This method
+        performs the following:
+            1. a peak detection on the cross-correlogram to estimate the synaptic strength
+            2. a statistical analysis to estimate the confidence intervals
+            3. a jittering analysis to estimate the jittered synaptic strength.
+
+        Analysis is based on [1]. For excitatory connections, a threshold of 5 is recommended.
         """
+
+        if method != 'ccg':
+            raise NotImplementedError("Only the 'ccg' method is currently implemented. Please choose this method.")
 
         valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
 
