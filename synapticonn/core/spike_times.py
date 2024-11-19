@@ -53,7 +53,7 @@ class SpikeManager():
 
         labels = self.spike_unit_labels()
         n_spks = [len(self.spike_times[label]) for label in labels]
-        firing_rates = [len(self.spike_times[label]) / self.recording_length_ms for label in labels]
+        firing_rates = [len(self.spike_times[label]) / self.recording_length_ms*1000 for label in labels]
         spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks, 'firing_rate_hz': firing_rates}
 
         return spk_unit_summary
