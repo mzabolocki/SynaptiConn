@@ -88,6 +88,19 @@ class SynaptiConn(SpikeManager):
         return f"Bin size: {self.bin_size_ms} ms, Max lag: {self.max_lag_ms} ms"
 
 
+    def _settings(self):
+        """ Return the settings of the object. """
+
+        settings = {'bin_size_ms': self.bin_size_ms,
+                    'max_lag_ms': self.max_lag_ms,
+                    'method': self.method,
+                    'recording_length_ms': self.recording_length_ms,
+                    'srate': self.srate,
+                    'spike_id_type': self.spike_id_type}
+
+        return settings
+
+
     def set_bin_settings(self, bin_size_ms: float = 1, max_lag_ms: float = 100):
         """ Set the settings of the object.
 
@@ -188,7 +201,7 @@ class SynaptiConn(SpikeManager):
 
     def report(self, spike_pairs: List[Tuple] = None,
                synaptic_strength_threshold: float = 5,
-               concise: bool = True,
+               concise: bool = False,
                **kwargs):
         """ Compute the synaptic strength and connection types, and display a report.
 
@@ -202,7 +215,7 @@ class SynaptiConn(SpikeManager):
             Threshold value for categorizing connection types. Default is 5.
             This is used to categorize the connection types based on the synaptic strength values.
         concise : bool
-            If True, print a concise summary of the results.
+            If True, print a concise summary of the results. This excludes blank lines.
         **kwargs : dict, optional
             Additional parameters for customizing the computation. Includes:
             - num_iterations : int
@@ -230,25 +243,32 @@ class SynaptiConn(SpikeManager):
             This is used to compute the connection types and features, and perform visualizations.
         """
 
+        # compute the synaptic strength and connection types
         connection_types = self.fit(spike_pairs, synaptic_strength_threshold, **kwargs)
-        self.print_results(connection_types)
+
+        # get the parameters for the report
+        params = {**self._settings(), 'synaptic_strength_threshold': synaptic_strength_threshold, **kwargs}
+
+        # print the results
+        self.print_connection_results(connection_types, concise, params)
 
 
-    def print_connection_results(self, connection_types: dict = None, concise: bool = True):
+    def print_connection_results(self, connection_types: dict = None, concise: bool = False, params: dict = None):
         """ Print the results of the synaptic strength and connection types.
 
         Parameters
         ----------
         connection_types : dict
-            Dictionary containing connection types and features for all pairs of spike trains.
-            This is the output of the 'fit' method.
+            Dictionary containing connection types for all pairs of spike trains.
+            This is computed using the 'fit' method.
         concise : bool
             If True, print a concise summary of the results.
             If False, print a detailed summary of the results.
+        params : dict
+            Additional parameters used for computing the model.
         """
 
-        assert connection_types is not None, "Please provide connection types to print."
-        print(gen_model_results_str(connection_types, concise=concise))
+        print(gen_model_results_str(connection_types, concise, params))
 
 
     @extract_spike_unit_labels

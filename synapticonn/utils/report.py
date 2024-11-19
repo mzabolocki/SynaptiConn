@@ -1,71 +1,95 @@
 """ report.py
 
 Utilities for generating reports.
+
+Note that this is a modified version of the report.py file from the neurodsp package
+and fooof package, with the original source code available at:
+https://github.com/fooof-tools/fooof/blob/main/specparam/core/strings.py#L266
 """
 
 import numpy as np
+import pandas as pd
 
 
-#############################################################################
-#############################################################################
+###################################################################################################
+###################################################################################################
+
+## Settings & Globals
+# Centering Value - Long & Short options
+#   Note: Long CV of 98 is so that the max line length plays nice with notebook rendering
+LCV = 98
+SCV = 70
+
+###################################################################################################
+###################################################################################################
 
 
-def gen_model_results_str(model, concise=False):
-    """Generate a string representation of model fit results.
+def gen_model_results_str(connection_types, concise, params):
+    """Generate a string representation of model monosynaptic connection inference results.
 
     Parameters
     ----------
-    model : SpectralModel
-        Object to access results from.
+    connection_types : dict
+        Dictionary of connection types, and the corresponding model results.
     concise : bool, optional, default: False
         Whether to print the report in concise mode.
+    params : key-value pairs
+        Additional parameters to include in the report
+        used for computing the model.
 
     Returns
     -------
     output : str
-        Formatted string of model results.
+        Formatted string of monosynaptic connection results.
     """
 
-    # Returns a null report if no results are available
-    if np.all(np.isnan(model.aperiodic_params_)):
-        return _no_model_str(concise)
+    if params.get('method') == 'ccg':
 
-    # Create the formatted strings for printing
+        # params
+        ccg_binsize_ms = params.get('bin_size_ms')
+        max_lag_ms = params.get('max_lag_ms')
+        srate = params.get('srate')
+        recording_length_ms = params.get('recording_length_ms')
+        recording_length_sec = recording_length_ms / 1000
+        synaptic_strength_threshold = params.get('synaptic_strength_threshold')
+        bootstrap_n = params.get('n_bootstraps')
+
+        # summarise the results
+        connections = pd.DataFrame(connection_types).T
+        exc_count = sum(connections.putative_exc_connection_type == 'excitatory')
+        inh_count = sum(connections.putative_exc_connection_type == 'inhibitory')
+
+    else:
+        raise ValueError('Method not recognized.')
+
+    # create the formatted strings for printing
     str_lst = [
 
-        # Header
+        # header
         '=',
         '',
-        'POWER SPECTRUM MODEL',
+        'SYNAPTICONN - MONOSYNAPTIC CONNECTIONS',
         '',
 
-        # Frequency range and resolution
-        'The model was run on the frequency range {} - {} Hz'.format(
-            int(np.floor(model.freq_range[0])), int(np.ceil(model.freq_range[1]))),
-        'Frequency Resolution is {:1.2f} Hz'.format(model.freq_res),
+        # ccg method parameters
+        'CCG Method Parameters:',
+        '',
+        'Sampling frequency is {:1.2f} Hz'.format(srate),
+        'Recording length is {:1.2f} seconds'.format(recording_length_sec),
+        'CCG bin size is {:1.2f} ms'.format(ccg_binsize_ms),
+        'Maximum lag is {:1.2f} ms'.format(max_lag_ms),
+        'Synaptic strength threshold cut-off is {:1.2f}'.format(synaptic_strength_threshold),
+        'Number of iterations for jitter: {}'.format(bootstrap_n),
         '',
 
-        # Aperiodic parameters
-        ('Aperiodic Parameters (offset, ' + \
-         ('knee, ' if model.aperiodic_mode == 'knee' else '') + \
-         'exponent): '),
-        ', '.join(['{:2.4f}'] * len(model.aperiodic_params_)).format(*model.aperiodic_params_),
+        # connection types
+        'Connection Types:',
+        '',
+        'Number of excitatory connections: {}'.format(exc_count),
+        'Number of inhibitory connections: {}'.format(inh_count),
         '',
 
-        # Peak parameters
-        '{} peaks were found:'.format(
-            len(model.peak_params_)),
-        *['CF: {:6.2f}, PW: {:6.3f}, BW: {:5.2f}'.format(op[0], op[1], op[2]) \
-          for op in model.peak_params_],
-        '',
-
-        # Goodness if fit
-        'Goodness of fit metrics:',
-        'R^2 of model fit is {:5.4f}'.format(model.r_squared_),
-        'Error of the fit is {:5.4f}'.format(model.error_),
-        '',
-
-        # Footer
+        # footer
         '='
     ]
 
