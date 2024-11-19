@@ -29,8 +29,8 @@ plt.style.use(style_path)  # set globally
 @savefig
 @apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
 @check_dependency(plt, 'matplotlib')
-def plot_synaptic_strength(pair_synaptic_strength_data, spike_pair, ax=None, bbox_to_anchor=(2.2, 1), **kwargs):
-    """ Plots synaptic strength based on the provided data.
+def plot_ccg_synaptic_strength(pair_synaptic_strength_data, spike_pair, ax=None, bbox_to_anchor=(2.2, 1), **kwargs):
+    """ Plots synaptic strength based on the provided data using the ccg method.
 
     Parameters
     ----------

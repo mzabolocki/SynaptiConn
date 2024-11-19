@@ -9,7 +9,7 @@ import pandas as pd
 from typing import Any
 
 from synapticonn.core.spike_times import SpikeManager
-from synapticonn.plots import plot_acg, plot_ccg, plot_synaptic_strength
+from synapticonn.plots import plot_acg, plot_ccg, plot_ccg_synaptic_strength
 from synapticonn.monosynaptic_connections.ccg_synaptic_strength import calculate_synaptic_strength
 from synapticonn.monosynaptic_connections.ccg_connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
@@ -212,7 +212,7 @@ class SynaptiConn(SpikeManager):
         if not hasattr(self, 'pair_synaptic_strength'):
             raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
-        plot_synaptic_strength(self.pair_synaptic_strength, spike_pair, **kwargs)
+        plot_ccg_synaptic_strength(self.pair_synaptic_strength, spike_pair, **kwargs)
 
 
     def monosynaptic_connection_types(self, threshold: float = None) -> dict:
