@@ -42,7 +42,8 @@ class SpikeManager():
         self.srate = srate
         self.recording_length_ms = recording_length_ms
 
-        self._run_initial_spike_time_checks()
+        self._run_initial_spike_time_type_checks()
+        self._run_initial_spike_time_val_checks()
 
 
     def report_spike_units(self):
@@ -228,10 +229,28 @@ class SpikeManager():
         return filtered_units_df
 
 
-    def _run_initial_spike_time_checks(self):
-        """ Run all the spike-time-related checks at initialization. """
+    ########### SPIKE TIME TYPE CHECKS ###########
+
+
+    def _run_initial_spike_time_type_checks(self):
+        """ Run all the spike-time-related type checks at initialization. """
 
         self._check_spike_times_type()
+
+
+    def _check_spike_times_type(self):
+        """ Ensure spike times is a dictionary. """
+
+        if not isinstance(self.spike_times, dict):
+            raise SpikeTimesError('Spike times must be a dictionary with unit-ids as keys.')
+
+
+    ########### SPIKE TIME VALUE CHECKS ###########
+
+
+    def _run_initial_spike_time_val_checks(self):
+        """ Run all the spike-time-related value checks at initialization. """
+
         self._check_spike_time_conversion()
         self._check_negative_spike_times()
         self._check_spike_times_values()
@@ -295,13 +314,6 @@ class SpikeManager():
         for key, spks in self.spike_times.items():
             if not np.all(spks >= 0):
                 raise SpikeTimesError(f'Spike times for unit {key} must be non-negative.')
-
-
-    def _check_spike_times_type(self):
-        """ Ensure spike times is a dictionary. """
-
-        if not isinstance(self.spike_times, dict):
-            raise SpikeTimesError('Spike times must be a dictionary with unit-ids as keys.')
 
 
     def _check_spike_times_values(self):
