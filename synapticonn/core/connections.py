@@ -249,7 +249,18 @@ class SynaptiConn(SpikeManager):
 
 
     def monosynaptic_connection_features(self, n_boothstraps: int = 1000):
-        """ Extract connection features from synaptic strength data. """
+        """ Extract connection features from synaptic strength data.
+
+        Parameters
+        ----------
+        n_boothstraps : int
+            Number of bootstraps to compute the confidence intervals.
+
+        Returns
+        -------
+        connection_features : dict
+            Dictionary containing connection features for all pairs of spike trains.
+        """
 
         if hasattr(self, 'pair_synaptic_strength'):
             connection_features = {}
