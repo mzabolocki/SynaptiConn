@@ -112,6 +112,15 @@ class SynaptiConn(SpikeManager):
             del self.pair_synaptic_strength
         else:
             raise DataError("No synaptic strength data found.")
+        
+    
+    def fit(self, spike_times: dict):
+        """ Compute monosynaptic connections between neurons for a given set of spike times.
+
+        """
+
+        super().fit(spike_times)
+        self._run_initial_spike_time_val_checks()
 
 
     @extract_spike_unit_labels
@@ -219,13 +228,14 @@ class SynaptiConn(SpikeManager):
             raise NotImplementedError("Only the 'ccg' method is currently implemented. Please choose this method.")
 
 
-    def monosynaptic_connection_types(self, threshold: float = None) -> dict:
+    def monosynaptic_connection_types(self, synaptic_strength_threshold: float = None) -> dict:
         """ Categorize monosynaptic connection types based on synaptic strength data output.
 
         Parameters
         ----------
-        threshold : float
+        synaptic_strength_threshold : float
             Threshold value for categorizing connection types. Default is None.
+            This is used to categorize the connection types based on the synaptic strength values.
 
         Returns
         -------
@@ -251,13 +261,14 @@ class SynaptiConn(SpikeManager):
         if hasattr(self, 'pair_synaptic_strength'):
             connection_types = {}
             for pair, synaptic_strength_data in self.pair_synaptic_strength.items():
-                connection_types[pair] = get_putative_connection_type(synaptic_strength_data['synaptic_strength'], threshold=threshold)
+                connection_types[pair] = get_putative_connection_type(synaptic_strength_data['synaptic_strength'],
+                                                                      threshold=synaptic_strength_threshold)
             return connection_types
         else:
             raise ConnectionTypeError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
 
-    def monosynaptic_connection_features(self, n_boothstraps: int = 1000):
+    def monosynaptic_connection_features(self, n_boothstraps: int = 1000) --> dict:
         """ Extract connection features from synaptic strength data.
 
         Parameters
