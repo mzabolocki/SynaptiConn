@@ -6,7 +6,7 @@ import logging
 import numpy as np
 import pandas as pd
 
-from typing import Any
+from typing import Any, List, Tuple
 
 from synapticonn.core.spike_times import SpikeManager
 from synapticonn.plots import plot_acg, plot_ccg, plot_ccg_synaptic_strength
@@ -114,18 +114,22 @@ class SynaptiConn(SpikeManager):
             raise DataError("No synaptic strength data found.")
         
     
-    def fit(self, spike_times: dict):
+    def fit(self, spike_pairs: List[Tuple] = None):
         """ Compute monosynaptic connections between neurons for a given set of spike times.
 
         """
+        
+        assert spike_pairs is not None, "Please provide a list of spike pairs to compute the connections."
 
-        super().fit(spike_times)
-        self._run_initial_spike_time_val_checks()
+        if not isinstance(spike_pairs, List[Tuple]):
+            raise SpikeTimesError("Spike pairs must be a list of tuples.")
+
+
 
 
     @extract_spike_unit_labels
     def synaptic_strength(self, spike_unit_labels: list,
-                          spike_pairs: list = None,
+                          spike_pairs: List[Tuple] = None,
                           num_iterations: int = 1000,
                           max_lag_ms: float = 25.0,
                           bin_size_ms: float = 0.5,
@@ -138,7 +142,7 @@ class SynaptiConn(SpikeManager):
         ----------
         spike_unit_labels : list
             List of spike unit labels.
-        spike_pairs : list
+        spike_pairs : List[Tuple]
             List of spike pairs to compute synaptic strength.
             These are tuples of pre- and post-synaptic neuron IDs.
             Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.
@@ -329,14 +333,14 @@ class SynaptiConn(SpikeManager):
 
 
     @extract_spike_unit_labels
-    def return_crosscorrelogram_data(self, spike_unit_labels: list, spike_pairs: list = None) -> dict:
+    def return_crosscorrelogram_data(self, spike_unit_labels: list, spike_pairs: List[Tuple] = None) -> dict:
         """ Compute and return the cross-correlogram data for valid spike pairs.
 
         Parameters
         ----------
         spike_unit_labels : list
             List of spike unit labels (in strings).
-        spike_pairs : list
+        spike_pairs : List[Tuple]
             List of spike pairs to compute the cross-correlogram data.
 
         Returns
@@ -357,14 +361,14 @@ class SynaptiConn(SpikeManager):
 
 
     @extract_spike_unit_labels
-    def plot_crosscorrelogram(self, spike_unit_labels: list, spike_pairs: list = None, **kwargs: Any):
+    def plot_crosscorrelogram(self, spike_unit_labels: list, spike_pairs: List[Tuple] = None, **kwargs: Any):
         """ Plot the cross-correlogram for valid spike pairs.
 
         Parameters
         ----------
         spike_unit_labels : list
             List of spike unit labels (in strings).
-        spike_pairs : list
+        spike_pairs : List[Tuple]
             List of spike pairs to plot.
         **kwargs : Any
             Additional keyword arguments passed to `plot_ccg`.
@@ -404,21 +408,21 @@ class SynaptiConn(SpikeManager):
         return spike_unit_labels
 
 
-    def _filter_spike_pairs(self, spike_pairs: list = None, spike_unit_labels: list = None):
+    def _filter_spike_pairs(self, spike_pairs: List[Tuple] = None, spike_unit_labels: list = None):
         """ Filter spike pairs for valid spike units.
 
         Parameters
         ----------
-        spike_pairs : list
+        spike_pairs : List[Tuple]
             List of spike pairs.
         spike_unit_labels : list
             List of spike unit labels.
 
         Returns
         -------
-        valid_spike_pairs : list
+        valid_spike_pairs : List[Tuple]
             List of valid spike pairs.
-        invalid_spike_pairs : list
+        invalid_spike_pairs : List[Tuple]
             List of invalid spike pairs.
         """
 
