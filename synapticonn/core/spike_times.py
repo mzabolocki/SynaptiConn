@@ -10,7 +10,7 @@ import pandas as pd
 from synapticonn.utils.errors import SpikeTimesError, DataError, RecordingLengthError
 from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
 from synapticonn.quality_metrics import compute_isi_violations, compute_presence_ratio, compute_firing_rates
-from synapticonn.core.utils import setup_log
+from synapticonn.core.core_tools import setup_log
 
 
 ###############################################################################

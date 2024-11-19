@@ -15,7 +15,7 @@ from synapticonn.monosynaptic_connections.connection_type import get_putative_co
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
 from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError
-from synapticonn.core.utils import extract_spike_unit_labels
+from synapticonn.core.core_tools import extract_spike_unit_labels
 
 
 ###############################################################################
