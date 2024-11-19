@@ -1,7 +1,8 @@
 """ ccg_connection_type.py
 
 Modules to categorize connection types
-based on synaptic strengths.
+based on synaptic strengths computed 
+using the cross-correlogram (CCG) method.
 """
 
 import warnings
