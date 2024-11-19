@@ -116,7 +116,8 @@ class SynaptiConn(SpikeManager):
 
     def fit(self, spike_pairs: List[Tuple] = None,
             synaptic_strength_threshold: float = 5,
-            verbose: bool = True,
+            report: bool = True,
+            concise_report: bool = True,
             **kwargs) -> dict:
         """ Compute monosynaptic connections between neurons for a given set of spike times.
 
@@ -152,10 +153,20 @@ class SynaptiConn(SpikeManager):
         # isolate the mono-synaptic connections
         connection_types = self.monosynaptic_connection_types(synaptic_strength_threshold)
 
-        if verbose:
-            logging.info(f"Monosynaptic connections: {connection_types}")
-
+        # extract connection features
+        connection_features = self.monosynaptic_connection_features()
         return connection_types
+
+
+    def print_results(self, concise: bool = True):
+        """ Print the results of the synaptic strength and connection types.
+
+        Parameters
+        ----------
+        concise : bool
+            If True, print a concise summary of the results.
+            If False, print a detailed summary of the results.
+        """
 
 
     @extract_spike_unit_labels
@@ -294,12 +305,12 @@ class SynaptiConn(SpikeManager):
             raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
 
-    def monosynaptic_connection_features(self, n_boothstraps: int = 1000) -> dict:
+    def monosynaptic_connection_features(self, n_bootstraps: int = 1000) -> dict:
         """ Extract connection features from synaptic strength data.
 
         Parameters
         ----------
-        n_boothstraps : int
+        n_bootstraps : int
             Number of bootstraps to compute the confidence intervals.
 
         Returns
@@ -313,7 +324,7 @@ class SynaptiConn(SpikeManager):
             for pair, synaptic_strength_data in self.pair_synaptic_strength.items():
                 peak_time = compute_peak_latency(synaptic_strength_data['original_ccg_counts'], self.bin_size_ms)
                 peak_amp = compute_peak_amp(synaptic_strength_data['original_ccg_counts'])
-                std_bootstrap = compute_ccg_bootstrap(synaptic_strength_data['original_ccg_counts'], n_bootstraps=n_boothstraps)
+                std_bootstrap = compute_ccg_bootstrap(synaptic_strength_data['original_ccg_counts'], n_bootstraps=n_bootstraps)
                 cv_ccg = compute_ccg_cv(synaptic_strength_data['original_ccg_counts'])
 
                 connection_features[pair] = {'synaptic_strength': synaptic_strength_data['synaptic_strength']}
