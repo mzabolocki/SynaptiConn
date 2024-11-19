@@ -34,6 +34,14 @@ class SynaptiConn(SpikeManager):
         Bin size of the cross-correlogram (in milliseconds).
     max_lag_ms : float
         Maximum lag to compute the cross-correlogram (in milliseconds).
+    method : str
+        Type of synaptic strength to compute. Default is 'ccg'.
+        This performs the following:
+            1. a peak detection on the cross-correlogram to estimate the synaptic strength
+            2. a statistical analysis to estimate the confidence intervals
+            3. a jittering analysis to estimate the jittered synaptic strength.
+        In future versions, this will be expanded to include other types of correlation methods,
+        such as cross-correlation, mutual information, etc.
     recording_length_ms : float
         Length of the recording (in seconds).
     srate : float
@@ -57,6 +65,7 @@ class SynaptiConn(SpikeManager):
     def __init__(self, spike_times: dict = None,
                  bin_size_ms: float = 1,
                  max_lag_ms: float = 100,
+                 method: str = 'ccg',
                  recording_length_ms: float = None,
                  srate: float = None,
                  spike_id_type: type = int):
@@ -69,6 +78,7 @@ class SynaptiConn(SpikeManager):
 
         self.bin_size_ms = bin_size_ms
         self.max_lag_ms = max_lag_ms
+        self.method = method
 
 
     def report_correlogram_settings(self):
@@ -107,7 +117,6 @@ class SynaptiConn(SpikeManager):
     @extract_spike_unit_labels
     def synaptic_strength(self, spike_unit_labels: list,
                           spike_pairs: list = None,
-                          method: str = 'ccg',
                           num_iterations: int = 1000,
                           max_lag_ms: float = 25.0,
                           bin_size_ms: float = 0.5,
@@ -124,14 +133,6 @@ class SynaptiConn(SpikeManager):
             List of spike pairs to compute synaptic strength.
             These are tuples of pre- and post-synaptic neuron IDs.
             Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.
-        method : str
-            Type of synaptic strength to compute. Default is 'ccg'.
-            This performs the following:
-                1. a peak detection on the cross-correlogram to estimate the synaptic strength
-                2. a statistical analysis to estimate the confidence intervals
-                3. a jittering analysis to estimate the jittered synaptic strength.
-            In future versions, this will be expanded to include other types of correlation methods,
-            such as cross-correlation, mutual information, etc.
         num_iterations : int
             Number of iterations to compute the synaptic strength.
         max_lag_ms : float
@@ -172,7 +173,7 @@ class SynaptiConn(SpikeManager):
         Analysis is based on [1]. For excitatory connections, a threshold of 5 is recommended.
         """
 
-        if method != 'ccg':
+        if self.method != 'ccg':
             raise NotImplementedError("Only the 'ccg' method is currently implemented. Please choose this method.")
 
         valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
@@ -212,7 +213,10 @@ class SynaptiConn(SpikeManager):
         if not hasattr(self, 'pair_synaptic_strength'):
             raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
-        plot_ccg_synaptic_strength(self.pair_synaptic_strength, spike_pair, **kwargs)
+        if self.method == 'ccg':
+            plot_ccg_synaptic_strength(self.pair_synaptic_strength, spike_pair, **kwargs)
+        else:
+            raise NotImplementedError("Only the 'ccg' method is currently implemented. Please choose this method.")
 
 
     def monosynaptic_connection_types(self, threshold: float = None) -> dict:
