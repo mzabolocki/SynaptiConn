@@ -93,7 +93,7 @@ It requires the following dependencies:
 
 We recommend using the `Anaconda <https://www.anaconda.com/distribution/>`_ distribution to manage these requirements.
 
-Spike-time data type
+Spike-train data type
 ---------
 SynaptiConn is designed to work with spike-train data, which can be provided in the form of a dict of spike times for each neuron.
 These are to be organised as a dictionary, where the keys are the neuron IDs, and the values are arrays of spike times.
