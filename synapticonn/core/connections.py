@@ -56,12 +56,14 @@ class SynaptiConn(SpikeManager):
                  bin_size_ms: float = 1,
                  max_lag_ms: float = 100,
                  recording_length_ms: float = None,
-                 srate: float = None):
+                 srate: float = None,
+                 spike_id_type: type = int):
         """ Initialize the SynaptiConn object. """
 
         super().__init__(spike_times=spike_times,
                          srate=srate,
-                         recording_length_ms=recording_length_ms)
+                         recording_length_ms=recording_length_ms,
+                         spike_id_type=spike_id_type)
 
         self.bin_size_ms = bin_size_ms
         self.max_lag_ms = max_lag_ms

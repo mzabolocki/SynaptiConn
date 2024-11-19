@@ -35,12 +35,14 @@ class SpikeManager():
 
     def __init__(self, spike_times: dict = None,
                  srate: float = None,
-                 recording_length_ms: float = None):
+                 recording_length_ms: float = None,
+                 spike_id_type: type = int or str):
         """ Initialize the spike manager. """
 
         self.spike_times = spike_times or {}
         self.srate = srate
         self.recording_length_ms = recording_length_ms
+        self.spike_id_type = spike_id_type
 
         self._run_initial_spike_time_type_checks()
         self._run_initial_spike_time_val_checks()
@@ -236,6 +238,7 @@ class SpikeManager():
         """ Run all the spike-time-related type checks at initialization. """
 
         self._check_spike_times_type()
+        self._check_key_types(self.spike_times, self.spike_id_type)
 
 
     def _check_spike_times_type(self):
@@ -243,6 +246,28 @@ class SpikeManager():
 
         if not isinstance(self.spike_times, dict):
             raise SpikeTimesError('Spike times must be a dictionary with unit-ids as keys.')
+
+
+    def _check_key_types(self, d, key_type):
+        """ Validate that all keys in a dictionary are of a specified type.
+
+        Parameters:
+        ----------
+        d : dict
+            Dictionary to check.
+        key_type : type
+            Type that all keys must be.
+
+        Raises:
+        -------
+        ValueError
+            If any key in the dictionary is not of the specified type.
+        """
+
+        if not all(isinstance(key, key_type) for key in d.keys()):
+            raise ValueError(f"All keys must be of type {key_type.__name__} or in {key_type}.",
+                             f"Got keys of types {[type(key) for key in d.keys()]} instead.",
+                             "Please check the spike unit IDs and change accordingly, or change the spike_id_type.")
 
 
     ########### SPIKE TIME VALUE CHECKS ###########
