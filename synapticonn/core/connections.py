@@ -14,8 +14,9 @@ from synapticonn.monosynaptic_connections.ccg_synaptic_strength import calculate
 from synapticonn.monosynaptic_connections.ccg_connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
-from synapticonn.utils.errors import SpikeTimesError, ConnectionTypeError, DataError
+from synapticonn.utils.errors import SpikeTimesError, DataError
 from synapticonn.core.core_tools import extract_spike_unit_labels
+from synapticonn.utils.report import gen_model_results_str
 
 
 ###############################################################################
@@ -116,11 +117,32 @@ class SynaptiConn(SpikeManager):
 
     def fit(self, spike_pairs: List[Tuple] = None,
             synaptic_strength_threshold: float = 5,
-            report: bool = True,
-            concise_report: bool = True,
             **kwargs) -> dict:
         """ Compute monosynaptic connections between neurons for a given set of spike times.
 
+        Parameters
+        ----------
+        spike_pairs : List[Tuple]
+            List of spike pairs to compute the synaptic strength.
+            These are tuples of pre- and post-synaptic neuron IDs.
+            Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.
+        synaptic_strength_threshold : float
+            Threshold value for categorizing connection types. Default is 5.
+            This is used to categorize the connection types based on the synaptic strength values.
+        **kwargs : dict, optional
+            Additional parameters for customizing the computation. Includes:
+            - num_iterations : int
+                Number of iterations for computing synaptic strength (default: 1000).
+            - max_lag_ms : float
+                Maximum lag to compute the synaptic strength (in ms, default: 25.0).
+            - bin_size_ms : float
+                Bin size for computing the synaptic strength (in ms, default: 0.5).
+            - jitter_range_ms : float
+                Jitter range for synaptic strength computation (in ms, default: 10.0).
+            - half_window_ms : float
+                Half window size for synaptic strength computation (in ms, default: 5).
+            - n_jobs : int
+                Number of parallel jobs to use (default: -1, all cores).
 
         Attributes set
         --------------
@@ -154,19 +176,79 @@ class SynaptiConn(SpikeManager):
         connection_types = self.monosynaptic_connection_types(synaptic_strength_threshold)
 
         # extract connection features
-        connection_features = self.monosynaptic_connection_features()
+        # the number of bootstraps can be adjusted, but the default is 1000
+        connection_features = self.monosynaptic_connection_features(kwargs.get('n_bootstraps', 1000))
+
+        # merge the connection types and features
+        for pair in connection_types:
+            connection_types[pair].update(connection_features[pair])
+
         return connection_types
 
 
-    def print_results(self, concise: bool = True):
+    def report(self, spike_pairs: List[Tuple] = None,
+               synaptic_strength_threshold: float = 5,
+               concise: bool = True,
+               **kwargs):
+        """ Compute the synaptic strength and connection types, and display a report.
+
+        Parameters
+        ----------
+        spike_pairs : List[Tuple]
+            List of spike pairs to compute the synaptic strength.
+            These are tuples of pre- and post-synaptic neuron IDs.
+            Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.
+        synaptic_strength_threshold : float
+            Threshold value for categorizing connection types. Default is 5.
+            This is used to categorize the connection types based on the synaptic strength values.
+        concise : bool
+            If True, print a concise summary of the results.
+        **kwargs : dict, optional
+            Additional parameters for customizing the computation. Includes:
+            - num_iterations : int
+                Number of iterations for computing synaptic strength (default: 1000).
+            - max_lag_ms : float
+                Maximum lag to compute the synaptic strength (in ms, default: 25.0).
+            - bin_size_ms : float
+                Bin size for computing the synaptic strength (in ms, default: 0.5).
+            - jitter_range_ms : float
+                Jitter range for synaptic strength computation (in ms, default: 10.0).
+            - half_window_ms : float
+                Half window size for synaptic strength computation (in ms, default: 5).
+            - n_jobs : int
+                Number of parallel jobs to use (default: -1, all cores).
+
+        Notes
+        -----
+        Data is computed and displayed in a report format.
+
+        Attributes set
+        --------------
+        pair_synaptic_strength : dict
+            Dictionary containing the synaptic strength for each pair of neurons.
+            This is stored in the object for future reference, and can be accessed using the 'pair_synaptic_strength' attribute.
+            This is used to compute the connection types and features, and perform visualizations.
+        """
+
+        connection_types = self.fit(spike_pairs, synaptic_strength_threshold, **kwargs)
+        self.print_results(connection_types)
+
+
+    def print_connection_results(self, connection_types: dict = None, concise: bool = True):
         """ Print the results of the synaptic strength and connection types.
 
         Parameters
         ----------
+        connection_types : dict
+            Dictionary containing connection types and features for all pairs of spike trains.
+            This is the output of the 'fit' method.
         concise : bool
             If True, print a concise summary of the results.
             If False, print a detailed summary of the results.
         """
+
+        assert connection_types is not None, "Please provide connection types to print."
+        print(gen_model_results_str(connection_types, concise=concise))
 
 
     @extract_spike_unit_labels
