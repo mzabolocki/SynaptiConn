@@ -234,6 +234,11 @@ class SynaptiConn(SpikeManager):
         For inhibitory connections, a threshold of  -5 is recommended. Thresholds
         can be adjusted based on the synaptic strength data.
 
+        Currently, connection types are based on the synaptic strength values. This is 
+        computed using the cross-correlogram method. In future versions, this will be expanded
+        to include other types of correlation methods, such as cross-correlation, mutual information, etc.
+        Please see [1] for more details.
+
         References
         ----------
         [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27.
