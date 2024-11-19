@@ -92,7 +92,7 @@ class SynaptiConn(SpikeManager):
 
         self.bin_size_ms = bin_size_ms
         self.max_lag_ms = max_lag_ms
-        self._run_initial_spike_time_checks()
+        self._run_initial_spike_time_val_checks()
 
 
     def reset_pair_synaptic_strength(self):
