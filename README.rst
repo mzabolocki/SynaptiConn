@@ -93,6 +93,22 @@ It requires the following dependencies:
 
 We recommend using the `Anaconda <https://www.anaconda.com/distribution/>`_ distribution to manage these requirements.
 
+Spike-time data type
+---------
+SynaptiConn is designed to work with spike-train data, which can be provided in the form of a dict of spike times for each neuron.
+These are to be organised as a dictionary, where the keys are the neuron IDs, and the values are arrays of spike times.
+
+It is recommended to use the `SpikeInterface <https://spikeinterface.readthedocs.io/en/latest/modules/sorters.html> `_ package to load and organize spike-train data.
+All spike-units should be subject to appropriate spike-sorting procedures before being analyzed with SynaptiConn. This includes removing noise and artifacts,
+and ensuring that the spike times are accurate. For further information, please see the quality control metric outline from
+`Allen Brain documentation <https://allensdk.readthedocs.io/en/latest/_static/examples/nb/ecephys_quality_metrics.html#d-prime>`_.
+
+If unsure of the data quality, SynaptiConn has simple quality control checks built in, which can be used to filter out poor quality data.
+
+*In future versions, we plan to include additional spike-time data types, such as NWB files, and other file formats. Further, 
+we plan to include additional spike-time data loaders, to make it easier to load and organize spike-time data, along with additional quality control checks.*
+
+
 
 .. ## References
 .. 1. https://star-protocols.cell.com/protocols/3438
