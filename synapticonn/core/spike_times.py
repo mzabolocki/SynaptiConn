@@ -265,9 +265,8 @@ class SpikeManager():
         """
 
         if not all(isinstance(key, key_type) for key in d.keys()):
-            raise ValueError(f"All keys must be of type {key_type.__name__} or in {key_type}.",
-                             f"Got keys of types {[type(key) for key in d.keys()]} instead.",
-                             "Please check the spike unit IDs and change accordingly, or change the spike_id_type.")
+            raise ValueError(f"All keys must be of type {key_type.__name__}."
+                             " Please check the spike unit IDs and change accordingly, or change the spike_id_type.")
 
 
     ########### SPIKE TIME VALUE CHECKS ###########
