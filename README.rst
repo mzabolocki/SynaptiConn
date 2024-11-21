@@ -99,12 +99,12 @@ The module is object orientated, and the main class is `SynaptiConn`, which is u
 
 An example how to use the package is shown below:
 
-.. code-block::python
+.. code-block:: python
    # import the model object
    from synapticonn import SynaptiConn
 
    # initialize the model object
-   snc = SynaptiConn(all_units, method="ccg", srate=30_000, recording_length_ms=600*1000)
+   snc = SynaptiConn(spike_times, method="cross-correlation", srate=30_000, recording_length_ms=600*1000)
 
    # set the spike unit ids to be used for the analysis
    spike_pairs = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
@@ -122,7 +122,7 @@ Spike-train data
 SynaptiConn is designed to work with spike-train data, which can be provided in the form of a dict of spike times for each neuron.
 These are to be organised as a dictionary, where the keys are the neuron IDs, and the values are arrays of spike times.
 
-It is recommended to use the `SpikeInterface <https://spikeinterface.readthedocs.io/en/latest/modules/sorters.html> `_ package to process, load and organize spike-train data.
+It is recommended to use the `SpikeInterface <https://spikeinterface.readthedocs.io/en/latest/modules/sorters.html>`_ package to process, load and organize spike-train data.
 All spike-units should be subject to appropriate spike-sorting procedures before being analyzed with SynaptiConn. This includes removing noise and artifacts,
 and ensuring that the spike times are accurate. For further information, please see the quality control metric outline from
 `Allen Brain documentation <https://allensdk.readthedocs.io/en/latest/_static/examples/nb/ecephys_quality_metrics.html#d-prime>`_.
