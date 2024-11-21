@@ -100,17 +100,18 @@ The module is object orientated, and the main class is `SynaptiConn`, which is u
 An example how to use the package is shown below:
 
 .. code-block:: python
-   # import the model object
-   from synapticonn import SynaptiConn
+   
+    # import the model object
+    from synapticonn import SynaptiConn
 
-   # initialize the model object
-   snc = SynaptiConn(spike_times, method="cross-correlation", srate=30_000, recording_length_ms=600*1000)
-
-   # set the spike unit ids to be used for the analysis
-   spike_pairs = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
-
-   # fit the model and report the monosynaptic connection results
-   snc.report(spike_pairs)
+    # initialize the model object
+    snc = SynaptiConn(spike_times, method="cross-correlation", srate=30_000, recording_length_ms=600*1000)
+ 
+    # set the spike unit ids to be used for the analysis
+    spike_pairs = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
+ 
+    # fit the model and report the monosynaptic connection results
+    snc.report(spike_pairs)
 
 **Note that a full set of examples and tutorials are provided in the documentation.
 These provide a more detailed overview of how to use the package, and how to interpret the results.**
