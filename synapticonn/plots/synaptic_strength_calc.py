@@ -52,8 +52,8 @@ def plot_ccg_synaptic_strength(pair_synaptic_strength_data, spike_pair, ax=None,
 
     # unpack the data
     data = pair_synaptic_strength_data[spike_pair]
-    ccg_bins, ccg_data = data['ccg_bins'], data['original_ccg_counts']
-    jittered_ccg_counts = data['jittered_ccg_counts']
+    ccg_bins, ccg_data = data['ccg_bins'], data['original_crosscorr_counts']
+    jittered_ccg_counts = data['jittered_crosscorr_counts']
     high_ci, low_ci, window_slice = data['high_ci'], data['low_ci'], data['window_slice']
 
     if ax is None:

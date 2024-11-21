@@ -85,6 +85,7 @@ def gen_model_results_str(connection_types, concise, params):
         'Sampling rate: {} Hz'.format(srate),
         'Recording length: {:1.2f} s'.format(recording_length_sec),
         '',
+        '----------------------------------------',
 
         # ccg method parameters
         'Cross-Correlation  Method Parameters:',

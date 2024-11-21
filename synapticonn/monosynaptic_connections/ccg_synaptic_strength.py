@@ -130,8 +130,8 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
 
     synaptic_strength_data.update(
         _return_synaptic_strength_zscore(synaptic_strength_data['ccg_bins'],
-                                         synaptic_strength_data['original_ccg_counts'],
-                                         synaptic_strength_data['jittered_ccg_counts'],
+                                         synaptic_strength_data['original_crosscorr_counts'],
+                                         synaptic_strength_data['jittered_crosscorr_counts'],
                                          half_window_ms, bin_size_ms))
 
     return synaptic_strength_data
@@ -253,8 +253,8 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     high_ci = np.percentile(jittered_ccgs, 99, axis=0)
     low_ci = np.percentile(jittered_ccgs, 1, axis=0)
 
-    jittered_ccg_data = {'ccg_bins': ccg_bins, 'original_ccg_counts': original_ccg_counts,
-                         'jittered_ccg_counts': jittered_ccgs, 'high_ci': high_ci, 'low_ci': low_ci}
+    jittered_ccg_data = {'ccg_bins': ccg_bins, 'original_crosscorr_counts': original_ccg_counts,
+                         'jittered_crosscorr_counts': jittered_ccgs, 'high_ci': high_ci, 'low_ci': low_ci}
 
     return jittered_ccg_data
 
