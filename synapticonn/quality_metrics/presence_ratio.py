@@ -70,28 +70,31 @@ def compute_presence_ratio(spike_train_ms, recording_length_ms,
 
     if recording_length_ms < bin_duration_ms:
         raise ValueError(f"The recording length of {recording_length_ms} "
-                                   f"ms is shorter than the bin duration of {bin_duration_ms} ms.")
+                        f"ms is shorter than the bin duration of {bin_duration_ms} ms.")
 
     if bin_duration_ms < 60000:
         warnings.warn("The bin duration is less than 60 seconds. This may lead to inaccurate presence ratios.")
 
-    spike_train_sec = spike_train_ms / 1000
+    spike_train_sec = spike_train_ms / 1000  # Ensure spike_train_ms is a NumPy array
     bin_duration_sec = bin_duration_ms / 1000
     recording_length_sec = recording_length_ms / 1000
 
+    if recording_length_sec <= 0:
+        raise ValueError("Recording length must be greater than 0.")
+
     # calculate the number of spikes that must be present in a bin to be considered "present"
-    unit_fr = len(spike_train_sec) / recording_length_sec  # hz
+    unit_fr = len(spike_train_ms) / recording_length_sec  # Ensure len() is appropriate for spike_train_ms
     bin_n_spikes_thresh = math.floor(unit_fr * bin_duration_sec * mean_fr_ratio_thresh)
 
     # calculate the number of bins
-    bin_duration_samples = int((bin_duration_sec * srate))
-    total_length = (recording_length_sec*srate)
+    bin_duration_samples = int(bin_duration_sec * srate)
+    total_length = int(recording_length_sec * srate)
     num_bin_edges = total_length // bin_duration_samples + 1
 
     # calculate the presence ratio
     bin_edges_in_samples = np.arange(num_bin_edges) * bin_duration_samples
     spike_train_in_samples = spike_train_sec * srate
     h, _ = np.histogram(spike_train_in_samples, bins=bin_edges_in_samples)
-    presence_ratio = np.sum(h > bin_n_spikes_thresh) / len(bin_edges_in_samples - 1)
+    presence_ratio = np.sum(h > bin_n_spikes_thresh) / (len(bin_edges_in_samples) - 1)
 
-    return {'presence_ratio': presence_ratio}
+    return {"presence_ratio": presence_ratio}
