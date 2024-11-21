@@ -85,14 +85,13 @@ def gen_model_results_str(connection_types, concise, params):
         'Sampling rate: {} Hz'.format(srate),
         'Recording length: {:1.2f} s'.format(recording_length_sec),
         '',
-        '----------------------------------------',
 
         # ccg method parameters
-        'Cross-Correlation  Method Parameters:',
+        'Cross-Correlation Method Parameters:',
         '',
-        'Crosscorrelogram bin size is {:1.2f} ms'.format(ccg_binsize_ms),
-        'Maximum time lag is {:1.2f} ms'.format(max_lag_ms),
-        'Synaptic strength threshold cut-off is {:1.2f}'.format(synaptic_strength_threshold),
+        'Crosscorrelogram bin size: {:1.2f} ms'.format(ccg_binsize_ms),
+        'Maximum time lag: {:1.2f} ms'.format(max_lag_ms),
+        'Synaptic strength threshold cut-off: {:1.2f}'.format(synaptic_strength_threshold),
         'Half window size used to calculate synaptic strength: {} ms'.format(half_window_ms),
         'Jitter range for synaptic strength computation: {:1.2f} ms'.format(jitter_range_ms),
         'Number of iterations for jitter: {}'.format(num_iterations),
