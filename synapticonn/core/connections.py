@@ -36,7 +36,7 @@ class SynaptiConn(SpikeManager):
     max_lag_ms : float
         Maximum lag to compute the cross-correlogram (in milliseconds).
     method : str
-        Type of synaptic strength to compute. Default is 'ccg'.
+        Type of synaptic strength to compute. Default is 'cross-correlation'.
         This performs the following:
             1. a peak detection on the cross-correlogram to estimate the synaptic strength
             2. a statistical analysis to estimate the confidence intervals
@@ -66,7 +66,7 @@ class SynaptiConn(SpikeManager):
     def __init__(self, spike_times: dict = None,
                  bin_size_ms: float = 1,
                  max_lag_ms: float = 100,
-                 method: str = 'ccg',
+                 method: str = 'cross-correlation',
                  recording_length_ms: float = None,
                  srate: float = None,
                  spike_id_type: type = int):
@@ -88,17 +88,35 @@ class SynaptiConn(SpikeManager):
         return f"Bin size: {self.bin_size_ms} ms, Max lag: {self.max_lag_ms} ms"
 
 
-    def _settings(self):
+    def _get_default_settings(self):
         """ Return the settings of the object. """
 
-        settings = {'bin_size_ms': self.bin_size_ms,
-                    'max_lag_ms': self.max_lag_ms,
-                    'method': self.method,
-                    'recording_length_ms': self.recording_length_ms,
-                    'srate': self.srate,
-                    'spike_id_type': self.spike_id_type}
+        settings = {
+            'bin_size_ms': self.bin_size_ms,
+            'max_lag_ms': self.max_lag_ms,
+            'method': self.method,
+            'recording_length_ms': self.recording_length_ms,
+            'srate': self.srate,
+            'spike_id_type': self.spike_id_type
+            }
 
-        return settings
+        if self.method == 'cross-correlation':  # default settings for the cross-correlation method
+
+            crosscorr_connection_settings = {
+                'bin_size_ms': 1,
+                'max_lag_ms': 100,
+                'num_iterations': 1000,
+                'jitter_range_ms': 10,
+                'half_window_ms': 5,
+                'n_jobs': -1
+            }
+
+            settings.update(crosscorr_connection_settings)
+
+            return settings
+
+        else:
+            raise NotImplementedError("Only the 'cross-correlation' method is currently implemented.")
 
 
     def set_bin_settings(self, bin_size_ms: float = 1, max_lag_ms: float = 100):
@@ -243,14 +261,16 @@ class SynaptiConn(SpikeManager):
             This is used to compute the connection types and features, and perform visualizations.
         """
 
+        # find default settings for reporting
+        # and update with any additional parameters passed
+        settings = {**self._get_default_settings(), **kwargs}
+        settings['synaptic_strength_threshold'] = synaptic_strength_threshold
+
         # compute the synaptic strength and connection types
         connection_types = self.fit(spike_pairs, synaptic_strength_threshold, **kwargs)
 
-        # get the parameters for the report
-        params = {**self._settings(), 'synaptic_strength_threshold': synaptic_strength_threshold, **kwargs}
-
         # print the results
-        self.print_connection_results(connection_types, concise, params)
+        self.print_connection_results(connection_types, concise, settings)
 
 
     def print_connection_results(self, connection_types: dict = None, concise: bool = False, params: dict = None):
@@ -328,7 +348,7 @@ class SynaptiConn(SpikeManager):
         only the cross-correlogram method is implemented. In future versions, this will be expanded
         to include other types of correlation methods, such as cross-correlation, mutual information, etc.
 
-        The 'ccg' method computes the synaptic strength using the cross-correlogram. This method
+        The 'cross-correlation' method computes the synaptic strength using the cross-correlogram. This method
         performs the following:
             1. a peak detection on the cross-correlogram to estimate the synaptic strength
             2. a statistical analysis to estimate the confidence intervals
@@ -338,10 +358,10 @@ class SynaptiConn(SpikeManager):
         """
 
         # check if the method is implemented
-        # note that only the 'ccg' method is currently implemented
+        # note that only the 'cross-correlation' method is currently implemented
         # and for future versions, this will be expanded to include other types of correlation methods
-        if self.method != 'ccg':
-            raise NotImplementedError("Only the 'ccg' method is currently implemented. Please choose this method.")
+        if self.method != 'cross-correlation':
+            raise NotImplementedError("Only the 'cross-correlation' method is currently implemented. Please choose this method.")
 
         valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
 
@@ -424,16 +444,16 @@ class SynaptiConn(SpikeManager):
         if hasattr(self, 'pair_synaptic_strength'):
             connection_features = {}
             for pair, synaptic_strength_data in self.pair_synaptic_strength.items():
-                peak_time = compute_peak_latency(synaptic_strength_data['original_ccg_counts'], self.bin_size_ms)
-                peak_amp = compute_peak_amp(synaptic_strength_data['original_ccg_counts'])
-                std_bootstrap = compute_ccg_bootstrap(synaptic_strength_data['original_ccg_counts'], n_bootstraps=n_bootstraps)
-                cv_ccg = compute_ccg_cv(synaptic_strength_data['original_ccg_counts'])
+                peak_time = compute_peak_latency(synaptic_strength_data['original_crosscorr_counts'], self.bin_size_ms)
+                peak_amp = compute_peak_amp(synaptic_strength_data['original_crosscorr_counts'])
+                std_bootstrap = compute_ccg_bootstrap(synaptic_strength_data['original_crosscorr_counts'], n_bootstraps=n_bootstraps)
+                cv_crosscorr = compute_ccg_cv(synaptic_strength_data['original_crosscorr_counts'])
 
                 connection_features[pair] = {'synaptic_strength': synaptic_strength_data['synaptic_strength']}
                 connection_features[pair].update(peak_time)
                 connection_features[pair].update(peak_amp)
                 connection_features[pair].update(std_bootstrap)
-                connection_features[pair].update(cv_ccg)
+                connection_features[pair].update(cv_crosscorr)
 
             return connection_features
         else:
@@ -454,12 +474,12 @@ class SynaptiConn(SpikeManager):
             raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
         # check if the method is implemented
-        # note that only the 'ccg' method is currently implemented
+        # note that only the 'cross-correlation' method is currently implemented
         # and for future versions, this will be expanded to include other types of correlation methods
-        if self.method == 'ccg':
+        if self.method == 'cross-correlation':
             plot_ccg_synaptic_strength(self.pair_synaptic_strength, spike_pair, **kwargs)
         else:
-            raise NotImplementedError("Only the 'ccg' method is currently implemented. Please choose this method.")
+            raise NotImplementedError("Only the 'cross-correlation' method is currently implemented. Please choose this method.")
 
 
     @extract_spike_unit_labels
