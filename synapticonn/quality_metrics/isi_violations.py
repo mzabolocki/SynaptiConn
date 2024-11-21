@@ -84,12 +84,12 @@ def compute_isi_violations(spike_train_ms, recording_length_ms, isi_threshold_ms
         total_rate = num_spikes / recording_length_s
         violation_rate = num_violations / violation_time
         isi_violations_ratio = violation_rate / total_rate
-        isi_violations_rate = num_violations / recording_length_s
+        isi_violations_proportion = (num_violations / recording_length_s)*100
         isi_violations_count = num_violations
         isi_violations_of_total = num_violations / num_spikes
 
     isi_violations['isi_violations_ratio'] = isi_violations_ratio
-    isi_violations['isi_violations_rate'] = isi_violations_rate
+    isi_violations['isi_violations_proportion'] = isi_violations_proportion
     isi_violations['isi_violations_count'] = isi_violations_count
     isi_violations['isi_violations_of_total_spikes'] = isi_violations_of_total
 
