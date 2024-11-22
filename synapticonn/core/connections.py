@@ -149,7 +149,7 @@ class SynaptiConn(SpikeManager):
             bin size, and maximum lag for all processing.
         """
 
-        self.bin_size_t = bin_size_t
+        self.bin_size_t = self._bin_size_check(bin_size_t)
         self.max_lag_t = max_lag_t
         self.time_unit = self._time_unit_check(time_unit)
 
@@ -163,6 +163,7 @@ class SynaptiConn(SpikeManager):
             raise DataError("No synaptic strength data found.")
 
 
+    @requires_arguments('spike_pairs', 'synaptic_strength_threshold')
     def fit(self, spike_pairs: List[Tuple] = None,
             synaptic_strength_threshold: float = 5,
             **kwargs) -> dict:
@@ -206,10 +207,6 @@ class SynaptiConn(SpikeManager):
         DataError
             If no synaptic strength data is found.
         """
-
-        # check if spike pairs are provided
-        if spike_pairs is None:
-            raise ValueError("Please provide a list of spike pairs to compute the connections.")
 
         # check if spike pairs are of a valid type
         if not isinstance(spike_pairs, List):
@@ -642,11 +639,12 @@ class SynaptiConn(SpikeManager):
         if bin_size_t <= 0:
             raise ValueError("Bin size must be greater than 0.")
         if bin_size_t > self.recording_length_t:
-            raise ValueError("Bin size is greater than the recording length. This may lead to inaccurate results.")
+            raise ValueError("Bin size is greater than the recording length. Select a smaller bin size.")
         if bin_size_t > self.max_lag_t:
-            raise ValueError("Bin size is greater than the maximum lag. This may lead to inaccurate results.")
+            raise ValueError("Bin size is greater than the maximum lag. Select a small maximum time lag.")
 
-        # check if the bin size for inferring synaptic transmission
+        # check bin size limits
+            # anything higher than 1 ms is not recommended
         if self.time_unit == 's' and bin_size_t > 0.001:
             warnings.warn("Bin size is greater than 0.001 seconds (1 ms). This may lead to inaccurate results.", UserWarning)
         if self.time_unit == 'ms' and bin_size_t > 1:

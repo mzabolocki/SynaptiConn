@@ -32,7 +32,7 @@ class SpikeManager():
         Indexed by unit ID.
     time_unit : str
         Unit of time for the spike times. Default is 'ms'.
-        Options include 's', 'ms', 'µs'.
+        Options include 's', 'ms'.
     srate : float
         Sampling rate of the recording in Hz.
     recording_length_t : float
@@ -51,7 +51,7 @@ class SpikeManager():
     spike_unit_filtering = False
 
     # type of time units allowed
-    unit_time_types = ['s', 'ms', 'µs']
+    unit_time_types = ['s', 'ms']
 
 
     def __init__(self, spike_times: dict = None,
@@ -94,7 +94,7 @@ class SpikeManager():
             Length of the recording in time units.
         time_unit : str
             Unit of time for the spike times. Default is 'ms'.
-            Options include 's', 'ms', 'µs'.
+            Options include 's', 'ms'.
         srate : float
             Sampling rate of the recording in Hz.
         spike_id_type : type
@@ -300,7 +300,7 @@ class SpikeManager():
             Sampling rate of the recording in Hz.
         time_unit : str
             Unit of time for the spike times. Default is 'ms'.
-            Options include 's', 'ms', 'µs'.
+            Options include 's', 'ms'.
         recording_length_t : float
             Length of the recording in time units.
         spike_id_type : type
