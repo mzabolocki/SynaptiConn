@@ -67,8 +67,10 @@ class SynaptiConn(SpikeManager):
     Recording length is used to check if spike times exceed the recording duration. This is in 
     milliseconds to match the spike times.
     """
-    
+
     # ----- CLASS VARIABLES
+    # list of current implemented methods
+        # note :: methods will be expanded in future versions 
     _methods = ['cross-correlation']
 
 
