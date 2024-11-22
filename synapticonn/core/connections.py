@@ -16,9 +16,15 @@ from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogra
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
 from synapticonn.utils.errors import SpikeTimesError, DataError
 from synapticonn.utils.attribute_checks import requires_arguments
-from synapticonn.core.core_tools import extract_spike_unit_labels
 from synapticonn.utils.report import gen_model_results_str
+from synapticonn.utils.warnings import custom_formatwarning
+from synapticonn.core.core_tools import extract_spike_unit_labels
 
+
+###############################################################################
+###############################################################################
+
+warnings.formatwarning = custom_formatwarning
 
 ###############################################################################
 ###############################################################################
@@ -33,7 +39,7 @@ class SynaptiConn(SpikeManager):
         Dictionary containing spike times for each unit indexed by unit ID.
         Spike times must be a float array.
     time_unit : str
-        Time unit options in ms (milliseconds), s (seconds) or µs (microseconds).
+        Time unit options in ms (milliseconds) or s (seconds).
         These are used to set the time unit for the spike times, recording length, 
         bin size, and maximum lag for all processing.
     bin_size_t : float
@@ -61,10 +67,6 @@ class SynaptiConn(SpikeManager):
     Recording length is used to check if spike times exceed the recording duration. This is in 
     milliseconds to match the spike times.
     """
-
-
-    ###########################################################################
-    ###########################################################################
 
 
     def __init__(self, spike_times: dict = None,
@@ -142,7 +144,7 @@ class SynaptiConn(SpikeManager):
         max_lag_t : float
             Maximum lag to compute the cross-correlogram.
         time_unit : str
-            Time unit options in ms (milliseconds), s (seconds) or µs (microseconds).
+            Time unit options in ms (milliseconds) or s (seconds).
             These are used to set the time unit for the spike times, recording length, 
             bin size, and maximum lag for all processing.
         """
@@ -632,3 +634,20 @@ class SynaptiConn(SpikeManager):
             raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
 
         return valid_spike_pairs, invalid_spike_pairs
+
+    def _bin_size_check(self, bin_size_t: float):
+        """ Check if the bin size is valid. """
+
+        # sanity check for the bin size
+        if bin_size_t <= 0:
+            raise ValueError("Bin size must be greater than 0.")
+        if bin_size_t > self.recording_length_t:
+            raise ValueError("Bin size is greater than the recording length. This may lead to inaccurate results.")
+        if bin_size_t > self.max_lag_t:
+            raise ValueError("Bin size is greater than the maximum lag. This may lead to inaccurate results.")
+
+        # check if the bin size for inferring synaptic transmission
+        if self.time_unit == 's' and bin_size_t > 0.001:
+            warnings.warn("Bin size is greater than 0.001 seconds (1 ms). This may lead to inaccurate results.", UserWarning)
+        if self.time_unit == 'ms' and bin_size_t > 1:
+            warnings.warn("Bin size is greater than 1 ms. This may lead to inaccurate results.", UserWarning)
