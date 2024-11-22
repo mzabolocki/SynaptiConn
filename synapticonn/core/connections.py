@@ -651,7 +651,23 @@ class SynaptiConn(SpikeManager):
                             max_value=None,
                             warn_threshold=None,
                             warn_message=None):
-        """ Generic validator for parameters with thresholds and warnings. """
+        """ Generic validator for parameters with thresholds and warnings.
+
+        Parameters
+        ----------
+        name : str
+            Name of the parameter.
+        value : float
+            Value of the parameter.
+        min_value : float
+            Minimum value of the parameter.
+        max_value : float
+            Maximum value of the parameter.
+        warn_threshold : float
+            Warning threshold for the parameter.
+        warn_message : str
+            Warning message for the parameter.
+        """
 
         if min_value is not None and value <= min_value:
             raise ValueError(f"{name} must be greater than {min_value}.")
