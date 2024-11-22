@@ -7,8 +7,8 @@ import pathlib
 import numpy as np
 import pandas as pd
 
-from synapticonn.utils.errors import SpikeTimesError, DataError, RecordingLengthError
-from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length
+from synapticonn.utils.errors import SpikeTimesError, DataError, RecordingLengthError, NoDataError, SamplingRateError
+from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length, requires_spike_times
 from synapticonn.quality_metrics import compute_isi_violations, compute_presence_ratio, compute_firing_rates
 from synapticonn.core.core_tools import setup_log
 
@@ -27,6 +27,7 @@ class SpikeManager():
         Indexed by unit ID.
     time_unit : str
         Unit of time for the spike times. Default is 'ms'.
+        Options include 's', 'ms', 'µs'.
     srate : float
         Sampling rate of the recording in Hz.
     recording_length_t : float
@@ -36,13 +37,16 @@ class SpikeManager():
     """
 
     # ----- CLASS VARIABLES
-    # spike unit filtering
-    spike_unit_filtering = False
-
-    # quality metric keys
+    # quality metric keys used to determine spike unit quality
     quality_metric_keys = ['isi_violations_ratio', 'isi_violations_rate', 'isi_violations_count',
                            'isi_violations_of_total_spikes', 'presence_ratio', 'firing_rate_hz',
                            'recording_length_sec', 'n_spikes']
+
+    # spike unit filtering flag to track if units have been filtered
+    spike_unit_filtering = False
+
+    # type of time units allowed
+    unit_time_types = ['s', 'ms', 'µs']
 
 
     def __init__(self, spike_times: dict = None,
@@ -52,15 +56,56 @@ class SpikeManager():
                  spike_id_type: type = int or str):
         """ Initialize the spike manager. """
 
-        self.spike_times = spike_times or {}
-        self.srate = srate
-        self.recording_length_t = recording_length_t
-        self.spike_id_type = spike_id_type
-        self.time_unit = time_unit
+        # prepare the spike time data
+            # set the spike times, time unit, recording length, and spike ID type
+        self.spike_times, self.time_unit, self.recording_length_t, self.spike_id_type, self.srate = \
+            self._prepare_spiketime_data(spike_times, time_unit, recording_length_t, spike_id_type, srate)
 
-        self._run_time_unit_checks()
-        self._run_initial_spike_time_type_checks()
-        self._run_initial_spike_time_val_checks()
+
+    def _reset_spike_time_data(self):
+        """ Reset the spike times data. """
+
+        self.spike_times = None
+        self.recording_length_t = None
+        self.srate = None
+        self.spike_id_type = None
+        self.time_unit = None
+        self.spike_unit_filtering = False  # reset the spike unit filtering flag
+
+
+    @requires_sampling_rate
+    @requires_recording_length
+    @requires_spike_times
+    def add_spike_time_data(self, spike_times: dict = None,
+                            recording_length_t: float = None,
+                            time_unit: str = 'ms',
+                            srate: float = None,
+                            spike_id_type: type = int or str):
+        """ Add spike time data to the SpikeManager object.
+
+        Parameters
+        ----------
+        spike_times : dict
+            Dictionary containing spike times for each unit.
+            Indexed by unit ID.
+        recording_length_t : float
+            Length of the recording in time units.
+        time_unit : str
+            Unit of time for the spike times. Default is 'ms'.
+            Options include 's', 'ms', 'µs'.
+        srate : float
+            Sampling rate of the recording in Hz.
+        spike_id_type : type
+            Type of the spike unit ID. Default is int or str.
+        """
+
+        # if any data is already present, then clear
+        # and the results to ensure object consistency
+        self._reset_spike_time_data()
+
+        # prepare the spike time data
+        self.spike_times, self.time_unit, self.recording_length_t, self.spike_id_type, self.srate = \
+            self._prepare_spiketime_data(spike_times, time_unit, recording_length_t, spike_id_type, srate)
 
 
     def report_spike_units(self):
@@ -94,20 +139,6 @@ class SpikeManager():
             Dictionary containing spike times for the selected units.
         """
         return {key: self.spike_times[key] for key in spike_units_to_collect}
-
-
-    def set_spike_times(self, spike_times: dict):
-        """ Set the spike times for the object.
-
-        Parameters
-        ----------
-        spike_times : dict
-            Dictionary containing spike times for each unit.
-            Indexed by unit ID.
-        """
-
-        self.spike_times = spike_times
-        self._run_initial_spike_time_checks()
 
 
     def spike_unit_quality(self,
@@ -178,7 +209,10 @@ class SpikeManager():
         return pd.DataFrame(quality_metrics).T
 
 
-    def filter_spike_units(self, quality_metrics: pd.DataFrame, query: str = None, log: bool = False, overwrite: bool = False) -> pd.DataFrame:
+    def filter_spike_units(self, quality_metrics: pd.DataFrame, 
+                           query: str = None,
+                           log: bool = False,
+                           overwrite: bool = False) -> pd.DataFrame:
         """ Filter spike units based on quality metrics.
 
         Parameters
@@ -246,107 +280,107 @@ class SpikeManager():
 
         return filtered_units_df
 
-    ########### TIME UNIT CHECKS ###########
-
-    def _run_time_unit_checks(self):
-        """ Run the time unit checks at initialization. """
-
-        unit_times = ['ms', 's']
-
-        if self.time_unit not in unit_times:
-            raise TypeError(f"Time unit must be in {unit_times}. Got {self.time_unit} instead.")
-
-
-    ########### SPIKE TIME TYPE CHECKS ###########
-
-
-    def _run_initial_spike_time_type_checks(self):
-        """ Run all the spike-time-related type checks at initialization. """
-
-        self._check_spike_times_type()
-        self._check_key_types(self.spike_times, self.spike_id_type)
-
-
-    def _check_spike_times_type(self):
-        """ Ensure spike times is a dictionary. """
-
-        if not isinstance(self.spike_times, dict):
-            raise SpikeTimesError('Spike times must be a dictionary with unit-ids as keys.')
-
-
-    def _check_key_types(self, d, key_type):
-        """ Validate that all keys in a dictionary are of a specified type.
-
-        Parameters:
-        ----------
-        d : dict
-            Dictionary to check.
-        key_type : type
-            Type that all keys must be.
-
-        Raises:
-        -------
-        SpikeTimesError
-            If any key in the dictionary is not of the specified type.
-        """
-
-        if not all(isinstance(key, key_type) for key in d.keys()):
-            msg = (f"All keys must be of type {key_type.__name__}."
-                   " Please check the spike unit IDs and change accordingly, or change the spike_id_type.")
-            raise SpikeTimesError(msg)
-
-
-    ########### SPIKE TIME VALUE CHECKS ###########
-
-
-    def _run_initial_spike_time_val_checks(self):
-        """ Run all the spike-time-related value checks at initialization. """
-
-        self._check_negative_spike_times()
-        self._check_spike_times_type()
-        self._check_recording_length_t()
-
-
     @requires_sampling_rate
     @requires_recording_length
-    def _check_recording_length_t(self):
-        """ Check the recording length is >= max spike time. """
+    def _prepare_spiketime_data(self, spike_times: dict = None,
+                                srate: type = float or int,
+                                time_unit: str = None,
+                                recording_length_t: float = None,
+                                spike_id_type: type = None):
+        """ Prepare the spike time data.
 
-        for unit_id, spks in self.spike_times.items():
+        Parameters
+        ----------
+        spike_times : dict
+            Dictionary containing spike times for each unit.
+            Indexed by unit ID.
+        srate : float or int
+            Sampling rate of the recording in Hz.
+        time_unit : str
+            Unit of time for the spike times. Default is 'ms'.
+            Options include 's', 'ms', 'µs'.
+        recording_length_t : float
+            Length of the recording in time units.
+        spike_id_type : type
+            Type of the spike unit ID. Default is int or str.
 
-            max_spk_time = np.max(spks)
+        Returns
+        -------
+        Returns the validated spike times, time unit, recording length, and spike ID type.
+        """
 
-            # simple sanity check to ensure spike times do not exceed recording length
-            if max_spk_time > self.recording_length_t:
+        ## sampling rate checks - run these checks on the sampling rate input
+        
+        if not isinstance(srate, (float, int)):
+            raise SamplingRateError("Sampling rate must be a float or int.")
+        if srate is <= 0:
+            raise SamplingRateError("Sampling rate must be greater than 0.")
+        if srate < 5000 or srate > 30_000:
+            warnings.warn("Sampling rate is outside the typical range of 5000-30,000 Hz. "
+                          "Please verify the sampling rate used to perform spike unit extractions. "
+                          "Please taken into account the Nyquist frequency when analyzing the data."
+                          "If this is intentional, please ignore this warning.")
+
+        ## spike time checks - run these checks on the spike times dict input
+
+        # check that spike_times is a dictionary
+            # see documentation for more information on the expected format
+        if not isinstance(spike_times, dict):
+            raise SpikeTimesError("Spike times must be a dictionary. Each key should be the unit ID.")
+
+        # check that all keys in spike_times match the expected type
+        if not all(isinstance(key, spike_id_type) for key in spike_times.keys()):
+            raise SpikeTimesError(
+                f"All keys in spike_times must be of type '{spike_id_type.__name__}'. "
+                "Please verify the unit IDs or update the spike_id_type."
+            )
+
+        # validate the spike times for each unit
+        for unit_id, spks in spike_times.items():
+            # check if spike times array is empty
+            if len(spks) == 0:
+                raise SpikeTimesError(f"Spike times for unit {unit_id} are empty. Please check the data.")
+
+            # check for non-negative spike times
+            if not np.all(spks >= 0):
+                raise SpikeTimesError(f"Spike times for unit {unit_id} must be non-negative.")
+
+            # check that each spike time is a float
+            if not np.issubdtype(spks.dtype, np.floating):
+                raise SpikeTimesError(
+                    f"Spike times for unit {unit_id} must be of type 'float'. "
+                    f"Found type '{spks.dtype}' instead."
+                )
+
+            # check if any nan or inf values in spike times
+            if np.any(np.isnan(spks)) or np.any(np.isinf(spks)):
+                raise SpikeTimesError(f"Spike times for unit {unit_id} contain NaN or Inf values.")
+
+        ## time unit checks - run these checks on the time unit input to confirm correct conversion
+
+        # check the time unit data that it has the correct type
+        if time_unit not in self.unit_time_types:
+            raise TypeError(
+                f"Time unit must be in {self.unit_time_types}."
+                f"Got {time_unit} instead."
+                )
+
+        # ensure spike times do not exceed recording length
+            # if so, probably an error in the recording length, spike times or time unit
+        for unit_id, spks in spike_times.items():
+            if np.max(spks) > recording_length_t:
                 msg = (f"Spike times for unit {unit_id} exceed the recording length. "
-                       f"Max spike time: {max_spk_time}, Recording length: {self.recording_length_t}. "
-                       f"Check that the recording length is correct and in {self.time_unit}.")
+                       f"Max spike time: {np.max(spks)}, Recording length: {recording_length_t}. "
+                       f"Check that the recording length is correct and in {time_unit}.")
                 raise RecordingLengthError(msg)
 
-            # check if max spike time is > 5% of recording length
-            # raise warning if so to check spike times and recording length parameters
-            if max_spk_time < 0.5*self.recording_length_t:
-                msg = (f"{unit_id} unit is firing across less than 50% of the recording length. "
-                       "This may lead to unexpected results. Please check the spike times and recording length.")
-                warnings.warn(msg)
+        # check the time unit matches the recording length
+            # raise a warning if the spike times exceed the recording length
+        max_spk_time = np.max([np.max(spks) for spks in spike_times.values()])
+        if max_spk_time > 0.8*recording_length_t:
+            msg = ("Unit is firing across less than 20% of the recording length. "
+                   "This may lead to unexpected results. Please check the spike times and recording length "
+                   "passed to the SpikeManager object. If this is intentional, please ignore this warning.")
+            warnings.warn(msg)
 
-
-    def _check_negative_spike_times(self):
-        """ Check for negative spike times. """
-
-        for unit_id, spks in self.spike_times.items():
-            if not np.all(spks >= 0):
-                raise SpikeTimesError(f'Spike times for unit {unit_id} must be non-negative.')
-
-
-    def _check_spike_times_type(self):
-        """ Check the type of the spike times dictionary are in floats. """
-
-        for unit_id, spks in self.spike_times.items():
-
-            # Check the type of individual spike times
-            for spk_count, spk in enumerate(spks):
-                if not isinstance(spk, np.floating):
-                    msg = (f"Spike times for unit {unit_id} at index {spk_count} must be of type 'float'. "
-                           f"Got {type(spk).__name__} instead.")
-                    raise SpikeTimesError(msg)
+        return spike_times, time_unit, recording_length_t, spike_id_type, srate

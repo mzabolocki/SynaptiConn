@@ -32,7 +32,7 @@ class SynaptiConn(SpikeManager):
         Dictionary containing spike times for each unit indexed by unit ID.
         Spike times must be a float array.
     time_unit : str
-        Time unit options in ms (milliseconds) or s (seconds).
+        Time unit options in ms (milliseconds), s (seconds) or µs (microseconds).
         These are used to set the time unit for the spike times, recording length, 
         bin size, and maximum lag for all processing.
     bin_size_t : float

@@ -17,3 +17,6 @@ class PlottingError(SpikeTimesError):
 
 class ConnectionTypeError(SpikeTimesError):
     """Error for if there is a problem with the connection type analysis."""
+    
+class NoDataError(SpikeTimesError):
+    """Error for if there is no data to analyze."""
