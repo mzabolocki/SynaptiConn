@@ -18,7 +18,22 @@ from synapticonn.core.core_tools import setup_log
 
 
 class SpikeManager():
-    """ Base class for checking and managing spike time imports. """
+    """ Base class for checking and managing spike time imports.
+
+    Parameters
+    ----------
+    spike_times : dict
+        Dictionary containing spike times for each unit.
+        Indexed by unit ID.
+    time_unit : str
+        Unit of time for the spike times. Default is 'ms'.
+    srate : float
+        Sampling rate of the recording in Hz.
+    recording_length_t : float
+        Length of the recording in time units.
+    spike_id_type : type
+        Type of the spike unit ID. Default is int or str.
+    """
 
     # ----- CLASS VARIABLES
     # spike unit filtering
@@ -239,7 +254,7 @@ class SpikeManager():
         unit_times = ['ms', 's']
 
         if self.time_unit not in unit_times:
-            raise ValueError(f"Time unit must be in {unit_times}. Got {self.time_unit} instead.")
+            raise TypeError(f"Time unit must be in {unit_times}. Got {self.time_unit} instead.")
 
 
     ########### SPIKE TIME TYPE CHECKS ###########
@@ -271,13 +286,14 @@ class SpikeManager():
 
         Raises:
         -------
-        ValueError
+        SpikeTimesError
             If any key in the dictionary is not of the specified type.
         """
 
         if not all(isinstance(key, key_type) for key in d.keys()):
-            raise SpikeTimesError(f"All keys must be of type {key_type.__name__}."
-                                  " Please check the spike unit IDs and change accordingly, or change the spike_id_type.")
+            msg = (f"All keys must be of type {key_type.__name__}."
+                   " Please check the spike unit IDs and change accordingly, or change the spike_id_type.")
+            raise SpikeTimesError(msg)
 
 
     ########### SPIKE TIME VALUE CHECKS ###########
@@ -286,7 +302,6 @@ class SpikeManager():
     def _run_initial_spike_time_val_checks(self):
         """ Run all the spike-time-related value checks at initialization. """
 
-        self._check_spike_time_conversion()
         self._check_negative_spike_times()
         self._check_spike_times_type()
         self._check_recording_length_t()
@@ -294,28 +309,6 @@ class SpikeManager():
 
     @requires_sampling_rate
     @requires_recording_length
-    def _check_spike_time_conversion(self):
-        """ Check that spike time values are in millisecond format. """
-
-        try:
-            # check for spike times type incase it was changed
-            # with object re-initialization
-            self._check_spike_times_type()
-        except SpikeTimesError:
-            pass
-
-        for unit_id, spks in self.spike_times.items():
-            if len(spks) == 0:
-                raise SpikeTimesError(f"Spike times for unit {unit_id} are empty.")
-
-            max_spk_time = np.max(spks)
-
-            # check if spike times exceed recording length
-            if max_spk_time > self.recording_length_t:
-                raise SpikeTimesError(f"Spike times for unit {unit_id} exceed the recording length after conversion.",
-                                      f" Check that the recording length is correct and in the time unit type: {self.time_unit}.")
-
-
     def _check_recording_length_t(self):
         """ Check the recording length is >= max spike time. """
 
@@ -323,7 +316,7 @@ class SpikeManager():
 
             max_spk_time = np.max(spks)
 
-            # check if spike times exceed recording length
+            # simple sanity check to ensure spike times do not exceed recording length
             if max_spk_time > self.recording_length_t:
                 msg = (f"Spike times for unit {unit_id} exceed the recording length. "
                        f"Max spike time: {max_spk_time}, Recording length: {self.recording_length_t}. "
@@ -331,6 +324,7 @@ class SpikeManager():
                 raise RecordingLengthError(msg)
 
             # check if max spike time is > 5% of recording length
+            # raise warning if so to check spike times and recording length parameters
             if max_spk_time < 0.5*self.recording_length_t:
                 msg = (f"{unit_id} unit is firing across less than 50% of the recording length. "
                        "This may lead to unexpected results. Please check the spike times and recording length.")
@@ -353,7 +347,6 @@ class SpikeManager():
             # Check the type of individual spike times
             for spk_count, spk in enumerate(spks):
                 if not isinstance(spk, np.floating):
-                    raise SpikeTimesError(
-                        f"Spike times for unit {unit_id} at index {spk_count} must be of type 'float'. "
-                        f"Got {type(spk).__name__} instead."
-                    )
+                    msg = (f"Spike times for unit {unit_id} at index {spk_count} must be of type 'float'. "
+                           f"Got {type(spk).__name__} instead.")
+                    raise SpikeTimesError(msg)
