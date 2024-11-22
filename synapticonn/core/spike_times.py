@@ -320,7 +320,7 @@ class SpikeManager():
         if srate < 5000 or srate > 30_000:
             warnings.warn("Sampling rate is outside the typical range of 5000-30,000 Hz. "
                           "Please verify the sampling rate used to perform spike unit extractions. "
-                          "Please taken into account the Nyquist frequency when analyzing the data."
+                          "Please taken into account the Nyquist frequency when analyzing the data. "
                           "If this is intentional, please ignore this warning.")
 
         ## spike time checks - run these checks on the spike times dict input
@@ -363,7 +363,7 @@ class SpikeManager():
         # check the time unit data that it has the correct type
         if time_unit not in self.unit_time_types:
             raise TypeError(
-                f"Time unit must be in {self.unit_time_types}."
+                f"Time unit must be in {self.unit_time_types}. "
                 f"Got {time_unit} instead."
                 )
 
