@@ -320,12 +320,21 @@ class SpikeManager():
         """ Check the recording length is >= max spike time. """
 
         for unit_id, spks in self.spike_times.items():
+
             max_spk_time = np.max(spks)
+
+            # check if spike times exceed recording length
             if max_spk_time > self.recording_length_t:
                 msg = (f"Spike times for unit {unit_id} exceed the recording length. "
                        f"Max spike time: {max_spk_time}, Recording length: {self.recording_length_t}. "
                        f"Check that the recording length is correct and in {self.time_unit}.")
                 raise RecordingLengthError(msg)
+
+            # check if max spike time is > 5% of recording length
+            if max_spk_time < 0.5*self.recording_length_t:
+                msg = (f"{unit_id} unit is firing across less than 50% of the recording length. "
+                       "This may lead to unexpected results. Please check the spike times and recording length.")
+                warnings.warn(msg)
 
 
     def _check_negative_spike_times(self):
@@ -341,8 +350,10 @@ class SpikeManager():
 
         for unit_id, spks in self.spike_times.items():
 
-            # check the type of individual spike times
+            # Check the type of individual spike times
             for spk_count, spk in enumerate(spks):
                 if not isinstance(spk, np.floating):
-                    raise SpikeTimesError(f'Spike times for unit {unit_id} at {spk_count} element must be a float type.',
-                                          f' Got {type(spk)} instead.')
+                    raise SpikeTimesError(
+                        f"Spike times for unit {unit_id} at index {spk_count} must be of type 'float'. "
+                        f"Got {type(spk).__name__} instead."
+                    )
