@@ -73,9 +73,9 @@ class SpikeManager():
         self.spike_unit_filtering = False  # reset the spike unit filtering flag
 
 
-    @requires_sampling_rate
-    @requires_recording_length
-    @requires_spike_times
+    # @requires_recording_length
+    # @requires_spike_times
+    # @requires_sampling_rate
     def add_spike_time_data(self, spike_times: dict = None,
                             recording_length_t: float = None,
                             time_unit: str = 'ms',
@@ -280,13 +280,15 @@ class SpikeManager():
 
         return filtered_units_df
 
-    @requires_sampling_rate
+
     @requires_recording_length
+    @requires_spike_times
+    @requires_sampling_rate
     def _prepare_spiketime_data(self, spike_times: dict = None,
-                                srate: type = float or int,
                                 time_unit: str = None,
                                 recording_length_t: float = None,
-                                spike_id_type: type = None):
+                                spike_id_type: type = None,
+                                srate: type = float or int):
         """ Prepare the spike time data.
 
         Parameters
@@ -310,10 +312,10 @@ class SpikeManager():
         """
 
         ## sampling rate checks - run these checks on the sampling rate input
-        
+
         if not isinstance(srate, (float, int)):
             raise SamplingRateError("Sampling rate must be a float or int.")
-        if srate is <= 0:
+        if srate <= 0:
             raise SamplingRateError("Sampling rate must be greater than 0.")
         if srate < 5000 or srate > 30_000:
             warnings.warn("Sampling rate is outside the typical range of 5000-30,000 Hz. "

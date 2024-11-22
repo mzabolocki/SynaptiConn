@@ -132,9 +132,9 @@ class SynaptiConn(SpikeManager):
         Parameters
         ----------
         bin_size_t : float
-            Bin size of the cross-correlogram (in milliseconds) or auto-correlograms.
+            Bin size of the cross-correlogram or auto-correlograms.
         max_lag_t : float
-            Maximum lag to compute the cross-correlogram (in milliseconds).
+            Maximum lag to compute the cross-correlogram.
         """
 
         self.bin_size_t = bin_size_t

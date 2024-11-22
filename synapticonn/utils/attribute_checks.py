@@ -14,6 +14,7 @@ def requires_sampling_rate(func):
     """ Decorator to ensure that 'srate' (sampling rate) is provided in the instance. """
 
     def wrapper(self, *args, **kwargs):
+        print(srate)
         if getattr(self, 'srate', None) is None:
             raise NoDataError('The sampling rate (srate) must be provided.')
 
@@ -27,7 +28,7 @@ def requires_recording_length(func):
 
     def wrapper(self, *args, **kwargs):
         if getattr(self, 'recording_length_t', None) is None:
-            raise NoDataError('The recording length must be provided. Units are to be in milliseconds.')
+            raise NoDataError('The recording length must be provided.')
 
         return func(self, *args, **kwargs)
 
