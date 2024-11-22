@@ -150,7 +150,7 @@ class SynaptiConn(SpikeManager):
         """
 
         self.bin_size_t = self._bin_size_check(bin_size_t)
-        self.max_lag_t = max_lag_t
+        self.max_lag_t = self._max_lag_check(max_lag_t)
         self.time_unit = self._time_unit_check(time_unit)
 
 
@@ -418,16 +418,19 @@ class SynaptiConn(SpikeManager):
         connection_types : dict
             Dictionary containing connection types for all pairs of spike trains.
 
-        Notes
-        -----
+        Cross-correlation method notes:
+        ------------------------------
         Based on [1], for excitatory connections, a threshold of  5 is recommended.
         For inhibitory connections, a threshold of  -5 is recommended. Thresholds
         can be adjusted based on the synaptic strength data.
 
-        Currently, connection types are based on the synaptic strength values. This is 
-        computed using the cross-correlogram method. In future versions, this will be expanded
-        to include other types of correlation methods, such as cross-correlation, mutual information, etc.
         Please see [1] for more details.
+
+        Notes
+        -----
+        Currently, connection types are based on the synaptic strength values. This is 
+        computed using the cross-correlation method. In future versions, this will be expanded
+        to include other types of correlation methods.
 
         References
         ----------
@@ -635,20 +638,57 @@ class SynaptiConn(SpikeManager):
 
         return valid_spike_pairs, invalid_spike_pairs
 
-    def _bin_size_check(self, bin_size_t: float):
+
+    def _validate_parameter(name, value,
+                            min_value=None,
+                            max_value=None,
+                            warn_threshold=None,
+                            warn_message=None):
+        """ Generic validator for parameters with thresholds and warnings. """
+
+        if min_value is not None and value <= min_value:
+            raise ValueError(f"{name} must be greater than {min_value}.")
+        if max_value is not None and value > max_value:
+            raise ValueError(f"{name} is greater than the allowed maximum ({max_value}). Adjust the value.")
+        if warn_threshold is not None and value > warn_threshold:
+            warnings.warn(warn_message, UserWarning)
+
+
+    def _bin_size_check(self, bin_size_t):
         """ Check if the bin size is valid. """
 
-        # sanity check for the bin size
-        if bin_size_t <= 0:
-            raise ValueError("Bin size must be greater than 0.")
-        if bin_size_t > self.recording_length_t:
-            raise ValueError("Bin size is greater than the recording length. Select a smaller bin size.")
-        if bin_size_t > self.max_lag_t:
-            raise ValueError("Bin size is greater than the maximum lag. Select a small maximum time lag.")
+        # validate bin size
+        self._validate_parameter(
+            name="Bin size",
+            value=bin_size_t,
+            min_value=0,
+            max_value=min(self.recording_length_t, self.max_lag_t),
+        )
 
-        # check bin size limits
-            # anything higher than 1 ms is not recommended
-        if self.time_unit == 's' and bin_size_t > 0.001:
-            warnings.warn("Bin size is greater than 0.001 seconds (1 ms). This may lead to inaccurate results.", UserWarning)
-        if self.time_unit == 'ms' and bin_size_t > 1:
-            warnings.warn("Bin size is greater than 1 ms. This may lead to inaccurate results.", UserWarning)
+        # issue warnings for high bin sizes
+        warn_threshold = 0.001 if self.time_unit == 's' else 1
+        warn_message = (
+            f"Bin size is greater than {warn_threshold} {self.time_unit}. "
+            "This may lead to inaccurate results."
+        )
+        self._validate_parameter(
+            name="Bin size",
+            value=bin_size_t,
+            warn_threshold=warn_threshold,
+            warn_message=warn_message,
+        )
+
+
+    def _max_lag_check(self, max_lag_t):
+        """Check if the maximum lag is valid."""
+
+        # validate maximum lag
+        self._validate_parameter(
+            name="Maximum lag",
+            value=max_lag_t,
+            min_value=0,
+            max_value=self.recording_length_t,
+        )
+        # ensure max lag is larger than bin size
+        if max_lag_t < self.bin_size_t:
+            raise ValueError("Maximum lag must be greater than or equal to the bin size.")

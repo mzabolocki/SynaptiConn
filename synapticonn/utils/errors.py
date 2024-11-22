@@ -20,3 +20,6 @@ class ConnectionTypeError(SpikeTimesError):
     
 class NoDataError(SpikeTimesError):
     """Error for if there is no data to analyze."""
+    
+class AnalysisError(SpikeTimesError):
+    """ Error for if there is a problem with the analysis. """
