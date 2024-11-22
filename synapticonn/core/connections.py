@@ -67,6 +67,9 @@ class SynaptiConn(SpikeManager):
     Recording length is used to check if spike times exceed the recording duration. This is in 
     milliseconds to match the spike times.
     """
+    
+    # ----- CLASS VARIABLES
+    _methods = ['cross-correlation']
 
 
     def __init__(self, spike_times: dict = None,
@@ -85,9 +88,9 @@ class SynaptiConn(SpikeManager):
                          recording_length_t=recording_length_t,
                          spike_id_type=spike_id_type)
 
-        self.bin_size_t = bin_size_t
-        self.max_lag_t = max_lag_t
-        self.method = method
+        self.bin_size_t = self._bin_size_check(bin_size_t)
+        self.max_lag_t = self._max_lag_check(max_lag_t)
+        self.method = self._method_check(method)
 
 
     def report_correlogram_settings(self):
@@ -308,7 +311,9 @@ class SynaptiConn(SpikeManager):
 
 
     @extract_spike_unit_labels
-    @requires_arguments('spike_pairs', 'num_iterations', 'max_lag_t', 'bin_size_t', 'jitter_range_ms', 'half_window_ms')
+    @requires_arguments('spike_pairs', 'num_iterations',
+                        'max_lag_t', 'bin_size_t',
+                        'jitter_range_ms', 'half_window_ms')
     def synaptic_strength(self, spike_unit_labels: list,
                           spike_pairs: List[Tuple] = None,
                           num_iterations: int = 1000,
@@ -374,12 +379,7 @@ class SynaptiConn(SpikeManager):
         Analysis is based on [1]. For excitatory connections, a threshold of 5 is recommended.
         """
 
-        # check if the method is implemented
-        # note that only the 'cross-correlation' method is currently implemented
-        # and for future versions, this will be expanded to include other types of correlation methods
-        if self.method != 'cross-correlation':
-            raise NotImplementedError("Only the 'cross-correlation' method is currently implemented. Please choose this method.")
-
+        # filter spike pairs for valid spike units
         valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
 
         self.pair_synaptic_strength = {}
@@ -491,7 +491,8 @@ class SynaptiConn(SpikeManager):
         assert isinstance(spike_pair, tuple), "Spike pair must be a tuple."
 
         if not hasattr(self, 'pair_synaptic_strength'):
-            raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
+            raise DataError("No synaptic strength data found. Please run "
+                            "the synaptic_strength method first.")
 
         # check if the method is implemented
         # note that only the 'cross-correlation' method is currently implemented
@@ -499,7 +500,8 @@ class SynaptiConn(SpikeManager):
         if self.method == 'cross-correlation':
             plot_ccg_synaptic_strength(self.pair_synaptic_strength, spike_pair, **kwargs)
         else:
-            raise NotImplementedError("Only the 'cross-correlation' method is currently implemented. Please choose this method.")
+            raise NotImplementedError("Only the 'cross-correlation' method is currently"
+                                      " implemented for plot. Please choose this method.")
 
 
     @extract_spike_unit_labels
@@ -558,7 +560,9 @@ class SynaptiConn(SpikeManager):
 
 
     @extract_spike_unit_labels
-    def plot_crosscorrelogram(self, spike_unit_labels: list, spike_pairs: List[Tuple] = None, **kwargs: Any):
+    def plot_crosscorrelogram(self, spike_unit_labels: list,
+                              spike_pairs: List[Tuple] = None,
+                              **kwargs: Any):
         """ Plot the cross-correlogram for valid spike pairs.
 
         Parameters
@@ -605,7 +609,8 @@ class SynaptiConn(SpikeManager):
         return spike_unit_labels
 
 
-    def _filter_spike_pairs(self, spike_pairs: List[Tuple] = None, spike_unit_labels: list = None):
+    def _filter_spike_pairs(self, spike_pairs: List[Tuple] = None,
+                            spike_unit_labels: list = None):
         """ Filter spike pairs for valid spike units.
 
         Parameters
@@ -692,3 +697,11 @@ class SynaptiConn(SpikeManager):
         # ensure max lag is larger than bin size
         if max_lag_t < self.bin_size_t:
             raise ValueError("Maximum lag must be greater than or equal to the bin size.")
+
+
+    def _method_check(self, method):
+        """ Check if the method is valid. """
+
+        if method not in self._methods:
+            raise NotImplementedError(f"Method {method} is not implemented. Please choose from {self._methods}.")
+        return method
