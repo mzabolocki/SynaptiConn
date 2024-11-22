@@ -1,10 +1,8 @@
 """ Base model object, which is used to quantify monosynaptic connections between neurons. """
 
 import warnings
-import logging
 
 import numpy as np
-import pandas as pd
 
 from typing import Any, List, Tuple
 
