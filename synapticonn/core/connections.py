@@ -287,7 +287,9 @@ class SynaptiConn(SpikeManager):
         self.print_connection_results(connection_types, concise, settings)
 
 
-    def print_connection_results(self, connection_types: dict = None, concise: bool = False, params: dict = None):
+    def print_connection_results(self, connection_types: dict = None,
+                                 concise: bool = False,
+                                 params: dict = None):
         """ Print the results of the synaptic strength and connection types.
 
         Parameters
@@ -306,6 +308,7 @@ class SynaptiConn(SpikeManager):
 
 
     @extract_spike_unit_labels
+    @requires_arguments('spike_pairs', 'num_iterations', 'max_lag_t', 'bin_size_t', 'jitter_range_ms', 'half_window_ms')
     def synaptic_strength(self, spike_unit_labels: list,
                           spike_pairs: List[Tuple] = None,
                           num_iterations: int = 1000,
