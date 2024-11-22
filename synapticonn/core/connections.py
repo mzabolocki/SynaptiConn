@@ -15,6 +15,7 @@ from synapticonn.monosynaptic_connections.ccg_connection_type import get_putativ
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
 from synapticonn.utils.errors import SpikeTimesError, DataError
+from synapticonn.utils.attribute_checks import requires_arguments
 from synapticonn.core.core_tools import extract_spike_unit_labels
 from synapticonn.utils.report import gen_model_results_str
 
@@ -102,7 +103,8 @@ class SynaptiConn(SpikeManager):
             'method': self.method,
             'recording_length_t': self.recording_length_t,
             'srate': self.srate,
-            'spike_id_type': self.spike_id_type
+            'spike_id_type': self.spike_id_type,
+            'time_unit': self.time_unit
             }
 
         if self.method == 'cross-correlation':  # default settings for the cross-correlation method
@@ -113,6 +115,7 @@ class SynaptiConn(SpikeManager):
                 'num_iterations': 1000,
                 'jitter_range_ms': 10,
                 'half_window_ms': 5,
+                'time_unit': 'ms',
                 'n_jobs': -1
             }
 
@@ -124,7 +127,10 @@ class SynaptiConn(SpikeManager):
             raise NotImplementedError("Only the 'cross-correlation' method is currently implemented.")
 
 
-    def set_bin_settings(self, bin_size_t: float = 1, max_lag_t: float = 100):
+    @requires_arguments('bin_size_t', 'max_lag_t', 'time_unit')
+    def set_bin_settings(self, bin_size_t: float = 1,
+                         max_lag_t: float = 100,
+                         time_unit: str = 'ms'):
         """ Set the settings of the object.
 
         Useful for changing the bin size and maximum lag after initialization.
@@ -135,11 +141,15 @@ class SynaptiConn(SpikeManager):
             Bin size of the cross-correlogram or auto-correlograms.
         max_lag_t : float
             Maximum lag to compute the cross-correlogram.
+        time_unit : str
+            Time unit options in ms (milliseconds), s (seconds) or µs (microseconds).
+            These are used to set the time unit for the spike times, recording length, 
+            bin size, and maximum lag for all processing.
         """
 
         self.bin_size_t = bin_size_t
         self.max_lag_t = max_lag_t
-        self._run_initial_spike_time_val_checks()
+        self.time_unit = self._time_unit_check(time_unit)
 
 
     def reset_pair_synaptic_strength(self):

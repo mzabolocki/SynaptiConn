@@ -358,14 +358,8 @@ class SpikeManager():
             if np.any(np.isnan(spks)) or np.any(np.isinf(spks)):
                 raise SpikeTimesError(f"Spike times for unit {unit_id} contain NaN or Inf values.")
 
-        ## time unit checks - run these checks on the time unit input to confirm correct conversion
-
-        # check the time unit data that it has the correct type
-        if time_unit not in self.unit_time_types:
-            raise TypeError(
-                f"Time unit must be in {self.unit_time_types}. "
-                f"Got {time_unit} instead."
-                )
+        # check the time unit type
+        time_unit = self._time_unit_check(time_unit)
 
         # ensure spike times do not exceed recording length
             # if so, probably an error in the recording length, spike times or time unit
@@ -386,3 +380,15 @@ class SpikeManager():
             warnings.warn(msg)
 
         return spike_times, time_unit, recording_length_t, spike_id_type, srate
+
+
+    def _time_unit_check(self, time_unit: str = None):
+        """ Check the time unit. """
+
+        if time_unit not in self.unit_time_types:
+            raise TypeError(
+                f"Time unit must be in {self.unit_time_types}. "
+                f"Got {time_unit} instead."
+                )
+
+        return time_unit
