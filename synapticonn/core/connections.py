@@ -31,9 +31,9 @@ class SynaptiConn(SpikeManager):
     spike_trains : dict
         Dictionary containing spike times for each unit (in milliseconds).
         Indexed by unit ID.
-    bin_size_ms : float
+    bin_size_t : float
         Bin size of the cross-correlogram (in milliseconds).
-    max_lag_ms : float
+    max_lag_t : float
         Maximum lag to compute the cross-correlogram (in milliseconds).
     method : str
         Type of synaptic strength to compute. Default is 'cross-correlation'.
@@ -43,7 +43,7 @@ class SynaptiConn(SpikeManager):
             3. a jittering analysis to estimate the jittered synaptic strength.
         In future versions, this will be expanded to include other types of correlation methods,
         such as cross-correlation, mutual information, etc.
-    recording_length_ms : float
+    recording_length_t : float
         Length of the recording (in seconds).
     srate : float
         Sampling rate of the spike times (in Hz).
@@ -64,38 +64,40 @@ class SynaptiConn(SpikeManager):
 
 
     def __init__(self, spike_times: dict = None,
-                 bin_size_ms: float = 1,
-                 max_lag_ms: float = 100,
+                 bin_size_t: float = 1,
+                 max_lag_t: float = 100,
                  method: str = 'cross-correlation',
-                 recording_length_ms: float = None,
+                 recording_length_t: float = None,
+                 time_unit: str = 'ms',
                  srate: float = None,
                  spike_id_type: type = int):
         """ Initialize the SynaptiConn object. """
 
         super().__init__(spike_times=spike_times,
                          srate=srate,
-                         recording_length_ms=recording_length_ms,
-                         spike_id_type=spike_id_type)
+                         recording_length_t=recording_length_t,
+                         spike_id_type=spike_id_type,
+                         time_unit=time_unit)
 
-        self.bin_size_ms = bin_size_ms
-        self.max_lag_ms = max_lag_ms
+        self.bin_size_t = bin_size_t
+        self.max_lag_t = max_lag_t
         self.method = method
 
 
     def report_correlogram_settings(self):
         """ Report the bin settings. """
 
-        return f"Bin size: {self.bin_size_ms} ms, Max lag: {self.max_lag_ms} ms"
+        return f"Bin size: {self.bin_size_t} ms, Max lag: {self.max_lag_t} ms"
 
 
     def _get_default_settings(self):
         """ Return the settings of the object. """
 
         settings = {
-            'bin_size_ms': self.bin_size_ms,
-            'max_lag_ms': self.max_lag_ms,
+            'bin_size_t': self.bin_size_t,
+            'max_lag_t': self.max_lag_t,
             'method': self.method,
-            'recording_length_ms': self.recording_length_ms,
+            'recording_length_t': self.recording_length_t,
             'srate': self.srate,
             'spike_id_type': self.spike_id_type
             }
@@ -103,8 +105,8 @@ class SynaptiConn(SpikeManager):
         if self.method == 'cross-correlation':  # default settings for the cross-correlation method
 
             crosscorr_connection_settings = {
-                'bin_size_ms': 1,
-                'max_lag_ms': 100,
+                'bin_size_t': 1,
+                'max_lag_t': 100,
                 'num_iterations': 1000,
                 'jitter_range_ms': 10,
                 'half_window_ms': 5,
@@ -119,21 +121,21 @@ class SynaptiConn(SpikeManager):
             raise NotImplementedError("Only the 'cross-correlation' method is currently implemented.")
 
 
-    def set_bin_settings(self, bin_size_ms: float = 1, max_lag_ms: float = 100):
+    def set_bin_settings(self, bin_size_t: float = 1, max_lag_t: float = 100):
         """ Set the settings of the object.
 
         Useful for changing the bin size and maximum lag after initialization.
 
         Parameters
         ----------
-        bin_size_ms : float
+        bin_size_t : float
             Bin size of the cross-correlogram (in milliseconds) or auto-correlograms.
-        max_lag_ms : float
+        max_lag_t : float
             Maximum lag to compute the cross-correlogram (in milliseconds).
         """
 
-        self.bin_size_ms = bin_size_ms
-        self.max_lag_ms = max_lag_ms
+        self.bin_size_t = bin_size_t
+        self.max_lag_t = max_lag_t
         self._run_initial_spike_time_val_checks()
 
 
@@ -164,9 +166,9 @@ class SynaptiConn(SpikeManager):
             Additional parameters for customizing the computation. Includes:
             - num_iterations : int
                 Number of iterations for computing synaptic strength (default: 1000).
-            - max_lag_ms : float
+            - max_lag_t : float
                 Maximum lag to compute the synaptic strength (in ms, default: 25.0).
-            - bin_size_ms : float
+            - bin_size_t : float
                 Bin size for computing the synaptic strength (in ms, default: 0.5).
             - jitter_range_ms : float
                 Jitter range for synaptic strength computation (in ms, default: 10.0).
@@ -238,9 +240,9 @@ class SynaptiConn(SpikeManager):
             Additional parameters for customizing the computation. Includes:
             - num_iterations : int
                 Number of iterations for computing synaptic strength (default: 1000).
-            - max_lag_ms : float
+            - max_lag_t : float
                 Maximum lag to compute the synaptic strength (in ms, default: 25.0).
-            - bin_size_ms : float
+            - bin_size_t : float
                 Bin size for computing the synaptic strength (in ms, default: 0.5).
             - jitter_range_ms : float
                 Jitter range for synaptic strength computation (in ms, default: 10.0).
@@ -295,8 +297,8 @@ class SynaptiConn(SpikeManager):
     def synaptic_strength(self, spike_unit_labels: list,
                           spike_pairs: List[Tuple] = None,
                           num_iterations: int = 1000,
-                          max_lag_ms: float = 25.0,
-                          bin_size_ms: float = 0.5,
+                          max_lag_t: float = 25.0,
+                          bin_size_t: float = 0.5,
                           jitter_range_ms: float = 10.0,
                           half_window_ms: float = 5,
                           n_jobs: int = -1) -> dict:
@@ -312,9 +314,9 @@ class SynaptiConn(SpikeManager):
             Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.
         num_iterations : int
             Number of iterations to compute the synaptic strength.
-        max_lag_ms : float
+        max_lag_t : float
             Maximum lag to compute the synaptic strength (in milliseconds).
-        bin_size_ms : float
+        bin_size_t : float
             Bin size of the synaptic strength (in milliseconds).
         jitter_range_ms : float
             Jitter range to compute the synaptic strength (in milliseconds).
@@ -377,8 +379,8 @@ class SynaptiConn(SpikeManager):
                                                                  post_synaptic_spktimes,
                                                                  jitter_range_ms=jitter_range_ms,
                                                                  num_iterations=num_iterations,
-                                                                 max_lag_ms=max_lag_ms,
-                                                                 bin_size_ms=bin_size_ms,
+                                                                 max_lag_t=max_lag_t,
+                                                                 bin_size_t=bin_size_t,
                                                                  half_window_ms=half_window_ms,
                                                                  n_jobs=n_jobs)
 
@@ -444,7 +446,7 @@ class SynaptiConn(SpikeManager):
         if hasattr(self, 'pair_synaptic_strength'):
             connection_features = {}
             for pair, synaptic_strength_data in self.pair_synaptic_strength.items():
-                peak_time = compute_peak_latency(synaptic_strength_data['original_crosscorr_counts'], self.bin_size_ms)
+                peak_time = compute_peak_latency(synaptic_strength_data['original_crosscorr_counts'], self.bin_size_t)
                 peak_amp = compute_peak_amp(synaptic_strength_data['original_crosscorr_counts'])
                 std_bootstrap = compute_ccg_bootstrap(synaptic_strength_data['original_crosscorr_counts'], n_bootstraps=n_bootstraps)
                 cv_crosscorr = compute_ccg_cv(synaptic_strength_data['original_crosscorr_counts'])
@@ -506,7 +508,7 @@ class SynaptiConn(SpikeManager):
         print(f'Plotting autocorrelogram for spike units: {spike_units_to_collect}')
 
         spike_times = self.get_spike_times_for_units(spike_units_to_collect)
-        plot_acg(spike_times, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms, **kwargs)
+        plot_acg(spike_times, bin_size_t=self.bin_size_t, max_lag_t=self.max_lag_t, **kwargs)
 
 
     @extract_spike_unit_labels
@@ -532,7 +534,7 @@ class SynaptiConn(SpikeManager):
         # retrieve spike times and compute cross-correlogram data
         spike_times = self.get_spike_times_for_units(valid_spike_units)
         crosscorrelogram_data = compute_crosscorrelogram(
-            spike_times, valid_spike_pairs, bin_size_ms=self.bin_size_ms, max_lag_ms=self.max_lag_ms)
+            spike_times, valid_spike_pairs, bin_size_t=self.bin_size_t, max_lag_t=self.max_lag_t)
 
         return crosscorrelogram_data
 

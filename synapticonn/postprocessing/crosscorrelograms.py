@@ -14,7 +14,7 @@ from synapticonn.postprocessing.correlogram_utils import make_bins
 ##########################################################
 
 
-def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms):
+def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_t, max_lag_t):
     """ Compute the cross-correlogram between all pairs of spike trains.
 
     Parameters
@@ -23,9 +23,9 @@ def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms):
         Dictionary containing spike times for each unit. Indexed by unit ID.
     spike_pairs : list
         List of tuples containing the unit IDs of the spike trains to compare.
-    bin_size_ms : float
+    bin_size_t : float
         Bin size of the cross-correlogram (in milliseconds).
-    max_lag_ms : float
+    max_lag_t : float
         Maximum lag to compute the cross-correlogram (in milliseconds).
 
     Returns
@@ -42,7 +42,7 @@ def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms):
     def _process_pair(pair):
         pair_1, pair_2 = pair
         cross_corr, bins = compute_crosscorrelogram_dual_spiketrains(
-            spike_times[pair_1], spike_times[pair_2], bin_size_ms, max_lag_ms
+            spike_times[pair_1], spike_times[pair_2], bin_size_t, max_lag_t
         )
         return (pair_1, pair_2), cross_corr, bins
 
@@ -56,7 +56,7 @@ def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_ms, max_lag_ms):
     return crosscorrelogram_data
 
 
-def compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_size_ms, max_lag_ms):
+def compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_size_t, max_lag_t):
     """ Compute the cross-correlogram between two spike trains.
 
     Parameters
@@ -65,9 +65,9 @@ def compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_
         The spike times of the first spike train.
     spike_train_2 : array_like
         The spike times of the second spike train.
-    bin_size_ms : float
+    bin_size_t : float
         The size of the bins in which to bin the time differences (in milliseconds).
-    max_lag_ms : float
+    max_lag_t : float
         The maximum lag to consider (in milliseconds).
 
     Returns
@@ -82,10 +82,10 @@ def compute_crosscorrelogram_dual_spiketrains(spike_train_1, spike_train_2, bin_
 
     time_diffs = spike_train_2[:, np.newaxis] - spike_train_1
 
-    mask = (time_diffs >= -max_lag_ms) & (time_diffs <= max_lag_ms)
+    mask = (time_diffs >= -max_lag_t) & (time_diffs <= max_lag_t)
     valid_diffs = time_diffs[mask]
 
-    bins = make_bins(max_lag_ms, bin_size_ms)
+    bins = make_bins(max_lag_t, bin_size_t)
     cross_corr, _ = np.histogram(valid_diffs, bins)
 
     return cross_corr, bins

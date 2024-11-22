@@ -45,11 +45,11 @@ def gen_model_results_str(connection_types, concise, params):
     if params.get('method') == 'cross-correlation':
 
         # params
-        ccg_binsize_ms = params.get('bin_size_ms')
-        max_lag_ms = params.get('max_lag_ms')
+        ccg_binsize_ms = params.get('bin_size_t')
+        max_lag_t = params.get('max_lag_t')
         srate = params.get('srate')
-        recording_length_ms = params.get('recording_length_ms')
-        recording_length_sec = recording_length_ms / 1000
+        recording_length_t = params.get('recording_length_t')
+        recording_length_sec = recording_length_t / 1000
         synaptic_strength_threshold = params.get('synaptic_strength_threshold')
         num_iterations = params.get('num_iterations')
         half_window_ms = params.get('half_window_ms')
@@ -90,7 +90,7 @@ def gen_model_results_str(connection_types, concise, params):
         'Cross-Correlation Method Parameters:',
         '',
         'Crosscorrelogram bin size: {:1.2f} ms'.format(ccg_binsize_ms),
-        'Maximum time lag: {:1.2f} ms'.format(max_lag_ms),
+        'Maximum time lag: {:1.2f} ms'.format(max_lag_t),
         'Synaptic strength threshold cut-off: {:1.2f}'.format(synaptic_strength_threshold),
         'Half window size used to calculate synaptic strength: {} ms'.format(half_window_ms),
         'Jitter range for synaptic strength computation: {:1.2f} ms'.format(jitter_range_ms),

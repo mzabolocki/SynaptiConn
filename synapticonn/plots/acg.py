@@ -33,7 +33,7 @@ plt.style.use(style_path)  # set globally
 @check_dependency(plt, 'matplotlib')
 @check_spktime_ax_length
 @acg_ax
-def plot_acg(spike_times, bin_size_ms=1, max_lag_ms=100, show_axes=True, ax=None, **kwargs):
+def plot_acg(spike_times, bin_size_t=1, max_lag_t=100, show_axes=True, ax=None, **kwargs):
     """Plot an autocorrelogram for a single spike train.
 
     Parameters
@@ -41,10 +41,10 @@ def plot_acg(spike_times, bin_size_ms=1, max_lag_ms=100, show_axes=True, ax=None
     spike_times : dict
         Spike times (in milliseconds).
         Each key is a unit ID and each value is a list of spike times.
-    bin_size_ms : float
+    bin_size_t : float
         Bin size of the autocorrelogram (in milliseconds).
         Default is 1 ms.
-    max_lag_ms : float
+    max_lag_t : float
         Maximum lag to compute the autocorrelogram (in milliseconds).
         Default is 100 ms.
     ax : matplotlib.axes.Axes, optional
@@ -67,9 +67,9 @@ def plot_acg(spike_times, bin_size_ms=1, max_lag_ms=100, show_axes=True, ax=None
         raise ValueError(msg)
 
     for count, (unit_id, single_spike_times) in enumerate(spike_times.items()):
-        lags, autocorr = compute_autocorrelogram(single_spike_times, bin_size_ms, max_lag_ms)
+        lags, autocorr = compute_autocorrelogram(single_spike_times, bin_size_t, max_lag_t)
 
-        ax[count].bar(lags, autocorr, width=bin_size_ms, align='center', **kwargs)
+        ax[count].bar(lags, autocorr, width=bin_size_t, align='center', **kwargs)
         ax[count].set_title(f'Unit {unit_id}')
 
         if show_axes:

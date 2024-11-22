@@ -105,7 +105,7 @@ An example how to use the package is shown below:
     from synapticonn import SynaptiConn
 
     # initialize the model object
-    snc = SynaptiConn(spike_times, method="cross-correlation", srate=30_000, recording_length_ms=600*1000)
+    snc = SynaptiConn(spike_times, method="cross-correlation", srate=30_000, recording_length_t=600*1000)
  
     # set the spike unit ids to be used for the analysis
     spike_pairs = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]

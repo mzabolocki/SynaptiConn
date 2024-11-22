@@ -59,9 +59,9 @@ def plot_ccg(cross_correlograms_data, ax=None, show_axes=True, **kwargs):
     for count, pair_id in enumerate(pair_identifiers):
         cross_corr = cross_correlograms_data['cross_correllations'][pair_id]
         bins = cross_correlograms_data['bins'][pair_id]
-        bin_size = bins[1] - bins[0]
+        bin_size_t = bins[1] - bins[0]
 
-        ax[count].bar(bins[:-1], cross_corr, width=bin_size, align='center', color=CCG_COLORS['pairs'], **kwargs)
+        ax[count].bar(bins[:-1], cross_corr, width=bin_size_t, align='center', color=CCG_COLORS['pairs'], **kwargs)
         ax[count].set_title(f'Pair {pair_id}')
 
         if show_axes:

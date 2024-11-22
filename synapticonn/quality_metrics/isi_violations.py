@@ -12,14 +12,14 @@ import numpy as np
 ####################################################
 
 
-def compute_isi_violations(spike_train_ms, recording_length_ms, isi_threshold_ms=1.5, min_isi_ms=0):
+def compute_isi_violations(spike_train_ms, recording_length_t, isi_threshold_ms=1.5, min_isi_ms=0):
     """Compute the number of interspike interval (ISI) violations in a spike train.
 
     Parameters
     ----------
     spike_train_ms : numpy.ndarray
         Spike train in milliseconds.
-    recording_length_ms : float
+    recording_length_t : float
         Length of the recording in milliseconds.
     isi_threshold_ms : float
         Minimum interspike interval in milliseconds.
@@ -62,7 +62,7 @@ def compute_isi_violations(spike_train_ms, recording_length_ms, isi_threshold_ms
 
     isi_threshold_s = isi_threshold_ms / 1000
     min_isi_s = min_isi_ms / 1000
-    recording_length_s = recording_length_ms / 1000
+    recording_length_s = recording_length_t / 1000
 
     isi_violations_count = {}
     isi_violations_ratio = {}

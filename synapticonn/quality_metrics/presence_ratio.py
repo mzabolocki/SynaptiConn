@@ -15,7 +15,7 @@ from synapticonn.utils.errors import RecordingLengthError
 ####################################################
 
 
-def compute_presence_ratio(spike_train_ms, recording_length_ms,
+def compute_presence_ratio(spike_train_ms, recording_length_t,
                            bin_duration_ms=60000, mean_fr_ratio_thresh=0.0, srate=None):
     """ Compute the presence ratio of a spike train.
 
@@ -23,7 +23,7 @@ def compute_presence_ratio(spike_train_ms, recording_length_ms,
     ----------
     spike_train_ms : numpy.ndarray
         Spike train in milliseconds.
-    recording_length_ms : float
+    recording_length_t : float
         Length of the recording in milliseconds.
     bin_duration_ms : float
         Duration of each bin in milliseconds.
@@ -68,8 +68,8 @@ def compute_presence_ratio(spike_train_ms, recording_length_ms,
     if mean_fr_ratio_thresh > 1:
         warnings.warn("A mean firing rate ratio threshold > 1.0 may lead to low presence ratios.")
 
-    if recording_length_ms < bin_duration_ms:
-        raise ValueError(f"The recording length of {recording_length_ms} "
+    if recording_length_t < bin_duration_ms:
+        raise ValueError(f"The recording length of {recording_length_t} "
                         f"ms is shorter than the bin duration of {bin_duration_ms} ms.")
 
     if bin_duration_ms < 60000:
@@ -77,7 +77,7 @@ def compute_presence_ratio(spike_train_ms, recording_length_ms,
 
     spike_train_sec = spike_train_ms / 1000  # Ensure spike_train_ms is a NumPy array
     bin_duration_sec = bin_duration_ms / 1000
-    recording_length_sec = recording_length_ms / 1000
+    recording_length_sec = recording_length_t / 1000
 
     if recording_length_sec <= 0:
         raise ValueError("Recording length must be greater than 0.")

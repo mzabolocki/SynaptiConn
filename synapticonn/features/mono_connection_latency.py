@@ -10,14 +10,14 @@ import numpy as np
 ##################################################################
 
 
-def compute_peak_latency(ccg, bin_size):
+def compute_peak_latency(ccg, bin_size_t):
     """ Compute the peak latency of the CCG.
 
     Parameters
     ----------
     ccg : array
         Cross-correlogram.
-    bin_size : float
+    bin_size_t : float
         Bin size of the cross-correlogram.
 
     Returns
@@ -30,6 +30,6 @@ def compute_peak_latency(ccg, bin_size):
     peak = np.argmax(ccg)
 
     # convert the peak to time
-    peak_time = (peak - len(ccg) // 2) * bin_size
+    peak_time = (peak - len(ccg) // 2) * bin_size_t
 
     return {'ccg_peak_time_ms': peak_time}
