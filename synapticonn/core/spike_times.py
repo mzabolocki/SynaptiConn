@@ -21,9 +21,6 @@ class SpikeManager():
     """ Base class for checking and managing spike time imports. """
 
     # ----- CLASS VARIABLES
-    # flag to check spike time conversion to milliseconds
-    converted_to_ms = False
-
     # spike unit filtering
     spike_unit_filtering = False
 
@@ -35,15 +32,18 @@ class SpikeManager():
 
     def __init__(self, spike_times: dict = None,
                  srate: float = None,
-                 recording_length_ms: float = None,
-                 spike_id_type: type = int or str):
+                 recording_length_t: float = None,
+                 spike_id_type: type = int or str,
+                 time_unit: str = 'ms'):
         """ Initialize the spike manager. """
 
         self.spike_times = spike_times or {}
         self.srate = srate
-        self.recording_length_ms = recording_length_ms
+        self.recording_length_t = recording_length_t
         self.spike_id_type = spike_id_type
+        self.time_unit = time_unit
 
+        self._run_time_unit_checks()
         self._run_initial_spike_time_type_checks()
         self._run_initial_spike_time_val_checks()
 
@@ -53,7 +53,7 @@ class SpikeManager():
 
         labels = self.spike_unit_labels()
         n_spks = [len(self.spike_times[label]) for label in labels]
-        firing_rates = [len(self.spike_times[label]) / self.recording_length_ms*1000 for label in labels]
+        firing_rates = [len(self.spike_times[label]) / self.recording_length_t*1000 for label in labels]
         spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks, 'firing_rate_hz': firing_rates}
 
         return spk_unit_summary
@@ -144,17 +144,17 @@ class SpikeManager():
         for key, spks in self.spike_times.items():
 
             # isi violations
-            isi_violations = compute_isi_violations(spks, self.recording_length_ms,
+            isi_violations = compute_isi_violations(spks, self.recording_length_t,
                                                     isi_threshold_ms, min_isi_ms)
 
             # presence ratio
-            presence_ratio = compute_presence_ratio(spks, self.recording_length_ms,
+            presence_ratio = compute_presence_ratio(spks, self.recording_length_t,
                                                     bin_duration_ms=presence_ratio_bin_duration_ms,
                                                     mean_fr_ratio_thresh=presence_ratio_mean_fr_ratio_thresh,
                                                     srate=self.srate)
 
             # unit firing rates
-            firing_rates = compute_firing_rates(spks, self.recording_length_ms)
+            firing_rates = compute_firing_rates(spks, self.recording_length_t)
 
             quality_metrics[key] = isi_violations
             quality_metrics[key].update(presence_ratio)
@@ -231,6 +231,16 @@ class SpikeManager():
 
         return filtered_units_df
 
+    ########### TIME UNIT CHECKS ###########
+
+    def _run_time_unit_checks(self):
+        """ Run all the time unit checks at initialization. """
+
+        unit_times = ['ms', 's']
+
+        if self.time_unit not in unit_times:
+            raise ValueError(f"Time unit must be in {unit_times}. Got {self.time_unit} instead.")
+
 
     ########### SPIKE TIME TYPE CHECKS ###########
 
@@ -278,8 +288,8 @@ class SpikeManager():
 
         self._check_spike_time_conversion()
         self._check_negative_spike_times()
-        self._check_spike_times_values()
-        self._check_recording_length_ms()
+        self._check_spike_times_type()
+        self._check_recording_length_t()
 
 
     @requires_sampling_rate
@@ -287,48 +297,38 @@ class SpikeManager():
     def _check_spike_time_conversion(self):
         """ Check that spike time values are in millisecond format. """
 
-        if SpikeManager.converted_to_ms:
-            try:
-                # check for spike times type incase it was changed
-                # with object re-initialization
-                self._check_spike_times_values()
-            except SpikeTimesError:
-                # if spike times are not in milliseconds, then convert
-                # if this does not work, _run_initial_spike_time_checks
-                # will raise an error
-                pass
-            else:
-                return
+        try:
+            # check for spike times type incase it was changed
+            # with object re-initialization
+            self._check_spike_times_type()
+        except SpikeTimesError:
+            # if spike times are not in milliseconds, then convert
+            # if this does not work, _run_initial_spike_time_checks
+            # will raise an error
+            pass
 
-        converted_keys = []
         for key, spks in self.spike_times.items():
             if len(spks) == 0:
                 raise SpikeTimesError(f"Spike times for unit {key} are empty.")
 
             max_spk_time = np.max(spks)
+            min_spk_time = np.min(spks)
 
-            # check if spike times need to be converted to milliseconds
-            if max_spk_time > self.recording_length_ms:
-                self.spike_times[key] = (spks / self.srate) * 1000
-                converted_keys.append(key)
-            elif max_spk_time > self.recording_length_ms:
+            # check if spike times exceed recording length
+            if max_spk_time > self.recording_length_t:
                 raise SpikeTimesError(f"Spike times for unit {key} exceed the recording length after conversion.")
-
-        if converted_keys:
-            converted_keys_str = ', '.join(map(str, converted_keys))
-            print(f"Warning: Spike times for unit(s) {converted_keys_str} were converted to milliseconds.")
-
-        SpikeManager.converted_to_ms = True
+            elif min_spk_time < 0:
+                raise SpikeTimesError(f"Spike times for unit {key} must be non-negative after conversion.")
 
 
-    def _check_recording_length_ms(self):
+    def _check_recording_length_t(self):
         """ Check the recording length is >= max spike time. """
 
         for key, spks in self.spike_times.items():
             max_spk_time = np.max(spks)
-            if max_spk_time > self.recording_length_ms:
+            if max_spk_time > self.recording_length_t:
                 msg = (f"Spike times for unit {key} exceed the recording length. "
-                       f"Max spike time: {max_spk_time}, Recording length: {self.recording_length_ms}. "
+                       f"Max spike time: {max_spk_time}, Recording length: {self.recording_length_t}. "
                        "Check that the recording length is correct and in milliseconds.")
                 raise RecordingLengthError(msg)
 
@@ -341,10 +341,11 @@ class SpikeManager():
                 raise SpikeTimesError(f'Spike times for unit {key} must be non-negative.')
 
 
-    def _check_spike_times_values(self):
-        """ Check the values of the spike times dictionary are in floats or arr format. """
+    def _check_spike_times_type(self):
+        """ Check the type of the spike times dictionary are in floats or arr format. """
 
         for key, value in self.spike_times.items():
+
             if not isinstance(value, np.ndarray):
                 raise SpikeTimesError(f'Spike times for unit {key} must be a 1D numpy array. Got {type(value)} instead.')
             if not np.issubdtype(value.dtype, np.floating):
