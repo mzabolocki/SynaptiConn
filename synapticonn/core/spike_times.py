@@ -2,16 +2,21 @@
 
 import warnings
 import logging
-import pathlib
 
 import numpy as np
 import pandas as pd
 
-from synapticonn.utils.errors import SpikeTimesError, DataError, RecordingLengthError, NoDataError, SamplingRateError
-from synapticonn.utils.attribute_checks import requires_sampling_rate, requires_recording_length, requires_spike_times
+from synapticonn.utils.errors import SpikeTimesError, DataError, RecordingLengthError, SamplingRateError
+from synapticonn.utils.attribute_checks import requires_arguments
 from synapticonn.quality_metrics import compute_isi_violations, compute_presence_ratio, compute_firing_rates
 from synapticonn.core.core_tools import setup_log
+from synapticonn.utils.warnings import custom_formatwarning
 
+
+###############################################################################
+###############################################################################
+
+warnings.formatwarning = custom_formatwarning
 
 ###############################################################################
 ###############################################################################
@@ -73,9 +78,6 @@ class SpikeManager():
         self.spike_unit_filtering = False  # reset the spike unit filtering flag
 
 
-    # @requires_recording_length
-    # @requires_spike_times
-    # @requires_sampling_rate
     def add_spike_time_data(self, spike_times: dict = None,
                             recording_length_t: float = None,
                             time_unit: str = 'ms',
@@ -281,9 +283,7 @@ class SpikeManager():
         return filtered_units_df
 
 
-    @requires_recording_length
-    @requires_spike_times
-    @requires_sampling_rate
+    @requires_arguments('spike_id_type', 'srate', 'spike_times', 'recording_length_t', 'time_unit')
     def _prepare_spiketime_data(self, spike_times: dict = None,
                                 time_unit: str = None,
                                 recording_length_t: float = None,

@@ -3,6 +3,7 @@
 Utils checking attributes of an object if present or not.
 """
 
+import inspect
 from ..utils.errors import NoDataError
 
 
@@ -14,7 +15,6 @@ def requires_sampling_rate(func):
     """ Decorator to ensure that 'srate' (sampling rate) is provided in the instance. """
 
     def wrapper(self, *args, **kwargs):
-        print(srate)
         if getattr(self, 'srate', None) is None:
             raise NoDataError('The sampling rate (srate) must be provided.')
 
@@ -45,3 +45,24 @@ def requires_spike_times(func):
         return func(self, *args, **kwargs)
 
     return wrapper
+
+
+def requires_arguments(*arg_names):
+    """ Decorator to ensure specific arguments are provided. """
+
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+
+            # get the function's signature
+            sig = inspect.signature(func)
+            bound_args = sig.bind(*args, **kwargs)
+            bound_args.apply_defaults()
+
+            # check for all required arguments
+            missing_args = [arg for arg in arg_names if bound_args.arguments.get(arg) is None]
+            if missing_args:
+                raise NoDataError(f"The following arguments are required but missing: {', '.join(missing_args)}")
+            return func(*args, **kwargs)
+
+        return wrapper
+    return decorator
