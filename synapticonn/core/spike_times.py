@@ -31,10 +31,10 @@ class SpikeManager():
 
 
     def __init__(self, spike_times: dict = None,
+                 time_unit: str = 'ms',
                  srate: float = None,
                  recording_length_t: float = None,
-                 spike_id_type: type = int or str,
-                 time_unit: str = 'ms'):
+                 spike_id_type: type = int or str):
         """ Initialize the spike manager. """
 
         self.spike_times = spike_times or {}
@@ -234,7 +234,7 @@ class SpikeManager():
     ########### TIME UNIT CHECKS ###########
 
     def _run_time_unit_checks(self):
-        """ Run all the time unit checks at initialization. """
+        """ Run the time unit checks at initialization. """
 
         unit_times = ['ms', 's']
 
@@ -302,51 +302,47 @@ class SpikeManager():
             # with object re-initialization
             self._check_spike_times_type()
         except SpikeTimesError:
-            # if spike times are not in milliseconds, then convert
-            # if this does not work, _run_initial_spike_time_checks
-            # will raise an error
             pass
 
-        for key, spks in self.spike_times.items():
+        for unit_id, spks in self.spike_times.items():
             if len(spks) == 0:
-                raise SpikeTimesError(f"Spike times for unit {key} are empty.")
+                raise SpikeTimesError(f"Spike times for unit {unit_id} are empty.")
 
             max_spk_time = np.max(spks)
-            min_spk_time = np.min(spks)
 
             # check if spike times exceed recording length
             if max_spk_time > self.recording_length_t:
-                raise SpikeTimesError(f"Spike times for unit {key} exceed the recording length after conversion.")
-            elif min_spk_time < 0:
-                raise SpikeTimesError(f"Spike times for unit {key} must be non-negative after conversion.")
+                raise SpikeTimesError(f"Spike times for unit {unit_id} exceed the recording length after conversion.",
+                                      f" Check that the recording length is correct and in the time unit type: {self.time_unit}.")
 
 
     def _check_recording_length_t(self):
         """ Check the recording length is >= max spike time. """
 
-        for key, spks in self.spike_times.items():
+        for unit_id, spks in self.spike_times.items():
             max_spk_time = np.max(spks)
             if max_spk_time > self.recording_length_t:
-                msg = (f"Spike times for unit {key} exceed the recording length. "
+                msg = (f"Spike times for unit {unit_id} exceed the recording length. "
                        f"Max spike time: {max_spk_time}, Recording length: {self.recording_length_t}. "
-                       "Check that the recording length is correct and in milliseconds.")
+                       f"Check that the recording length is correct and in {self.time_unit}.")
                 raise RecordingLengthError(msg)
 
 
     def _check_negative_spike_times(self):
         """ Check for negative spike times. """
 
-        for key, spks in self.spike_times.items():
+        for unit_id, spks in self.spike_times.items():
             if not np.all(spks >= 0):
-                raise SpikeTimesError(f'Spike times for unit {key} must be non-negative.')
+                raise SpikeTimesError(f'Spike times for unit {unit_id} must be non-negative.')
 
 
     def _check_spike_times_type(self):
-        """ Check the type of the spike times dictionary are in floats or arr format. """
+        """ Check the type of the spike times dictionary are in floats. """
 
-        for key, value in self.spike_times.items():
+        for unit_id, spks in self.spike_times.items():
 
-            if not isinstance(value, np.ndarray):
-                raise SpikeTimesError(f'Spike times for unit {key} must be a 1D numpy array. Got {type(value)} instead.')
-            if not np.issubdtype(value.dtype, np.floating):
-                raise SpikeTimesError(f'Spike times for unit {key} must be a 1D array of floats. Got {type(value)} instead.')
+            # check the type of individual spike times
+            for spk_count, spk in enumerate(spks):
+                if not isinstance(spk, np.floating):
+                    raise SpikeTimesError(f'Spike times for unit {unit_id} at {spk_count} element must be a float type.',
+                                          f' Got {type(spk)} instead.')

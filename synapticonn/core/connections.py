@@ -29,8 +29,12 @@ class SynaptiConn(SpikeManager):
     Parameters
     ----------
     spike_trains : dict
-        Dictionary containing spike times for each unit (in milliseconds).
-        Indexed by unit ID.
+        Dictionary containing spike times for each unit indexed by unit ID.
+        Spike times must be a float array.
+    time_unit : str
+        Time unit options in ms (milliseconds) or s (seconds).
+        These are used to set the time unit for the spike times, recording length, 
+        bin size, and maximum lag for all processing.
     bin_size_t : float
         Bin size of the cross-correlogram (in milliseconds).
     max_lag_t : float
@@ -41,10 +45,9 @@ class SynaptiConn(SpikeManager):
             1. a peak detection on the cross-correlogram to estimate the synaptic strength
             2. a statistical analysis to estimate the confidence intervals
             3. a jittering analysis to estimate the jittered synaptic strength.
-        In future versions, this will be expanded to include other types of correlation methods,
-        such as cross-correlation, mutual information, etc.
+        In future versions, this will be expanded to include other types of correlation methods.
     recording_length_t : float
-        Length of the recording (in seconds).
+        Length of the recording.
     srate : float
         Sampling rate of the spike times (in Hz).
     spike_id_type : type
@@ -64,20 +67,20 @@ class SynaptiConn(SpikeManager):
 
 
     def __init__(self, spike_times: dict = None,
+                 time_unit: str = 'ms',
                  bin_size_t: float = 1,
                  max_lag_t: float = 100,
                  method: str = 'cross-correlation',
                  recording_length_t: float = None,
-                 time_unit: str = 'ms',
                  srate: float = None,
                  spike_id_type: type = int):
         """ Initialize the SynaptiConn object. """
 
         super().__init__(spike_times=spike_times,
+                         time_unit=time_unit,
                          srate=srate,
                          recording_length_t=recording_length_t,
-                         spike_id_type=spike_id_type,
-                         time_unit=time_unit)
+                         spike_id_type=spike_id_type)
 
         self.bin_size_t = bin_size_t
         self.max_lag_t = max_lag_t
