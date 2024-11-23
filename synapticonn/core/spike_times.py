@@ -144,26 +144,29 @@ class SpikeManager():
 
 
     def spike_unit_quality(self,
-                           isi_threshold_ms=1.5,
-                           min_isi_ms=0,
-                           presence_ratio_bin_duration_ms=60000,
+                           isi_threshold_t=1.5,
+                           min_isi_t=0,
+                           presence_ratio_bin_duration_t=60000,
                            presence_ratio_mean_fr_ratio_thresh=0.0) -> pd.DataFrame:
         """ Compute spike isolation quality metrics.
 
         Parameters
         ----------
-        isi_threshold_ms : float
+        isi_threshold_t : float
             Threshold for the interspike interval (ISI) violations.
-        min_isi_ms : float
-            Minimum ISI value (in milliseconds).
-        presence_ratio_bin_duration_ms : float
-            Duration of each bin in milliseconds for the presence ratio.
+        min_isi_t : float
+            Minimum ISI value.
+        presence_ratio_bin_duration_t : float
+            Duration of each bin for the presence ratio.
         presence_ratio_mean_fr_ratio_thresh : float
             Minimum mean firing rate ratio threshold for the presence ratio.
             This is the minimum mean firing rate that must be present in a bin
             for the unit to be considered "present" in that bin.
             By default, this is set to 0.0. This means that the unit must have
             at least one spike in each bin to be considered "present."
+        time_unit : str
+            Unit of time for the spike times. Default is 'ms'.
+            This is used to compute the features in the quality metrics.
 
         Returns
         -------
@@ -188,16 +191,20 @@ class SpikeManager():
         see the respective functions in the quality_metrics module.
         """
 
+        # TO DO // update this all to account for the time units
+        # fix the errors with the calculations also
+        # have an option to pass the unit time in the method
+
         quality_metrics = {}
         for key, spks in self.spike_times.items():
 
             # isi violations
             isi_violations = compute_isi_violations(spks, self.recording_length_t,
-                                                    isi_threshold_ms, min_isi_ms)
+                                                    isi_threshold_t, min_isi_t)
 
             # presence ratio
             presence_ratio = compute_presence_ratio(spks, self.recording_length_t,
-                                                    bin_duration_ms=presence_ratio_bin_duration_ms,
+                                                    bin_duration_ms=presence_ratio_bin_duration_t,
                                                     mean_fr_ratio_thresh=presence_ratio_mean_fr_ratio_thresh,
                                                     srate=self.srate)
 

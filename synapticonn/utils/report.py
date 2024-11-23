@@ -49,11 +49,11 @@ def gen_model_results_str(connection_types, concise, params):
         max_lag_t = params.get('max_lag_t')
         srate = params.get('srate')
         recording_length_t = params.get('recording_length_t')
-        recording_length_sec = recording_length_t / 1000
         synaptic_strength_threshold = params.get('synaptic_strength_threshold')
         num_iterations = params.get('num_iterations')
         half_window_t = params.get('half_window_t')
         jitter_range_t = params.get('jitter_range_t')
+        time_unit = params.get('time_unit')
 
         # count the number of excitatory and inhibitory connections
         connections = pd.DataFrame(connection_types).T
@@ -83,17 +83,17 @@ def gen_model_results_str(connection_types, concise, params):
         'Recording Parameters:',
         '',
         'Sampling rate: {} Hz'.format(srate),
-        'Recording length: {:1.2f} s'.format(recording_length_sec),
+        'Recording length: {:1.2f} '.format(recording_length_t) + time_unit,
         '',
 
         # ccg method parameters
         'Cross-Correlation Method Parameters:',
         '',
-        'Crosscorrelogram bin size: {:1.2f} ms'.format(ccg_binsize_ms),
-        'Maximum time lag: {:1.2f} ms'.format(max_lag_t),
+        'Crosscorrelogram bin size: {:1.2f} '.format(ccg_binsize_ms) + time_unit,
+        'Maximum time lag: {:1.2f} '.format(max_lag_t) + time_unit,
         'Synaptic strength threshold cut-off: {:1.2f}'.format(synaptic_strength_threshold),
-        'Half window size used to calculate synaptic strength: {} ms'.format(half_window_t),
-        'Jitter range for synaptic strength computation: {:1.2f} ms'.format(jitter_range_t),
+        'Half window size used to calculate synaptic strength: {} '.format(half_window_t) + time_unit,
+        'Jitter range for synaptic strength computation: {:1.2f} '.format(jitter_range_t) + time_unit,
         'Number of iterations for jitter: {}'.format(num_iterations),
         ''
         '',

@@ -419,6 +419,10 @@ class SynaptiConn(SpikeManager):
         Analysis is based on [1]. For excitatory connections, a threshold of 5 is recommended.
         """
 
+        # check spike time units
+            # if not in milliseconds, raise an error
+            # this is required for synaptic strength calculations
+            # please see [1] for more details
         if self.time_unit == 's':
             raise DataError("Spike times are not in milliseconds. Please convert to milliseconds "
                             f"for synaptic strength calculations using {self.method}. "

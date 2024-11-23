@@ -12,7 +12,7 @@ import numpy as np
 ####################################################
 
 
-def compute_isi_violations(spike_train_ms, recording_length_t, isi_threshold_ms=1.5, min_isi_ms=0):
+def compute_isi_violations(spike_train_ms, recording_length_t, isi_threshold_t=1.5, min_isi_t=0):
     """Compute the number of interspike interval (ISI) violations in a spike train.
 
     Parameters
@@ -21,11 +21,11 @@ def compute_isi_violations(spike_train_ms, recording_length_t, isi_threshold_ms=
         Spike train in milliseconds.
     recording_length_t : float
         Length of the recording in milliseconds.
-    isi_threshold_ms : float
+    isi_threshold_t : float
         Minimum interspike interval in milliseconds.
         This is the minimum time that must elapse between two spikes.
         By default, this is set to 1.5 ms, which is the refractory period of most neurons.
-    min_isi_ms : float
+    min_isi_t : float
         Minimum possible interspike interval in milliseconds.
         This is the artifical refractory period enforced by the
         recording system or the spike sorting algorithm.
@@ -52,16 +52,16 @@ def compute_isi_violations(spike_train_ms, recording_length_t, isi_threshold_ms=
     acceptable for ISI violations.
     """
 
-    assert isi_threshold_ms > 0, "The ISI threshold must be greater than 0."
+    assert isi_threshold_t > 0, "The ISI threshold must be greater than 0."
 
-    if (isi_threshold_ms > 1.5):
+    if (isi_threshold_t > 1.5):
         warnings.warn("The ISI threshold is set to a value greater than the refractory period of most neurons.")
 
     isi_violations = {'isi_violations_ratio': np.nan, 'isi_violations_rate': np.nan,
                       'isi_violations_count': np.nan, 'isi_violations_of_total_spikes': np.nan}
 
-    isi_threshold_s = isi_threshold_ms / 1000
-    min_isi_s = min_isi_ms / 1000
+    isi_threshold_s = isi_threshold_t / 1000
+    min_isi_s = min_isi_t / 1000
     recording_length_s = recording_length_t / 1000
 
     isi_violations_count = {}
