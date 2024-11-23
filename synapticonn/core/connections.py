@@ -193,7 +193,6 @@ class SynaptiConn(SpikeManager):
                       "All processing will be based on this time unit.", UserWarning)
 
         self.time_unit = self._time_unit_check(time_unit)
-        print(f"Time unit set to {self.time_unit}.")
 
 
     def reset_pair_synaptic_strength(self):
