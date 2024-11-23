@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from synapticonn.utils.mod_utils import check_dependency
 from synapticonn.plots.style import apply_plot_style
 from synapticonn.plots.save import savefig
-from synapticonn.plots.aesthetics import SYN_STRENGTH_COLORS
+from synapticonn.plots.aesthetics import SYN_STRENGTH_COLORS, TIME_UNIT_LABELS
 
 
 ##########################################################
@@ -25,11 +25,14 @@ plt.style.use(style_path)  # set globally
 ##########################################################
 ##########################################################
 
-
 @savefig
 @apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
 @check_dependency(plt, 'matplotlib')
-def plot_ccg_synaptic_strength(pair_synaptic_strength_data, spike_pair, ax=None, bbox_to_anchor=(2.2, 1), **kwargs):
+def plot_ccg_synaptic_strength(pair_synaptic_strength_data,
+                               spike_pair,
+                               ax=None,
+                               time_unit='ms',
+                               bbox_to_anchor=(2.2, 1), **kwargs):
     """ Plots synaptic strength based on the provided data using the ccg method.
 
     Parameters
@@ -41,6 +44,10 @@ def plot_ccg_synaptic_strength(pair_synaptic_strength_data, spike_pair, ax=None,
         Spike pair for which synaptic strength is calculated.
     ax : list of matplotlib.axes._subplots.AxesSubplot, optional
         A list of two matplotlib axis objects. If None, new axes will be created.
+    time_unit : str, optional
+        The time unit for the x-axis. Default is 'ms'.
+    bbox_to_anchor : tuple, optional
+        The bbox_to_anchor parameter for the legend. Default is (2.2, 1).
     **kwargs : dict
         Additional keyword arguments for customizing the plot.
 
@@ -79,7 +86,7 @@ def plot_ccg_synaptic_strength(pair_synaptic_strength_data, spike_pair, ax=None,
     ax[1].set_title('Jittered CCG')
 
     for i in range(2):
-        ax[i].set_xlabel('Time lag (ms)')
+        ax[i].set_xlabel(TIME_UNIT_LABELS[time_unit])
         ax[i].set_ylabel('Spike count/bin')
 
     ax[0].legend(bbox_to_anchor=bbox_to_anchor, loc='upper left')
