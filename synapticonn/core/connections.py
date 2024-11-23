@@ -12,7 +12,7 @@ from synapticonn.monosynaptic_connections.ccg_synaptic_strength import calculate
 from synapticonn.monosynaptic_connections.ccg_connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
-from synapticonn.utils.errors import SpikeTimesError, DataError
+from synapticonn.utils.errors import SpikeTimesError, DataError, SpikePairError
 from synapticonn.utils.attribute_checks import requires_arguments
 from synapticonn.utils.report import gen_model_results_str
 from synapticonn.utils.warnings import custom_formatwarning
@@ -211,11 +211,8 @@ class SynaptiConn(SpikeManager):
             If no synaptic strength data is found.
         """
 
-        # check if spike pairs are of a valid type
-        if not isinstance(spike_pairs, List):
-            raise SpikeTimesError("Spike pairs must be a list of tuples.")
-        elif not all(isinstance(pair, Tuple) for pair in spike_pairs):
-            raise SpikeTimesError("Spike pairs must be a list of tuples.")
+        # check if spike pairs are valid
+        spike_pairs = self._spike_pairs_check(spike_pairs)
 
         # compute and set the synaptic strength for the given spike pairs
         synaptic_strength_data = self.synaptic_strength(spike_pairs=spike_pairs, **kwargs)
@@ -379,7 +376,7 @@ class SynaptiConn(SpikeManager):
         Analysis is based on [1]. For excitatory connections, a threshold of 5 is recommended.
         """
 
-        # filter spike pairs for valid spike units
+        # filter passed spike pairs for available spike units
         valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
 
         self.pair_synaptic_strength = {}
@@ -532,7 +529,8 @@ class SynaptiConn(SpikeManager):
 
 
     @extract_spike_unit_labels
-    def return_crosscorrelogram_data(self, spike_unit_labels: list, spike_pairs: List[Tuple] = None) -> dict:
+    def return_crosscorrelogram_data(self, spike_unit_labels: list,
+                                     spike_pairs: List[Tuple] = None) -> dict:
         """ Compute and return the cross-correlogram data for valid spike pairs.
 
         Parameters
@@ -548,8 +546,8 @@ class SynaptiConn(SpikeManager):
             Dictionary containing cross-correlograms and bins for all pairs of spike trains.
         """
 
-        valid_spike_units = self._get_valid_spike_unit_labels(spike_pairs, spike_unit_labels)
         valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
+        valid_spike_units = self._get_valid_spike_unit_labels(spike_pairs, spike_unit_labels)
 
         # retrieve spike times and compute cross-correlogram data
         spike_times = self.get_spike_times_for_units(valid_spike_units)
@@ -628,6 +626,10 @@ class SynaptiConn(SpikeManager):
             List of invalid spike pairs.
         """
 
+        # check if spike pairs are valid
+        spike_pairs = self._spike_pairs_check(spike_pairs)
+
+        # filter passed spike pairs for available spike units
         valid_spike_units = self._get_valid_spike_unit_labels(spike_pairs, spike_unit_labels)
 
         invalid_spike_pairs = [pair for pair in spike_pairs if pair[0] not in valid_spike_units or pair[1] not in valid_spike_units]
@@ -642,6 +644,31 @@ class SynaptiConn(SpikeManager):
             raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
 
         return valid_spike_pairs, invalid_spike_pairs
+
+
+    def _spike_pairs_check(self, spike_pairs):
+        """ Check if the spike pairs are valid.
+
+        Parameters
+        ----------
+        spike_pairs : List[Tuple]
+            List of spike pairs to compute synaptic strength.
+
+        Returns
+        -------
+        spike_pairs : List[Tuple]
+            List of valid spike pairs.
+        """
+
+        if spike_pairs is None:
+            raise SpikePairError("Please provide spike pairs to compute synaptic strength.")
+
+        # check type
+        if not isinstance(spike_pairs, List):
+            raise SpikeTimesError("Spike pairs must be a list of tuples.")
+        elif not all(isinstance(pair, Tuple) for pair in spike_pairs):
+            raise SpikeTimesError("Spike pairs must be a list of tuples.")
+        return spike_pairs
 
 
     def _validate_parameter(name, value,

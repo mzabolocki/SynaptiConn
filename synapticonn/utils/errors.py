@@ -23,3 +23,6 @@ class NoDataError(SpikeTimesError):
     
 class AnalysisError(SpikeTimesError):
     """ Error for if there is a problem with the analysis. """
+
+class SpikePairError(SpikeTimesError):
+    """ Error for if there is a problem with the spike pair analysis. """
