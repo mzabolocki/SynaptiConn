@@ -16,7 +16,6 @@ from synapticonn.utils.errors import SpikeTimesError, DataError, SpikePairError
 from synapticonn.utils.attribute_checks import requires_arguments
 from synapticonn.utils.report import gen_model_results_str
 from synapticonn.utils.warnings import custom_formatwarning
-from synapticonn.core.core_utils import extract_spike_unit_labels
 
 
 ###############################################################################
@@ -130,6 +129,12 @@ class SynaptiConn(SpikeManager):
 
         else:
             raise NotImplementedError("Only the 'cross-correlation' method is currently implemented.")
+
+
+    def spike_unit_ids(self):
+        """ Return the spike unit labels. """
+
+        return list(self.spike_times.keys())
 
 
     @requires_arguments('bin_size_t', 'max_lag_t', 'time_unit')
@@ -324,11 +329,10 @@ class SynaptiConn(SpikeManager):
         print(gen_model_results_str(connection_types, concise, params))
 
 
-    @extract_spike_unit_labels
     @requires_arguments('spike_pairs', 'num_iterations',
                         'max_lag_t', 'bin_size_t',
                         'jitter_range_ms', 'half_window_ms')
-    def synaptic_strength(self, spike_unit_labels: list,
+    def synaptic_strength(self,
                           spike_pairs: List[Tuple] = None,
                           num_iterations: int = 1000,
                           max_lag_t: float = 25.0,
@@ -340,7 +344,7 @@ class SynaptiConn(SpikeManager):
 
         Parameters
         ----------
-        spike_unit_labels : list
+        spike_unit_ids : list
             List of spike unit labels.
         spike_pairs : List[Tuple]
             List of spike pairs to compute synaptic strength.
@@ -349,15 +353,15 @@ class SynaptiConn(SpikeManager):
         num_iterations : int
             Number of iterations to compute the synaptic strength.
         max_lag_t : float
-            Maximum lag to compute the synaptic strength (in milliseconds).
+            Maximum lag to compute the synaptic strength.
         bin_size_t : float
-            Bin size of the synaptic strength (in milliseconds).
+            Bin size of the synaptic strength.
         jitter_range_ms : float
-            Jitter range to compute the synaptic strength (in milliseconds).
+            Jitter range to compute the synaptic strength.
         half_window_ms : float
-            Half window size for the synaptic strength (in milliseconds).
+            Half window size for the synaptic strength.
         n_jobs: int
-            Number of parallel jobs to run. Default is -1 (all cores).
+            Number of parallel jobs to run. Default is -1.
             Use this to speed up computation.
 
         Returns
@@ -393,8 +397,11 @@ class SynaptiConn(SpikeManager):
         Analysis is based on [1]. For excitatory connections, a threshold of 5 is recommended.
         """
 
+        # get spike unit ids
+        spike_unit_ids = self.spike_unit_ids()
+
         # filter passed spike pairs for available spike units
-        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
+        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_ids)
 
         self.pair_synaptic_strength = {}
         for pre_synaptic_neuron_id, post_synaptic_neuron_id in valid_spike_pairs:
@@ -518,15 +525,11 @@ class SynaptiConn(SpikeManager):
                                       " implemented for plot. Please choose this method.")
 
 
-    @extract_spike_unit_labels
-    def plot_autocorrelogram(self, spike_unit_labels: list,
-                             spike_units: list = None, **kwargs):
+    def plot_autocorrelogram(self, spike_units: list = None, **kwargs):
         """ Plot the autocorrelogram.
 
         Parameters
         ----------
-        spike_unit_labels : list
-            List of spike unit labels.
         spike_units : list
             List of spike units to plot.
         **kwargs
@@ -538,8 +541,11 @@ class SynaptiConn(SpikeManager):
         The bin size and maximum lag are set by the object parameters.
         """
 
-        # validate and filter spike unit labels
-        spike_units_to_collect = self._get_valid_spike_unit_labels(spike_units, spike_unit_labels)
+        # get spike unit ids
+        spike_unit_ids = self.spike_unit_ids()
+
+        # find valid spike units to plot
+        spike_units_to_collect = self._get_valid_spike_unit_ids(spike_units, spike_unit_ids)
         print(f'Plotting autocorrelogram for spike units: {spike_units_to_collect}')
 
         # retrieve spike times for the selected spike units
@@ -553,15 +559,11 @@ class SynaptiConn(SpikeManager):
                  **kwargs)
 
 
-    @extract_spike_unit_labels
-    def return_crosscorrelogram_data(self, spike_unit_labels: list,
-                                     spike_pairs: List[Tuple] = None) -> dict:
+    def return_crosscorrelogram_data(self, spike_pairs: List[Tuple] = None) -> dict:
         """ Compute and return the cross-correlogram data for valid spike pairs.
 
         Parameters
         ----------
-        spike_unit_labels : list
-            List of spike unit labels (in strings).
         spike_pairs : List[Tuple]
             List of spike pairs to compute the cross-correlogram data.
 
@@ -571,8 +573,12 @@ class SynaptiConn(SpikeManager):
             Dictionary containing cross-correlograms and bins for all pairs of spike trains.
         """
 
-        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_labels)
-        valid_spike_units = self._get_valid_spike_unit_labels(spike_pairs, spike_unit_labels)
+        # get spike unit ids
+        spike_unit_ids = self.spike_unit_ids()
+
+        # filter passed spike pairs for available spike units
+        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_ids)
+        valid_spike_units = self._get_valid_spike_unit_ids(spike_pairs, spike_unit_ids)
 
         # retrieve spike times and compute cross-correlogram data
         spike_times = self.get_spike_times_for_units(valid_spike_units)
@@ -582,40 +588,38 @@ class SynaptiConn(SpikeManager):
         return crosscorrelogram_data
 
 
-    @extract_spike_unit_labels
-    def plot_crosscorrelogram(self, spike_unit_labels: list,
-                              spike_pairs: List[Tuple] = None,
-                              **kwargs: Any):
+    def plot_crosscorrelogram(self, spike_pairs: List[Tuple] = None, **kwargs: Any):
         """ Plot the cross-correlogram for valid spike pairs.
 
         Parameters
         ----------
-        spike_unit_labels : list
-            List of spike unit labels (in strings).
         spike_pairs : List[Tuple]
             List of spike pairs to plot.
         **kwargs : Any
             Additional keyword arguments passed to `plot_ccg`.
         """
 
-        crosscorrelogram_data = self.return_crosscorrelogram_data(spike_unit_labels, spike_pairs)
+        crosscorrelogram_data = self.return_crosscorrelogram_data(spike_pairs)
         plot_ccg(crosscorrelogram_data, **kwargs)
 
 
-    def _get_valid_spike_unit_labels(self, spike_units: list = None,
-                                     spike_unit_labels: list = None):
-        """ Validate and filter spike unit labels.
+    def _get_valid_spike_unit_ids(self, spike_units: list = None,
+                                  spike_unit_ids: list = None):
+        """ Validate and filter spike unit ids.
+
+        Note that this method is used to filter spike units
+        against the available spike unit IDs.
 
         Parameters
         ----------
         spike_units : list
             List of spike units to select for.
-        spike_unit_labels : list
+        spike_unit_ids : list
             List of spike unit labels.
 
         Returns
         -------
-        spike_unit_labels : list
+        spike_unit_ids : list
             List of valid spike units to plot.
         """
 
@@ -625,22 +629,22 @@ class SynaptiConn(SpikeManager):
         if not isinstance(spike_units, np.ndarray):
             spike_units = np.array(spike_units)
 
-        spike_unit_labels = spike_units[np.isin(spike_units, spike_unit_labels)]
-        if len(spike_unit_labels) == 0:
+        spike_unit_ids = spike_units[np.isin(spike_units, spike_unit_ids)]
+        if len(spike_unit_ids) == 0:
             raise SpikeTimesError('No valid spike units to plot.')
 
-        return spike_unit_labels
+        return spike_unit_ids
 
 
     def _filter_spike_pairs(self, spike_pairs: List[Tuple] = None,
-                            spike_unit_labels: list = None):
+                            spike_unit_ids: list = None):
         """ Filter spike pairs for valid spike units.
 
         Parameters
         ----------
         spike_pairs : List[Tuple]
             List of spike pairs.
-        spike_unit_labels : list
+        spike_unit_ids : list
             List of spike unit labels.
 
         Returns
@@ -655,7 +659,7 @@ class SynaptiConn(SpikeManager):
         spike_pairs = self._spike_pairs_check(spike_pairs)
 
         # filter passed spike pairs for available spike units
-        valid_spike_units = self._get_valid_spike_unit_labels(spike_pairs, spike_unit_labels)
+        valid_spike_units = self._get_valid_spike_unit_ids(spike_pairs, spike_unit_ids)
 
         invalid_spike_pairs = [pair for pair in spike_pairs if pair[0] not in valid_spike_units or pair[1] not in valid_spike_units]
         valid_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units and pair[1] in valid_spike_units]
