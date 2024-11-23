@@ -175,8 +175,8 @@ class SynaptiConn(SpikeManager):
         self.time_unit = self._time_unit_check(time_unit)
 
         if verbose:
-            print(f"Bin size set to {self.bin_size_t}, and maximum lag"
-                  f" set to {self.max_lag_t}. Time unit set to {self.time_unit}.")
+            print(f"Bin size set to {self.bin_size_t} {self.time_unit}, "
+                  f"and maximum lag set to {self.max_lag_t} {self.time_unit}.")
 
 
     def reset_pair_synaptic_strength(self):
