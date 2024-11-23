@@ -7,7 +7,7 @@ import numpy as np
 from typing import Any, List, Tuple
 
 from synapticonn.core.spike_times import SpikeManager
-from synapticonn.plots import plot_acg, plot_ccg, plot_ccg_synaptic_strength
+from synapticonn.plots import plot_acg, plot_ccg, plot_ccg_synaptic_strength, plot_spiketrain
 from synapticonn.monosynaptic_connections.ccg_synaptic_strength import calculate_synaptic_strength
 from synapticonn.monosynaptic_connections.ccg_connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
@@ -627,12 +627,42 @@ class SynaptiConn(SpikeManager):
         ----------
         spike_pairs : List[Tuple]
             List of spike pairs to plot.
+        ax : Any
+            Axis to plot on.
+        show_axes : bool
+            Whether to add axis labels. Default is True.
         **kwargs : Any
             Additional keyword arguments passed to `plot_ccg`.
         """
 
         crosscorrelogram_data = self.return_crosscorrelogram_data(spike_pairs)
-        plot_ccg(crosscorrelogram_data, **kwargs)
+        plot_ccg(crosscorrelogram_data, time_unit=self.time_unit, **kwargs)
+
+
+    def plot_spike_train(self, spike_units: list = None, **kwargs: Any):
+        """ Plot the spike train for the given spike units.
+
+        Parameters
+        ----------
+        spike_units : list
+            List of spike units to plot.
+            If None, all spike units are plotted.
+        **kwargs : Any
+            Additional keyword arguments passed to `plot_spike_train`
+            for customizing the plot using `matplotlib`.
+        """
+
+        if spike_units is None:
+            spktimes_plotting = self.spike_times  # default to all spike times
+
+        elif spike_units is not None:
+            try: 
+                spktimes_plotting = {k: self.spike_times[k] for k in spike_units}
+            except KeyError as e:
+                raise SpikeTimesError(f"Please provide valid spike unit keys to plot. "
+                                      f"Error with spike units: {e}")
+
+        plot_spiketrain(spktimes_plotting, **kwargs)
 
 
     def _get_valid_spike_unit_ids(self, spike_units: list = None,

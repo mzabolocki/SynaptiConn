@@ -68,6 +68,23 @@ def ccg_ax(func):
     return wrapper
 
 
+def spktrain_ax(func):
+    """ Decorator to check axes for spiketrain raster plot. """
+    def wrapper(spike_times, *args, **kwargs):
+
+        ax = kwargs.get('ax', None)
+
+        if ax is None:
+            figsize = kwargs.pop('figsize', (15, 5)) 
+            _, ax = plt.subplots(1, 1, figsize=figsize)
+
+        kwargs['ax'] = ax
+
+        return func(spike_times, *args, **kwargs)
+
+    return wrapper
+
+
 def check_spktime_ax_length(func):
     """ Decorator to check axes length before plotting multiple subplots. """
     def wrapper(spike_times, *args, **kwargs):
