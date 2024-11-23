@@ -18,9 +18,9 @@ from synapticonn.utils.errors import SpikeTimesError
 
 
 def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
-                                jitter_range_ms=10, num_iterations=1000,
+                                jitter_range_t=10, num_iterations=1000,
                                 max_lag_t=25, bin_size_t=0.5,
-                                half_window_ms=5, n_jobs=-1):
+                                half_window_t=5, n_jobs=-1):
     """ Calculate the synaptic strength between two spike trains.
 
     Parameters
@@ -29,9 +29,9 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
         The spike times for the pre-synaptic cell.
     post_spike_train : np.ndarray
         The spike times for the post-synaptic cell.
-    jitter_range_ms : float
-        Jin the range (in milliseconds) within which to jitter each spike time.
-        Each spike will be shifted by a random amount in the range [-jitter_range_ms, +jitter_range_ms].
+    jitter_range_t : float
+        Jin the range  within which to jitter each spike time.
+        Each spike will be shifted by a random amount in the range [-jitter_range_t, +jitter_range_t].
         Default is 10 ms.
     num_iterations : int
         The number of jittered cross-correlograms to compute.
@@ -42,7 +42,7 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     bin_size_t : float, optional
         The size of each bin in the cross-correlogram (in milliseconds).
         Default is 0.5 ms.
-    half_window_ms : float, optional
+    half_window_t : float, optional
         The half-width of the window around the zero-lag time (in milliseconds).
         Default is 5 ms.
     n_jobs : int, optional
@@ -91,7 +91,7 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
     synaptic connection or indirectly through a third neuron providing a common input.
 
     To compute synaptic strength, the firing of a single unit in a pair was jittered across a
-    number of iterations (num_iterations) within a time range (jitter_range_ms).
+    number of iterations (num_iterations) within a time range (jitter_range_t).
     These were used to calculate a confidence interval (CI) between 1% and 99%. If the real
     CCG peak passed the 99% CI, the corresponding functional connection would be considered
     significant and not random.
@@ -117,7 +117,7 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
         warnings.warn("Bin size is greater than 0.5 ms. This may affect the accuracy of the synaptic strength value.", UserWarning)
     if max_lag_t > 25:
         warnings.warn("Maximum lag is greater than 25 ms. It is recommended to calculate synaptic strength within a 25 ms range.", UserWarning)
-    if jitter_range_ms > 10:
+    if jitter_range_t > 10:
         warnings.warn("Jitter range is greater than 10 ms. This may affect the accuracy of the synaptic strength value.", UserWarning)
     if num_iterations < 1000:
         warnings.warn("Number of iterations is less than 1000. This may affect the accuracy of the synaptic strength value.", RuntimeWarning)
@@ -126,19 +126,19 @@ def calculate_synaptic_strength(pre_spike_train=None, post_spike_train=None,
 
     synaptic_strength_data = _return_jittered_ccg(pre_spike_train, post_spike_train,
                                                   num_iterations, max_lag_t,
-                                                  bin_size_t, jitter_range_ms, n_jobs)
+                                                  bin_size_t, jitter_range_t, n_jobs)
 
     synaptic_strength_data.update(
         _return_synaptic_strength_zscore(synaptic_strength_data['ccg_bins'],
                                          synaptic_strength_data['original_crosscorr_counts'],
                                          synaptic_strength_data['jittered_crosscorr_counts'],
-                                         half_window_ms, bin_size_t))
+                                         half_window_t, bin_size_t))
 
     return synaptic_strength_data
 
 
 def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
-                                     jittered_ccg_counts, half_window_ms=5,
+                                     jittered_ccg_counts, half_window_t=5,
                                      bin_size_t=0.5):
     """ Calculate the synaptic strength as the Z-score of the peak bin
     count within a specified window in the original CCG.
@@ -151,7 +151,7 @@ def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
         The original cross-correlogram counts.
     jittered_ccg_counts : np.ndarray
         The jittered cross-correlogram counts.
-    half_window_ms : float, optional
+    half_window_t : float, optional
         The half-width of the window around the zero-lag time (in milliseconds).
         Default is 5 ms.
     bin_size_t : float, optional
@@ -171,7 +171,7 @@ def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
     assert len(original_ccg_counts) == (jittered_ccg_counts.shape[1]), "Original and jittered CCG counts must have the same length."
 
     # define the window around the zero-lag time
-    window_bins = int((half_window_ms*2) / (2 * bin_size_t))
+    window_bins = int((half_window_t*2) / (2 * bin_size_t))
     mid_bin = len(ccg_bins) // 2  # the center bin corresponds to zero lag
     window_slice = slice(mid_bin - window_bins, mid_bin + window_bins + 1)  # slice the window
 
@@ -200,7 +200,7 @@ def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
 
 
 def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
-                         max_lag_t=25, bin_size_t=0.5, jitter_range_ms=10, n_jobs=-1):
+                         max_lag_t=25, bin_size_t=0.5, jitter_range_t=10, n_jobs=-1):
     """ Return the jittered cross-correlogram.
 
     Parameters
@@ -242,7 +242,7 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     # jitter a single spike train across multiple iterations
     # note :: a seed is applied to each iteration for reproducibility
     def single_jitter_iteration(seed):
-        jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_ms, seed=seed)
+        jittered_post_spike_train = _apply_jitter(post_spike_train, jitter_range_t, seed=seed)
         jittered_ccg_counts, _ = compute_crosscorrelogram_dual_spiketrains(pre_spike_train, jittered_post_spike_train, bin_size_t, max_lag_t)
         return jittered_ccg_counts
 
@@ -259,7 +259,7 @@ def _return_jittered_ccg(pre_spike_train, post_spike_train, num_iterations=1000,
     return jittered_ccg_data
 
 
-def _apply_jitter(spike_train, jitter_range_ms, seed=None):
+def _apply_jitter(spike_train, jitter_range_t, seed=None):
     """ Apply random jitter to a spike train within a specified range.
 
     This is an internal function used to apply random jitter to a spike train.
@@ -269,9 +269,9 @@ def _apply_jitter(spike_train, jitter_range_ms, seed=None):
     ----------
     spike_train : array_like
         The original spike times for a single cell.
-    jitter_range_ms : float
+    jitter_range_t : float
         The range (in milliseconds) within which to jitter each spike time.
-        Each spike will be shifted by a random amount in the range [-jitter_range_ms, +jitter_range_ms].
+        Each spike will be shifted by a random amount in the range [-jitter_range_t, +jitter_range_t].
     seed : int, optional
         Random seed for reproducibility. Default is 0.
 
@@ -294,12 +294,12 @@ def _apply_jitter(spike_train, jitter_range_ms, seed=None):
     [1] https://numpy.org/doc/2.0/reference/random/generated/numpy.random.seed.html 
     """
 
-    assert jitter_range_ms > 0, "Jitter range must be greater than zero."
+    assert jitter_range_t > 0, "Jitter range must be greater than zero."
 
     if seed is not None:
         np.random.seed(seed)  # add seed for reproducibility
 
-    jitter = np.random.uniform(-jitter_range_ms, jitter_range_ms, size=len(spike_train))
+    jitter = np.random.uniform(-jitter_range_t, jitter_range_t, size=len(spike_train))
     jittered_spike_train = spike_train + jitter
 
     sorted_jittered_spike_train = np.sort(jittered_spike_train)  # sort to ensure temporal order

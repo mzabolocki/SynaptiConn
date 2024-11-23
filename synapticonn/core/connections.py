@@ -117,8 +117,8 @@ class SynaptiConn(SpikeManager):
                 'bin_size_t': 1,
                 'max_lag_t': 100,
                 'num_iterations': 1000,
-                'jitter_range_ms': 10,
-                'half_window_ms': 5,
+                'jitter_range_t': 10,
+                'half_window_t': 5,
                 'time_unit': 'ms',
                 'n_jobs': -1
             }
@@ -138,9 +138,9 @@ class SynaptiConn(SpikeManager):
 
 
     @requires_arguments('bin_size_t', 'max_lag_t', 'time_unit')
-    def set_bin_settings(self, bin_size_t: float = 1,
-                         max_lag_t: float = 100,
-                         time_unit: str = 'ms',
+    def set_bin_settings(self, bin_size_t: float = None,
+                         max_lag_t: float = None,
+                         time_unit: str = None,
                          verbose: bool = True):
         """ Set the settings of the object.
 
@@ -179,6 +179,23 @@ class SynaptiConn(SpikeManager):
                   f"and maximum lag set to {self.max_lag_t} {self.time_unit}.")
 
 
+    @requires_arguments('time_unit')
+    def set_time_unit(self, time_unit: str = 'ms'):
+        """ Set the time unit for the spike times, recording length, bin size, and maximum lag.
+
+        Parameters
+        ----------
+        time_unit : str
+            Time unit options in ms (milliseconds) or s (seconds).
+        """
+
+        warnings.warn("This method is used to set the time unit for the spike times. "
+                      "All processing will be based on this time unit.", UserWarning)
+
+        self.time_unit = self._time_unit_check(time_unit)
+        print(f"Time unit set to {self.time_unit}.")
+
+
     def reset_pair_synaptic_strength(self):
         """ Reset the synaptic strength data. """
 
@@ -211,9 +228,9 @@ class SynaptiConn(SpikeManager):
                 Maximum lag to compute the synaptic strength (in ms, default: 25.0).
             - bin_size_t : float
                 Bin size for computing the synaptic strength (in ms, default: 0.5).
-            - jitter_range_ms : float
+            - jitter_range_t : float
                 Jitter range for synaptic strength computation (in ms, default: 10.0).
-            - half_window_ms : float
+            - half_window_t : float
                 Half window size for synaptic strength computation (in ms, default: 5).
             - n_jobs : int
                 Number of parallel jobs to use (default: -1, all cores).
@@ -278,9 +295,9 @@ class SynaptiConn(SpikeManager):
                 Maximum lag to compute the synaptic strength (in ms, default: 25.0).
             - bin_size_t : float
                 Bin size for computing the synaptic strength (in ms, default: 0.5).
-            - jitter_range_ms : float
+            - jitter_range_t : float
                 Jitter range for synaptic strength computation (in ms, default: 10.0).
-            - half_window_ms : float
+            - half_window_t : float
                 Half window size for synaptic strength computation (in ms, default: 5).
             - n_jobs : int
                 Number of parallel jobs to use (default: -1, all cores).
@@ -293,7 +310,7 @@ class SynaptiConn(SpikeManager):
         --------------
         pair_synaptic_strength : dict
             Dictionary containing the synaptic strength for each pair of neurons.
-            This is stored in the object for future reference, and can be accessed using the 'pair_synaptic_strength' attribute.
+            This is stored in the object for future reference, and can be accessedusing the 'pair_synaptic_strength' attribute.
             This is used to compute the connection types and features, and perform visualizations.
         """
 
@@ -331,14 +348,14 @@ class SynaptiConn(SpikeManager):
 
     @requires_arguments('spike_pairs', 'num_iterations',
                         'max_lag_t', 'bin_size_t',
-                        'jitter_range_ms', 'half_window_ms')
+                        'jitter_range_t', 'half_window_t')
     def synaptic_strength(self,
                           spike_pairs: List[Tuple] = None,
                           num_iterations: int = 1000,
                           max_lag_t: float = 25.0,
                           bin_size_t: float = 0.5,
-                          jitter_range_ms: float = 10.0,
-                          half_window_ms: float = 5,
+                          jitter_range_t: float = 10.0,
+                          half_window_t: float = 5,
                           n_jobs: int = -1) -> dict:
         """ Compute the synaptic strength for the given spike pairs.
 
@@ -356,9 +373,9 @@ class SynaptiConn(SpikeManager):
             Maximum lag to compute the synaptic strength.
         bin_size_t : float
             Bin size of the synaptic strength.
-        jitter_range_ms : float
+        jitter_range_t : float
             Jitter range to compute the synaptic strength.
-        half_window_ms : float
+        half_window_t : float
             Half window size for the synaptic strength.
         n_jobs: int
             Number of parallel jobs to run. Default is -1.
@@ -370,6 +387,11 @@ class SynaptiConn(SpikeManager):
             Dictionary containing synaptic strength data for all pairs of spike trains.
             This contains the mean, standard deviation, and confidence intervals of the synaptic strength
             following jittering and bootstrapping.
+
+        Warning
+        -------
+        If spike times are not in milliseconds, a DataError is raised. Please convert to milliseconds
+        for synaptic strength calculations using the 'cross-correlation' method. This is based on [1].
 
         Attributes set
         --------------
@@ -397,6 +419,12 @@ class SynaptiConn(SpikeManager):
         Analysis is based on [1]. For excitatory connections, a threshold of 5 is recommended.
         """
 
+        if self.time_unit == 's':
+            raise DataError("Spike times are not in milliseconds. Please convert to milliseconds "
+                            f"for synaptic strength calculations using {self.method}. "
+                            "This can be done by setting the time unit to 'ms' using "
+                            "the set_time_unit method.")
+
         # get spike unit ids
         spike_unit_ids = self.spike_unit_ids()
 
@@ -413,11 +441,11 @@ class SynaptiConn(SpikeManager):
             # calculate synaptic strength
             synaptic_strength_data = calculate_synaptic_strength(pre_synaptic_spktimes,
                                                                  post_synaptic_spktimes,
-                                                                 jitter_range_ms=jitter_range_ms,
+                                                                 jitter_range_t=jitter_range_t,
                                                                  num_iterations=num_iterations,
                                                                  max_lag_t=max_lag_t,
                                                                  bin_size_t=bin_size_t,
-                                                                 half_window_ms=half_window_ms,
+                                                                 half_window_t=half_window_t,
                                                                  n_jobs=n_jobs)
 
             self.pair_synaptic_strength[(pre_synaptic_neuron_id, post_synaptic_neuron_id)] = synaptic_strength_data
