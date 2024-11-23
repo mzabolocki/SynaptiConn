@@ -16,7 +16,7 @@ from synapticonn.utils.errors import SpikeTimesError, DataError, SpikePairError
 from synapticonn.utils.attribute_checks import requires_arguments
 from synapticonn.utils.report import gen_model_results_str
 from synapticonn.utils.warnings import custom_formatwarning
-from synapticonn.core.core_tools import extract_spike_unit_labels
+from synapticonn.core.core_utils import extract_spike_unit_labels
 
 
 ###############################################################################
@@ -88,8 +88,8 @@ class SynaptiConn(SpikeManager):
                          recording_length_t=recording_length_t,
                          spike_id_type=spike_id_type)
 
-        self.bin_size_t = self._bin_size_check(bin_size_t)
-        self.max_lag_t = self._max_lag_check(max_lag_t)
+        self.bin_size_t = self._bin_size_check(bin_size_t, max_lag_t)
+        self.max_lag_t = self._max_lag_check(bin_size_t, max_lag_t)
         self.method = self._method_check(method)
 
 
@@ -679,7 +679,8 @@ class SynaptiConn(SpikeManager):
         return spike_pairs
 
 
-    def _validate_parameter(name, value,
+    def _validate_parameter(self, name,
+                            value,
                             min_value=None,
                             max_value=None,
                             warn_threshold=None,
@@ -710,7 +711,7 @@ class SynaptiConn(SpikeManager):
             warnings.warn(warn_message, UserWarning)
 
 
-    def _bin_size_check(self, bin_size_t):
+    def _bin_size_check(self, bin_size_t, max_lag_t):
         """ Check if the bin size is valid. """
 
         # validate bin size
@@ -718,7 +719,7 @@ class SynaptiConn(SpikeManager):
             name="Bin size",
             value=bin_size_t,
             min_value=0,
-            max_value=min(self.recording_length_t, self.max_lag_t),
+            max_value=min(self.recording_length_t, max_lag_t),
         )
 
         # issue warnings for high bin sizes
@@ -734,8 +735,10 @@ class SynaptiConn(SpikeManager):
             warn_message=warn_message,
         )
 
+        return bin_size_t
 
-    def _max_lag_check(self, max_lag_t):
+
+    def _max_lag_check(self, bin_size_t, max_lag_t):
         """Check if the maximum lag is valid."""
 
         # validate maximum lag
@@ -746,8 +749,10 @@ class SynaptiConn(SpikeManager):
             max_value=self.recording_length_t,
         )
         # ensure max lag is larger than bin size
-        if max_lag_t < self.bin_size_t:
+        if max_lag_t < bin_size_t:
             raise ValueError("Maximum lag must be greater than or equal to the bin size.")
+
+        return max_lag_t
 
 
     def _method_check(self, method):
