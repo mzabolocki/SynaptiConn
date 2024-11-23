@@ -521,11 +521,19 @@ class SynaptiConn(SpikeManager):
         The bin size and maximum lag are set by the object parameters.
         """
 
+        # validate and filter spike unit labels
         spike_units_to_collect = self._get_valid_spike_unit_labels(spike_units, spike_unit_labels)
         print(f'Plotting autocorrelogram for spike units: {spike_units_to_collect}')
 
+        # retrieve spike times for the selected spike units
         spike_times = self.get_spike_times_for_units(spike_units_to_collect)
-        plot_acg(spike_times, bin_size_t=self.bin_size_t, max_lag_t=self.max_lag_t, **kwargs)
+
+        # plot the autocorrelogram
+        plot_acg(spike_times,
+                 bin_size_t=self.bin_size_t,
+                 max_lag_t=self.max_lag_t,
+                 time_unit=self.time_unit,
+                 **kwargs)
 
 
     @extract_spike_unit_labels

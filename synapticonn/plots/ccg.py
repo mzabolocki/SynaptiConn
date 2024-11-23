@@ -12,7 +12,7 @@ from synapticonn.utils.mod_utils import check_dependency
 from synapticonn.plots.style import apply_plot_style
 from synapticonn.plots.save import savefig
 from synapticonn.plots.plot_utils import ccg_ax, check_spktime_ax_length
-from synapticonn.plots.aesthetics import CCG_COLORS
+from synapticonn.plots.aesthetics import CCG_COLORS, TIME_UNIT_TIMELAG_LABELS
 
 
 ##########################################################
@@ -31,7 +31,11 @@ plt.style.use(style_path)  # set globally
 @check_dependency(plt, 'matplotlib')
 @check_spktime_ax_length
 @ccg_ax
-def plot_ccg(cross_correlograms_data, ax=None, show_axes=True, **kwargs):
+def plot_ccg(cross_correlograms_data,
+             ax=None,
+             show_axes=True,
+             time_unit='ms',
+             **kwargs):
     """
     Plot cross-correlograms for spike train pairs with multiple subplots.
 
@@ -44,6 +48,8 @@ def plot_ccg(cross_correlograms_data, ax=None, show_axes=True, **kwargs):
         Array of axes to plot on.
     show_axes : bool, optional
         Whether to add axis labels. Default is True.
+    time_unit : str, optional
+        Time unit for the x-axis. Default is 'ms'.
     **kwargs
         Additional keyword arguments passed to ax.bar.
 
@@ -65,7 +71,7 @@ def plot_ccg(cross_correlograms_data, ax=None, show_axes=True, **kwargs):
         ax[count].set_title(f'Pair {pair_id}')
 
         if show_axes:
-            ax[count].set_xlabel('Lag (ms)')
+            ax[count].set_xlabel(TIME_UNIT_TIMELAG_LABELS[time_unit])
             ax[count].set_ylabel('Cross-correlation')
 
     return ax

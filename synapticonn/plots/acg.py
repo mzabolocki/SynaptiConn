@@ -10,10 +10,10 @@ import matplotlib.pyplot as plt
 
 from synapticonn.postprocessing.autocorrelograms import compute_autocorrelogram
 from synapticonn.utils.mod_utils import check_dependency
-from synapticonn.plots.spiketrain_utils import check_spiketrain_ndim, check_spiketrain_millisecond
 from synapticonn.plots.plot_utils import acg_ax, check_spktime_ax_length
 from synapticonn.plots.style import apply_plot_style
 from synapticonn.plots.save import savefig
+from synapticonn.plots.aesthetics import TIME_UNIT_TIMELAG_LABELS
 
 
 ##########################################################
@@ -33,7 +33,13 @@ plt.style.use(style_path)  # set globally
 @check_dependency(plt, 'matplotlib')
 @check_spktime_ax_length
 @acg_ax
-def plot_acg(spike_times, bin_size_t=1, max_lag_t=100, show_axes=True, ax=None, **kwargs):
+def plot_acg(spike_times,
+             bin_size_t=1,
+             max_lag_t=100,
+             show_axes=True,
+             ax=None,
+             time_unit='ms',
+             **kwargs):
     """Plot an autocorrelogram for a single spike train.
 
     Parameters
@@ -51,6 +57,9 @@ def plot_acg(spike_times, bin_size_t=1, max_lag_t=100, show_axes=True, ax=None, 
         Axis to plot on.
     show_axes: bool, optional
         Whether to add axis labels. Default
+        is True.
+    time_unit : str, optional
+        The time unit for the x-axis. Default is 'ms'.
     **kwargs
         Additional keyword arguments passed to `ax.bar`.
 
@@ -73,7 +82,7 @@ def plot_acg(spike_times, bin_size_t=1, max_lag_t=100, show_axes=True, ax=None, 
         ax[count].set_title(f'Unit {unit_id}')
 
         if show_axes:
-            ax[count].set_xlabel('Time lag (ms)')
+            ax[count].set_xlabel(TIME_UNIT_TIMELAG_LABELS[time_unit])
             ax[count].set_ylabel('Spike counts/bin')
 
     return ax

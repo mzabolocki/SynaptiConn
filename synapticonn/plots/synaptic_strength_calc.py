@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from synapticonn.utils.mod_utils import check_dependency
 from synapticonn.plots.style import apply_plot_style
 from synapticonn.plots.save import savefig
-from synapticonn.plots.aesthetics import SYN_STRENGTH_COLORS, TIME_UNIT_LABELS
+from synapticonn.plots.aesthetics import SYN_STRENGTH_COLORS, TIME_UNIT_TIMELAG_LABELS
 
 
 ##########################################################
@@ -86,7 +86,7 @@ def plot_ccg_synaptic_strength(pair_synaptic_strength_data,
     ax[1].set_title('Jittered CCG')
 
     for i in range(2):
-        ax[i].set_xlabel(TIME_UNIT_LABELS[time_unit])
+        ax[i].set_xlabel(TIME_UNIT_TIMELAG_LABELS[time_unit])
         ax[i].set_ylabel('Spike count/bin')
 
     ax[0].legend(bbox_to_anchor=bbox_to_anchor, loc='upper left')
