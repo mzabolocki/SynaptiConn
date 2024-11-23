@@ -30,8 +30,8 @@ plt.style.use(style_path)  # set globally
 @check_dependency(plt, 'matplotlib')
 def plot_ccg_synaptic_strength(pair_synaptic_strength_data,
                                spike_pair,
-                               ax=None,
                                time_unit='ms',
+                               ax=None,
                                bbox_to_anchor=(2.2, 1), **kwargs):
     """ Plots synaptic strength based on the provided data using the ccg method.
 
