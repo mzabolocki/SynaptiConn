@@ -153,10 +153,17 @@ class SynaptiConn(SpikeManager):
             bin size, and maximum lag for all processing.
         verbose : bool
             If True, print a message confirming the settings.
+
+        User Warning
+        ------------
+        Please use this method with caution. Parameters should match the spike time units.
+        If a change in the time unit is required, the spike times will NOT be converted to the new unit
+        automatically. This should be done manually before calling this method.
         """
 
-        warnings.warn("This method is used to set the bin size and maximum lag after initialization. "
-                      "Please use this method with caution. Parameters should match the spike time units", UserWarning)
+        warnings.warn("This method is used to set the bin size and maximum "
+                      "lag after initialization. Please use this method with caution. "
+                      "Parameters should match the spike time units", UserWarning)
 
         self.bin_size_t = self._bin_size_check(bin_size_t, max_lag_t)
         self.max_lag_t = self._max_lag_check(bin_size_t, max_lag_t)
