@@ -135,7 +135,8 @@ class SynaptiConn(SpikeManager):
     @requires_arguments('bin_size_t', 'max_lag_t', 'time_unit')
     def set_bin_settings(self, bin_size_t: float = 1,
                          max_lag_t: float = 100,
-                         time_unit: str = 'ms'):
+                         time_unit: str = 'ms',
+                         verbose: bool = True):
         """ Set the settings of the object.
 
         Useful for changing the bin size and maximum lag after initialization.
@@ -150,11 +151,20 @@ class SynaptiConn(SpikeManager):
             Time unit options in ms (milliseconds) or s (seconds).
             These are used to set the time unit for the spike times, recording length, 
             bin size, and maximum lag for all processing.
+        verbose : bool
+            If True, print a message confirming the settings.
         """
 
-        self.bin_size_t = self._bin_size_check(bin_size_t)
-        self.max_lag_t = self._max_lag_check(max_lag_t)
+        warnings.warn("This method is used to set the bin size and maximum lag after initialization. "
+                      "Please use this method with caution. Parameters should match the spike time units", UserWarning)
+
+        self.bin_size_t = self._bin_size_check(bin_size_t, max_lag_t)
+        self.max_lag_t = self._max_lag_check(bin_size_t, max_lag_t)
         self.time_unit = self._time_unit_check(time_unit)
+
+        if verbose:
+            print(f"Bin size set to {self.bin_size_t}, and maximum lag"
+                  f" set to {self.max_lag_t}. Time unit set to {self.time_unit}.")
 
 
     def reset_pair_synaptic_strength(self):
