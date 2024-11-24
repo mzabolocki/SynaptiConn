@@ -1,4 +1,7 @@
-""" Object for handling spike time data. """
+""" spike_times.py
+
+Object for handling spike time data.
+"""
 
 import warnings
 import logging

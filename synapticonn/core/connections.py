@@ -1,4 +1,7 @@
-""" Base model object, which is used to quantify monosynaptic connections between neurons. """
+""" connections.py
+
+Base model object, which is used to quantify monosynaptic connections between neurons.
+"""
 
 import warnings
 
@@ -257,7 +260,7 @@ class SynaptiConn(SpikeManager):
         """
 
         # check if spike pairs are valid
-        spike_pairs = self._spike_pairs_check(spike_pairs)
+        spike_pairs = _spike_pairs_check(spike_pairs)
 
         # compute and set the synaptic strength for the given spike pairs
         synaptic_strength_data = self.synaptic_strength(spike_pairs=spike_pairs, **kwargs)
@@ -740,7 +743,7 @@ class SynaptiConn(SpikeManager):
         """
 
         # check if spike pairs are valid
-        spike_pairs = self._spike_pairs_check(spike_pairs)
+        spike_pairs = _spike_pairs_check(spike_pairs)
 
         # filter passed spike pairs for available spike units
         valid_spike_units = self._get_valid_spike_unit_ids(spike_pairs, spike_unit_ids)
@@ -764,44 +767,27 @@ class SynaptiConn(SpikeManager):
     def _bin_size_check(self, bin_size_t, max_lag_t):
         """ Check if the bin size is valid. """
 
-        # validate bin size
-        self._validate_parameter(
+        _validate_parameter(
             name="Bin size",
             value=bin_size_t,
             min_value=0,
             max_value=min(self.recording_length_t, max_lag_t),
+            warn_threshold=0.001 if self.time_unit == 's' else 1,
+            warn_message="Bin size is greater than the threshold. This may lead to inaccurate results.",
         )
-
-        # issue warnings for high bin sizes
-        warn_threshold = 0.001 if self.time_unit == 's' else 1
-        warn_message = (
-            f"Bin size is greater than {warn_threshold} {self.time_unit}. "
-            "This may lead to inaccurate results."
-        )
-        self._validate_parameter(
-            name="Bin size",
-            value=bin_size_t,
-            warn_threshold=warn_threshold,
-            warn_message=warn_message,
-        )
-
         return bin_size_t
 
-
     def _max_lag_check(self, bin_size_t, max_lag_t):
-        """Check if the maximum lag is valid."""
+        """ Check if the maximum lag is valid. """
 
-        # validate maximum lag
-        self._validate_parameter(
+        _validate_parameter(
             name="Maximum lag",
             value=max_lag_t,
             min_value=0,
             max_value=self.recording_length_t,
         )
-        # ensure max lag is larger than bin size
         if max_lag_t < bin_size_t:
             raise ValueError("Maximum lag must be greater than or equal to the bin size.")
-
         return max_lag_t
 
 

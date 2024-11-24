@@ -44,7 +44,7 @@ def setup_log(log_folder_name: str = 'removed_spike_units',
 ## helper check decorator
 
 
-def _spike_pairs_check(self, spike_pairs):
+def _spike_pairs_check(spike_pairs):
     """ Check if the spike pairs are valid.
 
     Parameters
@@ -69,7 +69,7 @@ def _spike_pairs_check(self, spike_pairs):
     return spike_pairs
 
 
-def _validate_parameter(self, name,
+def _validate_parameter(name,
                         value,
                         min_value=None,
                         max_value=None,
