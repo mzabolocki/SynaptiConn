@@ -27,22 +27,41 @@ warnings.formatwarning = custom_formatwarning
 
 
 class SpikeManager():
-    """ Base class for checking and managing spike time imports.
+    """
+    Base class for managing and processing spike time data.
+
+    This class provides methods for validating, organizing, and analyzing
+    spike time data for neuroscience studies. It facilitates quality control
+    metrics computation, spike unit filtering, and retrieval of relevant spike
+    unit information.
 
     Parameters
     ----------
     spike_times : dict
-        Dictionary containing spike times for each unit.
-        Indexed by unit ID.
+        Dictionary containing spike times for each unit, indexed by unit ID.
     time_unit : str
-        Unit of time for the spike times. Default is 'ms'.
-        Options include 's', 'ms'.
+        Unit of time for the spike times. Default is 'ms'. Options include 's', 'ms'.
     srate : float
         Sampling rate of the recording in Hz.
     recording_length_t : float
-        Length of the recording in time units.
+        Length of the recording in the specified time unit.
     spike_id_type : type
-        Type of the spike unit ID. Default is int or str.
+        Data type of the spike unit ID. Default is `int` or `str`.
+
+    Attributes
+    ----------
+    spike_times : dict
+        Validated dictionary of spike times, indexed by unit ID.
+    time_unit : str
+        The time unit used for spike times ('ms' or 's').
+    recording_length_t : float
+        The duration of the recording in the specified time unit.
+    spike_id_type : type
+        Data type of spike unit identifiers.
+    srate : float
+        Sampling rate of the recording in Hz.
+    spike_unit_filtering : bool
+        Tracks whether spike units have been filtered.
 
     Notes
     -----

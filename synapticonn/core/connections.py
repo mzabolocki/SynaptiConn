@@ -16,7 +16,8 @@ from synapticonn.monosynaptic_connections.ccg_connection_type import get_putativ
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
 from synapticonn.core.core_utils import _validate_spike_pairs, _validate_parameter
-from synapticonn.utils.errors import SpikeTimesError, DataError, SpikePairError
+from synapticonn.core.info import get_available_processing_methods
+from synapticonn.utils.errors import SpikeTimesError, DataError
 from synapticonn.utils.attribute_checks import requires_arguments
 from synapticonn.utils.report import gen_model_results_str
 from synapticonn.utils.warnings import custom_formatwarning
@@ -33,48 +34,81 @@ warnings.formatwarning = custom_formatwarning
 
 
 class SynaptiConn(SpikeManager):
-    """ Base class for quantifying monosynaptic connections between neurons.
+    """Base class for quantifying monosynaptic connections between neurons.
+
+    This class builds upon the `SpikeManager` to provide functionality for 
+    computing, analyzing, and visualizing monosynaptic connections between 
+    pairs of neurons based on their spike trains. Key features include 
+    cross-correlogram computation, synaptic strength estimation, and connection 
+    classification.
 
     Parameters
     ----------
-    spike_trains : dict
-        Dictionary containing spike times for each unit indexed by unit ID.
-        Spike times must be a float array.
+    spike_times : dict
+        Dictionary containing spike times for each unit, indexed by unit ID. Spike 
+        times should be a NumPy array of floats.
     time_unit : str
-        Time unit options in ms (milliseconds) or s (seconds).
-        These are used to set the time unit for the spike times, recording length, 
-        bin size, and maximum lag for all processing.
+        Unit of time for the spike times. Options are 'ms' (milliseconds) or 's' (seconds).
     bin_size_t : float
-        Bin size of the cross-correlogram (in milliseconds).
+        Bin size for computing cross-correlograms, in milliseconds.
     max_lag_t : float
-        Maximum lag to compute the cross-correlogram (in milliseconds).
-    method : str
-        Type of synaptic strength to compute. Default is 'cross-correlation'.
-        This performs the following:
-            1. a peak detection on the cross-correlogram to estimate the synaptic strength
-            2. a statistical analysis to estimate the confidence intervals
-            3. a jittering analysis to estimate the jittered synaptic strength.
-        In future versions, this will be expanded to include other types of correlation methods.
+        Maximum lag to consider when computing cross-correlograms, in milliseconds.
+    method : str, optional
+        Method for computing synaptic strength. Default is 'cross-correlation'. 
+        Currently, only this method is implemented, but future versions may 
+        include additional methods.
     recording_length_t : float
-        Length of the recording.
+        Duration of the recording, in the same time unit as `time_unit`.
     srate : float
-        Sampling rate of the spike times (in Hz).
+        Sampling rate of the recording in Hz.
     spike_id_type : type
-        Data type of the spike IDs.
+        Data type of spike unit identifiers. Typically `int` or `str`.
+
+    Attributes
+    ----------
+    bin_size_t : float
+        Bin size used for cross-correlogram computations.
+    max_lag_t : float
+        Maximum lag used for cross-correlogram computations.
+    method : str
+        The method used for synaptic strength computation.
+    recording_length_t : float
+        Total duration of the recording, in the specified time unit.
+    srate : float
+        Sampling rate of the spike data, in Hz.
+    spike_id_type : type
+        Type of spike unit identifiers (e.g., `int` or `str`).
+    time_unit : str
+        Unit of time used for computations and spike data.
+    pair_synaptic_strength : dict
+        Dictionary containing synaptic strength data for each spike pair. This 
+        is populated after running the `fit` or `synaptic_strength` methods.
 
     Notes
     -----
-    If spike trains are not in milliseconds, a conversion from seconds to milliseconds is attempted.
+    - The `SynaptiConn` class is designed to process and analyze spike train data 
+      for determining monosynaptic connections.
+    - If the spike times are provided in seconds, they are converted to milliseconds 
+      internally to maintain consistency.
+    - The class assumes that the recording duration (`recording_length_t`) and 
+      time unit (`time_unit`) are accurately specified.
 
-    Recording length is used to check if spike times exceed the recording duration. This is in 
-    milliseconds to match the spike times.
+    Examples
+    --------
+    Initialize the SynaptiConn object and compute synaptic strength:
+
+    >>> synapti_conn = SynaptiConn(
+    ...     spike_times=spike_data,
+    ...     time_unit='ms',
+    ...     bin_size_t=1.0,
+    ...     max_lag_t=50.0,
+    ...     method='cross-correlation',
+    ...     recording_length_t=60000,
+    ...     srate=20000
+    ... )
+    >>> synapti_conn.fit(spike_pairs=[(1, 2), (3, 4)])
+    >>> print(synapti_conn.pair_synaptic_strength)
     """
-
-    # ----- CLASS VARIABLES
-    # list of current implemented methods
-        # note :: methods will be expanded in future versions 
-    _methods = ['cross-correlation']
-
 
     def __init__(self, spike_times: dict = None,
                  time_unit: str = 'ms',
@@ -698,6 +732,7 @@ class SynaptiConn(SpikeManager):
         )
         return bin_size_t
 
+
     def _max_lag_check(self, bin_size_t, max_lag_t):
         """ Check if the maximum lag is valid. """
 
@@ -715,6 +750,7 @@ class SynaptiConn(SpikeManager):
     def _method_check(self, method):
         """ Check if the method is valid. """
 
-        if method not in self._methods:
-            raise NotImplementedError(f"Method {method} is not implemented. Please choose from {self._methods}.")
+        if method not in get_available_processing_methods():
+            raise NotImplementedError(f"Method {method} is not implemented. "
+                                      f"Please choose from {get_available_processing_methods()}.")
         return method
