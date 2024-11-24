@@ -34,7 +34,8 @@ warnings.formatwarning = custom_formatwarning
 
 
 class SynaptiConn(SpikeManager):
-    """Base class for quantifying monosynaptic connections between neurons.
+    """
+    Base class for quantifying monosynaptic connections between neurons.
 
     This class builds upon the `SpikeManager` to provide functionality for 
     computing, analyzing, and visualizing monosynaptic connections between 
