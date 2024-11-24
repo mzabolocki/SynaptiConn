@@ -114,12 +114,41 @@ class SpikeManager():
 
 
     def report_spike_units(self):
-        """ Report the spike units. """
+        """ Report the spike units.
+
+        Returns
+        -------
+        spk_unit_summary : dict
+            Dictionary containing the spike unit summary.
+            Includes the unit ID, number of spikes, and
+            firing rate in Hz.
+
+        Notes
+        -----
+        The spike unit summary is computed for each unit
+        in the spike_times dictionary. Firing rates
+        are calculated based on the total number of spikes
+        and the recording length. If the time unit is in seconds,
+        the firing rate is converted to Hz.
+        """
 
         labels = self.spike_unit_labels()
+
+        # number of spikes for each unit
         n_spks = [len(self.spike_times[label]) for label in labels]
-        firing_rates = [len(self.spike_times[label]) / self.recording_length_t*1000 for label in labels]
-        spk_unit_summary = {'unit_id': labels, 'n_spikes': n_spks, 'firing_rate_hz': firing_rates}
+
+        # calculate firing rates
+            # convert to Hz if time unit is in seconds
+        if self.time_unit == 's':
+            firing_rates = [len(self.spike_times[label]) / self.recording_length_t for label in labels]
+        elif self.time_unit == 'ms':
+            firing_rates = [len(self.spike_times[label]) / self.recording_length_t * 1000 for label in labels]
+        else:
+            raise ValueError(f"Invalid time_unit: {self.time_unit}. Must be 's' or 'ms'.")
+
+        spk_unit_summary = {'unit_id': labels,
+                            'n_spikes': n_spks,
+                            'firing_rate_hz': firing_rates}
 
         return spk_unit_summary
 
@@ -225,11 +254,14 @@ class SpikeManager():
         for key, spks in self.spike_times.items():
 
             # isi violations
-            isi_violations = compute_isi_violations(spks, self.recording_length_t,
-                                                    isi_threshold_t, min_isi_t)
+            isi_violations = compute_isi_violations(spks,
+                                                    self.recording_length_t,
+                                                    isi_threshold_t,
+                                                    min_isi_t)
 
             # presence ratio
-            presence_ratio = compute_presence_ratio(spks, self.recording_length_t,
+            presence_ratio = compute_presence_ratio(spks,
+                                                    self.recording_length_t,
                                                     bin_duration_ms=presence_ratio_bin_duration_t,
                                                     mean_fr_ratio_thresh=presence_ratio_mean_fr_ratio_thresh,
                                                     srate=self.srate)
@@ -244,7 +276,7 @@ class SpikeManager():
         return pd.DataFrame(quality_metrics).T
 
 
-    def filter_spike_units(self, quality_metrics: pd.DataFrame, 
+    def filter_spike_units(self, quality_metrics: pd.DataFrame,
                            query: str = None,
                            log: bool = False,
                            overwrite: bool = False) -> pd.DataFrame:
@@ -282,15 +314,16 @@ class SpikeManager():
         if SpikeManager.spike_unit_filtering:
             if not overwrite:
                 msg = ("Spike units have already been filtered. Please re-initialize the object "
-                       "or 'set_spike_times' to set the spike_times dict for re-filtering. If this was intentional, "
-                       "please set the 'overwrite' parameter to True.")
+                       "or 'set_spike_times' to set the spike_times dict for re-filtering. "
+                       "If this was intentional, please set the 'overwrite' parameter to True.")
                 warnings.warn(msg)
             if overwrite:
                 SpikeManager.spike_unit_filtering = False
 
         if not set(self.quality_metric_keys).issubset(quality_metrics.columns):
             msg = ("Quality metrics DataFrame is missing required columns. "
-                   f"Required columns: {self.quality_metric_keys}. Please run the spike_unit_quality method.")
+                   f"Required columns: {self.quality_metric_keys}. "
+                   "Please run the spike_unit_quality method.")
             raise DataError(msg)
 
         # filter units based on query
@@ -316,7 +349,8 @@ class SpikeManager():
         return filtered_units_df
 
 
-    @requires_arguments('spike_id_type', 'srate', 'spike_times', 'recording_length_t', 'time_unit')
+    @requires_arguments('spike_id_type','srate', 'spike_times',
+                        'recording_length_t', 'time_unit')
     def _prepare_spiketime_data(self, spike_times: dict = None,
                                 time_unit: str = None,
                                 recording_length_t: float = None,
