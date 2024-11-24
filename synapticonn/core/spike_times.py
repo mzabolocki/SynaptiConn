@@ -13,6 +13,7 @@ from synapticonn.utils.errors import SpikeTimesError, DataError, RecordingLength
 from synapticonn.utils.attribute_checks import requires_arguments
 from synapticonn.quality_metrics import compute_isi_violations, compute_presence_ratio, compute_firing_rates
 from synapticonn.core.core_utils import setup_log
+from synapticonn.core.info import get_unit_time_types, get_quality_metric_keys
 from synapticonn.utils.warnings import custom_formatwarning
 
 
@@ -42,19 +43,28 @@ class SpikeManager():
         Length of the recording in time units.
     spike_id_type : type
         Type of the spike unit ID. Default is int or str.
+
+    Notes
+    -----
+    The SpikeManager object is used to manage spike time data.
+    This object is used to store and process spike times for
+    each unit in the recording. The object provides methods
+    for computing quality metrics, filtering spike units,
+    and reporting spike unit information.
+
+    The SpikeManager object is initialized with the spike times,
+    time unit, sampling rate, recording length, and spike ID type.
+    The spike times are stored in a dictionary, indexed by the unit ID.
+
+    The SpikeManager object provides methods for computing quality metrics
+    for each unit, filtering spike units based on quality metrics,
+    and reporting spike unit information. These methods are used to
+    analyze and process the spike time data.
     """
 
-    # ----- CLASS VARIABLES
-    # quality metric keys used to determine spike unit quality
-    quality_metric_keys = ['isi_violations_ratio', 'isi_violations_rate', 'isi_violations_count',
-                           'isi_violations_of_total_spikes', 'presence_ratio', 'firing_rate_hz',
-                           'recording_length_sec', 'n_spikes']
 
     # spike unit filtering flag to track if units have been filtered
     spike_unit_filtering = False
-
-    # type of time units allowed
-    unit_time_types = ['s', 'ms']
 
 
     def __init__(self, spike_times: dict = None,
@@ -319,9 +329,9 @@ class SpikeManager():
             if overwrite:
                 SpikeManager.spike_unit_filtering = False
 
-        if not set(self.quality_metric_keys).issubset(quality_metrics.columns):
+        if not set(get_quality_metric_keys()).issubset(quality_metrics.columns):
             msg = ("Quality metrics DataFrame is missing required columns. "
-                   f"Required columns: {self.quality_metric_keys}. "
+                   f"Required columns: {get_quality_metric_keys()}. "
                    "Please run the spike_unit_quality method.")
             raise DataError(msg)
 
@@ -451,9 +461,9 @@ class SpikeManager():
     def _time_unit_check(self, time_unit: str = None):
         """ Check the time unit. """
 
-        if time_unit not in self.unit_time_types:
+        if time_unit not in get_unit_time_types():
             raise TypeError(
-                f"Time unit must be in {self.unit_time_types}. "
+                f"Time unit must be in {get_unit_time_types()}. "
                 f"Got {time_unit} instead."
                 )
 
