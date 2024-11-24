@@ -18,7 +18,7 @@ from synapticonn.utils.errors import RecordingLengthError
 def compute_presence_ratio(spike_train,
                            recording_length_t,
                            time_unit,
-                           bin_duration_sec=60000,
+                           bin_duration_sec=60,
                            mean_fr_ratio_thresh=0.0,
                            srate=None):
     """ Compute the presence ratio of a spike train.
