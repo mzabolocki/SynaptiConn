@@ -1,15 +1,21 @@
-"""Utilities for testing synapticonn."""
+""" tutils.py
 
-import os
+Utilities for testing synapticonn."""
+
 import pathlib
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
+import scipy.io
 
 import synapticonn as synapticonn
 
+
+###############################################################################
+###############################################################################
+
+
 def test_data_path(data_file_type: str) -> pathlib.Path:
-    """Return the path to the test data directory."""
+    """ Return the path to the test data directory. """
 
     base_path = pathlib.Path(__file__).parent / "spiketimetest"
 
@@ -23,5 +29,33 @@ def test_data_path(data_file_type: str) -> pathlib.Path:
         data_path = pathlib.Path(base_path, "spikeinterface", "BD0187_spikesorting_array.pkl")
     else:
         raise ValueError(f"Unknown data file type: {data_file_type}")
-    
+
     return data_path
+
+
+def load_spiketimes(data_file_type: str) -> pd.DataFrame:
+    """Load the spike times from the data file."""
+
+    # --- mat file ---
+    if data_file_type == '.mat':
+
+        data_path = test_data_path(data_file_type)
+
+        # open mat file
+        data = scipy.io.loadmat(data_path)
+
+        # re-organize data
+        num_units = len(data['unit_t'][0])
+        spiketimes = {}
+        for i in range(num_units):
+            spiketimes[i] = data['unit_t'][0][i].T[0]
+
+    # --- spikeinterface ---
+    elif data_file_type == 'spikeinterface':
+        data_path = test_data_path(data_file_type)
+        spiketimes = np.load(data_path, allow_pickle=True)
+
+    else:
+        raise ValueError(f"Unknown data file type: {data_file_type}")
+
+    return spiketimes
