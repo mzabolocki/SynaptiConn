@@ -113,13 +113,11 @@ def get_quality_metric_keys():
     """
 
     quality_metric_keys = ['isi_violations_ratio',
-                           'isi_violations_rate',
                            'isi_violations_count',
                            'isi_violations_of_total_spikes',
                            'presence_ratio',
-                           'firing_rate_hz',
-                           'recording_length_sec',
-                           'n_spikes']
+                           'n_spikes',
+                           'firing_rate_hz']
 
     return quality_metric_keys
 
