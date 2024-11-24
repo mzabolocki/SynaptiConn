@@ -300,9 +300,6 @@ class SynaptiConn(SpikeManager):
             If no synaptic strength data is found.
         """
 
-        # check spike pair type and raise error if not provided
-
-
         # compute and set the synaptic strength for the given spike pairs
         synaptic_strength_data = self.synaptic_strength(spike_pairs=spike_pairs, **kwargs)
 
