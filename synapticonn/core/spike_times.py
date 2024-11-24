@@ -336,7 +336,8 @@ class SpikeManager():
         """
 
         assert isinstance(query, str), f"Query must be a string. Got {type(query)} instead."
-        assert isinstance(quality_metrics, pd.DataFrame), "Quality metrics must be a DataFrame. Got {type(quality_metrics)} instead."
+        assert isinstance(quality_metrics, pd.DataFrame), "Quality metrics must be a DataFrame. \
+                                                            Got {type(quality_metrics)} instead."
 
         # check if spike units have already been filtered
         if SpikeManager.spike_unit_filtering:
@@ -468,8 +469,8 @@ class SpikeManager():
         # check the time unit matches the recording length
             # raise a warning if the spike times exceed the recording length
         max_spk_time = np.max([np.max(spks) for spks in spike_times.values()])
-        if max_spk_time > 0.8*recording_length_t:
-            msg = ("Unit is firing across less than 20% of the recording length. "
+        if max_spk_time < 0.5*recording_length_t:
+            msg = ("Unit is firing across less than 50% of the recording length. "
                    "This may lead to unexpected results. Please check the spike times and recording length "
                    "passed to the SpikeManager object. If this is intentional, please ignore this warning.")
             warnings.warn(msg)
