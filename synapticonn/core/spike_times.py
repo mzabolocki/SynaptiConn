@@ -137,7 +137,7 @@ class SpikeManager():
         # number of spikes for each unit
         n_spks = [len(self.spike_times[label]) for label in labels]
 
-        # calculate firing rates
+        # calculate firing rates for each unit
             # convert to Hz if time unit is in seconds
         if self.time_unit == 's':
             firing_rates = [len(self.spike_times[label]) / self.recording_length_t for label in labels]
@@ -199,20 +199,20 @@ class SpikeManager():
 
 
     def spike_unit_quality(self,
-                           isi_threshold_t=1.5,
-                           min_isi_t=0,
-                           presence_ratio_bin_duration_t=60000,
+                           isi_threshold_ms=1.5,
+                           min_isi_ms=0,
+                           presence_ratio_bin_duration_sec=60,
                            presence_ratio_mean_fr_ratio_thresh=0.0) -> pd.DataFrame:
         """ Compute spike isolation quality metrics.
 
         Parameters
         ----------
-        isi_threshold_t : float
-            Threshold for the interspike interval (ISI) violations.
-        min_isi_t : float
-            Minimum ISI value.
-        presence_ratio_bin_duration_t : float
-            Duration of each bin for the presence ratio.
+        isi_threshold_ms : float
+            Threshold for the interspike interval (ISI) violations, in milliseconds.
+        min_isi_ms : float
+            Minimum ISI value, in milliseconds.
+        presence_ratio_bin_duration_sec : float
+            Duration of each bin for the presence ratio, in seconds.
         presence_ratio_mean_fr_ratio_thresh : float
             Minimum mean firing rate ratio threshold for the presence ratio.
             This is the minimum mean firing rate that must be present in a bin
@@ -232,7 +232,6 @@ class SpikeManager():
         -----
         Quality metrics include:
         - isi_violations_ratio: Fraction of ISIs that violate the threshold.
-        - isi_violations_rate: Rate of ISIs that violate the threshold.
         - isi_violations_count: Number of ISIs that violate the threshold.
         - isi_violations_of_total_spikes: Fraction of ISIs that violate the threshold out of total spikes.
         - presence_ratio: Fraction of time during a session in which a unit is spiking.
@@ -246,28 +245,28 @@ class SpikeManager():
         see the respective functions in the quality_metrics module.
         """
 
-        # TO DO // update this all to account for the time units
-        # fix the errors with the calculations also
-        # have an option to pass the unit time in the method
-
         quality_metrics = {}
         for key, spks in self.spike_times.items():
 
             # isi violations
             isi_violations = compute_isi_violations(spks,
                                                     self.recording_length_t,
-                                                    isi_threshold_t,
-                                                    min_isi_t)
+                                                    isi_threshold_ms,
+                                                    min_isi_ms,
+                                                    self.time_unit)
 
             # presence ratio
             presence_ratio = compute_presence_ratio(spks,
                                                     self.recording_length_t,
-                                                    bin_duration_ms=presence_ratio_bin_duration_t,
-                                                    mean_fr_ratio_thresh=presence_ratio_mean_fr_ratio_thresh,
-                                                    srate=self.srate)
+                                                    self.time_unit,
+                                                    presence_ratio_bin_duration_sec,
+                                                    presence_ratio_mean_fr_ratio_thresh,
+                                                    self.srate)
 
             # unit firing rates
-            firing_rates = compute_firing_rates(spks, self.recording_length_t)
+            firing_rates = compute_firing_rates(spks,
+                                                self.recording_length_t,
+                                                self.time_unit)
 
             quality_metrics[key] = isi_violations
             quality_metrics[key].update(presence_ratio)

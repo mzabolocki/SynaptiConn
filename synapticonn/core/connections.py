@@ -682,7 +682,7 @@ class SynaptiConn(SpikeManager):
                 raise SpikeTimesError(f"Please provide valid spike unit keys to plot. "
                                       f"Error with spike units: {e}")
 
-        plot_spiketrain(spktimes_plotting, **kwargs)
+        plot_spiketrain(spktimes_plotting, time_unit=self.time_unit, **kwargs)
 
 
     def _bin_size_check(self, bin_size_t, max_lag_t):
