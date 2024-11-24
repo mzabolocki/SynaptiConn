@@ -92,6 +92,12 @@ class SynaptiConn(SpikeManager):
         self.method = self._method_check(method)
 
 
+    def __call__(self):
+        """ Return the object. """
+
+        return self
+
+
     def report_correlogram_settings(self):
         """ Report the bin settings. """
 
@@ -537,6 +543,22 @@ class SynaptiConn(SpikeManager):
 
         Note, this method requires the synaptic strength data to be computed first.
         It only plots the synaptic strength for a single pair of spike trains.
+
+        Parameters
+        ----------
+        spike_pair : tuple
+            Spike pair to plot the synaptic strength.
+        **kwargs
+            Additional keyword arguments passed to `plot_ccg_synaptic_strength`.
+
+        Raises
+        ------
+        DataError
+            If no synaptic strength data is found.
+        SpikePairError
+            If spike pair is not provided.
+        NotImplementedError
+            If the method is not implemented in the current package version.
         """
 
         assert spike_pair is not None, "Please provide a valid spike pair to plot."
