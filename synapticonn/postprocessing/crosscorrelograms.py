@@ -24,9 +24,9 @@ def compute_crosscorrelogram(spike_times, spike_pairs, bin_size_t, max_lag_t):
     spike_pairs : list
         List of tuples containing the unit IDs of the spike trains to compare.
     bin_size_t : float
-        Bin size of the cross-correlogram (in milliseconds).
+        Bin size of the cross-correlogram.
     max_lag_t : float
-        Maximum lag to compute the cross-correlogram (in milliseconds).
+        Maximum lag to compute the cross-correlogram.
 
     Returns
     -------

@@ -51,9 +51,9 @@ class SynaptiConn(SpikeManager):
     time_unit : str
         Unit of time for the spike times. Options are 'ms' (milliseconds) or 's' (seconds).
     bin_size_t : float
-        Bin size for computing cross-correlograms, in milliseconds.
+        Bin size for computing cross-correlograms.
     max_lag_t : float
-        Maximum lag to consider when computing cross-correlograms, in milliseconds.
+        Maximum lag to consider when computing cross-correlograms.
     method : str, optional
         Method for computing synaptic strength. Default is 'cross-correlation'. 
         Currently, only this method is implemented, but future versions may 
@@ -216,9 +216,9 @@ class SynaptiConn(SpikeManager):
                       "lag after initialization. Please use this method with caution. "
                       "Parameters should match the spike time units", UserWarning)
 
+        self.time_unit = self._time_unit_check(time_unit)
         self.bin_size_t = self._bin_size_check(bin_size_t, max_lag_t)
         self.max_lag_t = self._max_lag_check(bin_size_t, max_lag_t)
-        self.time_unit = self._time_unit_check(time_unit)
 
         if verbose:
             print(f"Bin size set to {self.bin_size_t} {self.time_unit}, "
@@ -592,6 +592,10 @@ class SynaptiConn(SpikeManager):
             Dictionary containing cross-correlograms and bins for all pairs of spike trains.
         """
 
+        if self.time_unit == 's':
+            warnings.warn("Spike times are not in milliseconds. It is recommended to convert to milliseconds "
+                          "for cross-correlogram calculations.", UserWarning)
+
         # validate spike pairs
         valid_spike_pairs = _validate_spike_pairs(spike_pairs, self.spike_unit_ids())
 
@@ -729,7 +733,7 @@ class SynaptiConn(SpikeManager):
             min_value=0,
             max_value=min(self.recording_length_t, max_lag_t),
             warn_threshold=0.001 if self.time_unit == 's' else 1,
-            warn_message="Bin size is greater than the threshold. This may lead to inaccurate results.",
+            warn_message="Bin size is greater than 1 ms. This may lead to inaccurate results.",
         )
         return bin_size_t
 
