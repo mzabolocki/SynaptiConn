@@ -12,7 +12,8 @@ from synapticonn.monosynaptic_connections.ccg_synaptic_strength import calculate
 from synapticonn.monosynaptic_connections.ccg_connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
-from synapticonn.utils.errors import SpikeTimesError, DataError, SpikePairError
+from synapticonn.core.core_utils import _spike_pairs_check, _validate_parameter
+from synapticonn.utils.errors import SpikeTimesError, DataError
 from synapticonn.utils.attribute_checks import requires_arguments
 from synapticonn.utils.report import gen_model_results_str
 from synapticonn.utils.warnings import custom_formatwarning
@@ -538,6 +539,35 @@ class SynaptiConn(SpikeManager):
             raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
 
 
+    def return_crosscorrelogram_data(self, spike_pairs: List[Tuple] = None) -> dict:
+        """ Compute and return the cross-correlogram data for valid spike pairs.
+
+        Parameters
+        ----------
+        spike_pairs : List[Tuple]
+            List of spike pairs to compute the cross-correlogram data.
+
+        Returns
+        -------
+        crosscorrelogram_data : dict
+            Dictionary containing cross-correlograms and bins for all pairs of spike trains.
+        """
+
+        # get spike unit ids
+        spike_unit_ids = self.spike_unit_ids()
+
+        # filter passed spike pairs for available spike units
+        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_ids)
+        valid_spike_units = self._get_valid_spike_unit_ids(spike_pairs, spike_unit_ids)
+
+        # retrieve spike times and compute cross-correlogram data
+        spike_times = self.get_spike_times_for_units(valid_spike_units)
+        crosscorrelogram_data = compute_crosscorrelogram(
+            spike_times, valid_spike_pairs, bin_size_t=self.bin_size_t, max_lag_t=self.max_lag_t)
+
+        return crosscorrelogram_data
+
+
     def plot_synaptic_strength(self, spike_pair: tuple = None, **kwargs):
         """ Plot the synaptic strength for the given spike pair.
 
@@ -610,35 +640,6 @@ class SynaptiConn(SpikeManager):
                  max_lag_t=self.max_lag_t,
                  time_unit=self.time_unit,
                  **kwargs)
-
-
-    def return_crosscorrelogram_data(self, spike_pairs: List[Tuple] = None) -> dict:
-        """ Compute and return the cross-correlogram data for valid spike pairs.
-
-        Parameters
-        ----------
-        spike_pairs : List[Tuple]
-            List of spike pairs to compute the cross-correlogram data.
-
-        Returns
-        -------
-        crosscorrelogram_data : dict
-            Dictionary containing cross-correlograms and bins for all pairs of spike trains.
-        """
-
-        # get spike unit ids
-        spike_unit_ids = self.spike_unit_ids()
-
-        # filter passed spike pairs for available spike units
-        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_ids)
-        valid_spike_units = self._get_valid_spike_unit_ids(spike_pairs, spike_unit_ids)
-
-        # retrieve spike times and compute cross-correlogram data
-        spike_times = self.get_spike_times_for_units(valid_spike_units)
-        crosscorrelogram_data = compute_crosscorrelogram(
-            spike_times, valid_spike_pairs, bin_size_t=self.bin_size_t, max_lag_t=self.max_lag_t)
-
-        return crosscorrelogram_data
 
 
     def plot_crosscorrelogram(self, spike_pairs: List[Tuple] = None, **kwargs: Any):
@@ -744,8 +745,10 @@ class SynaptiConn(SpikeManager):
         # filter passed spike pairs for available spike units
         valid_spike_units = self._get_valid_spike_unit_ids(spike_pairs, spike_unit_ids)
 
-        invalid_spike_pairs = [pair for pair in spike_pairs if pair[0] not in valid_spike_units or pair[1] not in valid_spike_units]
-        valid_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units and pair[1] in valid_spike_units]
+        invalid_spike_pairs = [pair for pair in spike_pairs if pair[0] not in valid_spike_units \
+                               or pair[1] not in valid_spike_units]
+        valid_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units \
+                             and pair[1] in valid_spike_units]
 
         if invalid_spike_pairs:
             warnings.warn(
@@ -756,63 +759,6 @@ class SynaptiConn(SpikeManager):
             raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
 
         return valid_spike_pairs, invalid_spike_pairs
-
-
-    def _spike_pairs_check(self, spike_pairs):
-        """ Check if the spike pairs are valid.
-
-        Parameters
-        ----------
-        spike_pairs : List[Tuple]
-            List of spike pairs to compute synaptic strength.
-
-        Returns
-        -------
-        spike_pairs : List[Tuple]
-            List of valid spike pairs.
-        """
-
-        if spike_pairs is None:
-            raise SpikePairError("Please provide spike pairs to compute synaptic strength.")
-
-        # check type
-        if not isinstance(spike_pairs, List):
-            raise SpikeTimesError("Spike pairs must be a list of tuples.")
-        elif not all(isinstance(pair, Tuple) for pair in spike_pairs):
-            raise SpikeTimesError("Spike pairs must be a list of tuples.")
-        return spike_pairs
-
-
-    def _validate_parameter(self, name,
-                            value,
-                            min_value=None,
-                            max_value=None,
-                            warn_threshold=None,
-                            warn_message=None):
-        """ Generic validator for parameters with thresholds and warnings.
-
-        Parameters
-        ----------
-        name : str
-            Name of the parameter.
-        value : float
-            Value of the parameter.
-        min_value : float
-            Minimum value of the parameter.
-        max_value : float
-            Maximum value of the parameter.
-        warn_threshold : float
-            Warning threshold for the parameter.
-        warn_message : str
-            Warning message for the parameter.
-        """
-
-        if min_value is not None and value <= min_value:
-            raise ValueError(f"{name} must be greater than {min_value}.")
-        if max_value is not None and value > max_value:
-            raise ValueError(f"{name} is greater than the allowed maximum ({max_value}). Adjust the value.")
-        if warn_threshold is not None and value > warn_threshold:
-            warnings.warn(warn_message, UserWarning)
 
 
     def _bin_size_check(self, bin_size_t, max_lag_t):
