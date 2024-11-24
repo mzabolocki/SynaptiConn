@@ -605,7 +605,7 @@ class SynaptiConn(SpikeManager):
         # note that only the 'cross-correlation' method is currently implemented
         # and for future versions, this will be expanded to include other types of correlation methods
         if self.method == 'cross-correlation':
-            plot_ccg_synaptic_strength(self.pair_synaptic_strength, valid_spike_pair, self.time_unit, **kwargs)
+            plot_ccg_synaptic_strength(self.pair_synaptic_strength, valid_spike_pair[0], self.time_unit, **kwargs)
         else:
             raise NotImplementedError("Only the 'cross-correlation' method is currently"
                                       " implemented for plot. Please choose this method.")

@@ -101,32 +101,26 @@ def _validate_spike_pairs(spike_pairs: List[Tuple] = None,
         List of valid spike pairs.
     """
 
-    # check the spike pairs type
+    # ensure spike_unit_ids is a set for efficient lookup
+    spike_unit_ids_set = set(spike_unit_ids)
+
+    # validate the input is a list of tuples
     if spike_pairs is not None:
         if not isinstance(spike_pairs, list) or not \
                 all(isinstance(pair, tuple) for pair in spike_pairs):
             raise SpikePairError("Spike pairs must be a list of tuples.")
     else:
-        raise SpikePairError("Please provide spike pairs to "
-                             "compute synaptic strength.")
+        raise SpikePairError("Please provide spike pairs to compute synaptic strength.")
 
-    # check and convert the spike pairs to numpy array
-        # this is for easier manipulation and filtering
-    if not isinstance(spike_pairs, np.ndarray):
-        spike_pairs = np.array(spike_pairs)
-
-    # find the valid spike pairs
-    valid_spike_units = spike_pairs[np.isin(spike_pairs, spike_unit_ids)]
+    # separate valid and invalid pairs
+    valid_spike_pairs = [pair for pair in spike_pairs if pair[0] in \
+                         spike_unit_ids_set and pair[1] in spike_unit_ids_set]
+    invalid_spike_pairs = [pair for pair in spike_pairs if pair \
+                           not in valid_spike_pairs]
 
     # raise error if no valid spike units
-    if len(valid_spike_units) == 0:
+    if not valid_spike_pairs:
         raise SpikeTimesError('No valid spike units to plot.')
-
-    # isolate the valid and invalid spike pairs
-    invalid_spike_pairs = [pair for pair in spike_pairs if pair[0] not in valid_spike_units \
-                            or pair[1] not in valid_spike_units]
-    valid_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units \
-                            and pair[1] in valid_spike_units]
 
     # warn if invalid spike pairs are found
     if invalid_spike_pairs:
@@ -136,4 +130,3 @@ def _validate_spike_pairs(spike_pairs: List[Tuple] = None,
         )
 
     return valid_spike_pairs
-
