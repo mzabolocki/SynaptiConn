@@ -4,8 +4,9 @@ Base model object, which is used to quantify monosynaptic connections between ne
 """
 
 import warnings
+import logging
 
-import numpy as np
+import pandas as pd
 
 from typing import Any, List, Tuple
 
@@ -15,7 +16,7 @@ from synapticonn.monosynaptic_connections.ccg_synaptic_strength import calculate
 from synapticonn.monosynaptic_connections.ccg_connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
-from synapticonn.core.core_utils import _validate_spike_pairs, _validate_parameter
+from synapticonn.core.core_utils import _validate_spike_pairs, _validate_parameter, setup_log
 from synapticonn.core.info import get_available_processing_methods
 from synapticonn.utils.errors import SpikeTimesError, DataError
 from synapticonn.utils.attribute_checks import requires_arguments
@@ -110,6 +111,10 @@ class SynaptiConn(SpikeManager):
     >>> synapti_conn.fit(spike_pairs=[(1, 2), (3, 4)])
     >>> print(synapti_conn.pair_synaptic_strength)
     """
+
+    # connection filtering flag to track if spike pairs have been filtered
+    connections_filtering = False
+
 
     def __init__(self, spike_times: dict = None,
                  time_unit: str = 'ms',
@@ -508,8 +513,9 @@ class SynaptiConn(SpikeManager):
         Parameters
         ----------
         synaptic_strength_threshold : float
-            Threshold value for categorizing connection types. Default is None.
-            This is used to categorize the connection types based on the synaptic strength values.
+            Threshold value for categorizing connection types.
+            Default is None. This is used to categorize the
+            connection types based on the synaptic strength values.
 
         Returns
         -------
@@ -576,6 +582,87 @@ class SynaptiConn(SpikeManager):
             return connection_features
         else:
             raise DataError("No synaptic strength data found. Please run the synaptic_strength method first.")
+
+
+    def filter_connections(self, connections_df: pd.DataFrame,
+                           query: str = None,
+                           log: bool = False,
+                           overwrite: bool = False) -> pd.DataFrame:
+        """ Filter connections based on a query string.
+
+        Parameters
+        ----------
+        connections_df : pd.DataFrame
+            DataFrame containing the connection data.
+            This DataFrame should contain the synaptic strength data
+            for all select pairs of spike trains.
+        query : str
+            Query string to filter the DataFrame.
+        log : bool
+            If True, print the query string used for filtering.
+        overwrite : bool
+            If True, overwrite the DataFrame with the filtered data.
+
+        Returns
+        -------
+        connections_df_filtered : pd.DataFrame
+            DataFrame containing the filtered connection data.
+
+        Log
+        ---
+        The log parameter is used to track the removed spike pairs with
+        detected monosynaptic connections. This is useful for tracking
+        the removed spike pairs from the original DataFrame.
+
+        The output is saved in a log file in the
+        'removed_spikepair_connections' folder. The file is named
+        'low_quality_connections_removed.log'.
+        """
+
+        # validate the input data
+        if connections_df is None:
+            raise DataError("No connection data found. "
+                            "Please run the synaptic_strength method first.")
+
+        # check types
+        if not isinstance(connections_df, pd.DataFrame):
+            raise TypeError(f"Connections data must be a pandas DataFrame. \
+                            Got {type(connections_df)} instead.")
+        if not isinstance(query, str):
+            raise TypeError(f"Query must be a string. Got {type(query)} instead.")
+
+        # check if the connection data is already filtered
+        if SynaptiConn.connections_filtering:
+            if not overwrite:
+                msg = ("Connections have already been filtered. Please re-initialize the object. "
+                       "If this was intentional, please set the 'overwrite' parameter to True.")
+                warnings.warn(msg)
+            if overwrite:
+                SynaptiConn.connections_filtering = False
+
+        # filter based on the query
+        if query is not None:
+            connections_df_filtered = connections_df.query(query)
+        else:
+            # skip filtering if no query is provided
+            connections_df_filtered = connections_df
+
+        # if log, track removed spike pairs
+        # with detected monosynaptic connections
+        if log:
+
+            setup_log(log_folder_name='removed_spikepair_connections',
+                      log_fname='low_quality_connections_removed.log')
+
+            removed_spikepairs = connections_df[~connections_df.index.isin(connections_df_filtered.index)]
+
+            for key, row in removed_spikepairs.iterrows():
+                log_msg = f'spike pair: {key} - removed from original dataframe with query {query}'
+                logging.info(log_msg)
+
+        SynaptiConn.connections_filtering = True
+
+        return connections_df_filtered
 
 
     def return_crosscorrelogram_data(self, spike_pairs: List[Tuple] = None) -> dict:

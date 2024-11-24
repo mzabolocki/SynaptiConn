@@ -330,12 +330,24 @@ class SpikeManager():
         filtered_units_df : pd.DataFrame
             DataFrame containing the filtered spike units based on the query.
 
-        Notes
-        -----
-        The quality_metrics dataframe is outputted from the spike_unit_quality method.
+        Log
+        ---
+        If log is True, the method will log the removed spike units
+        based on the query. The log will contain the unit ID and the
+        query used to filter the units.
+
+        The log file will be saved in the 'removed_spike_units' folder
+        in the current working directory. The log file will be named
+        'low_quality_units_removed.log'.
         """
 
+        if quality_metrics is None:
+            raise DataError("Quality metrics DataFrame is missing. "
+                            "Please run the spike_unit_quality method.")
+
+        # check the query
         assert isinstance(query, str), f"Query must be a string. Got {type(query)} instead."
+        # check the quality metrics type
         assert isinstance(quality_metrics, pd.DataFrame), "Quality metrics must be a DataFrame. \
                                                             Got {type(quality_metrics)} instead."
 
@@ -356,7 +368,11 @@ class SpikeManager():
             raise DataError(msg)
 
         # filter units based on query
-        filtered_units_df = quality_metrics.query(query)
+        if query is not None:
+            filtered_units_df = quality_metrics.query(query)
+        else:
+            # if no query, return the original dataframe
+            filtered_units_df = quality_metrics
 
         # remove filtered units from the spike times dictionary
         self.spike_times = {key: self.spike_times[key] for key in filtered_units_df.index}
