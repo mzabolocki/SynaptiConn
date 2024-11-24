@@ -15,11 +15,12 @@ from synapticonn.monosynaptic_connections.ccg_synaptic_strength import calculate
 from synapticonn.monosynaptic_connections.ccg_connection_type import get_putative_connection_type
 from synapticonn.postprocessing.crosscorrelograms import compute_crosscorrelogram
 from synapticonn.features import compute_peak_latency, compute_ccg_bootstrap, compute_ccg_cv, compute_peak_amp
-from synapticonn.core.core_utils import _spike_pairs_check, _validate_parameter
-from synapticonn.utils.errors import SpikeTimesError, DataError
+from synapticonn.core.core_utils import _validate_spike_pairs, _validate_parameter
+from synapticonn.utils.errors import SpikeTimesError, DataError, SpikePairError
 from synapticonn.utils.attribute_checks import requires_arguments
 from synapticonn.utils.report import gen_model_results_str
 from synapticonn.utils.warnings import custom_formatwarning
+from synapticonn.utils.data_utils import flatten_list
 
 
 ###############################################################################
@@ -259,8 +260,8 @@ class SynaptiConn(SpikeManager):
             If no synaptic strength data is found.
         """
 
-        # check if spike pairs are valid
-        spike_pairs = _spike_pairs_check(spike_pairs)
+        # check spike pair type and raise error if not provided
+
 
         # compute and set the synaptic strength for the given spike pairs
         synaptic_strength_data = self.synaptic_strength(spike_pairs=spike_pairs, **kwargs)
@@ -442,7 +443,7 @@ class SynaptiConn(SpikeManager):
         spike_unit_ids = self.spike_unit_ids()
 
         # filter passed spike pairs for available spike units
-        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_ids)
+        valid_spike_pairs = _validate_spike_pairs(spike_pairs, spike_unit_ids)
 
         self.pair_synaptic_strength = {}
         for pre_synaptic_neuron_id, post_synaptic_neuron_id in valid_spike_pairs:
@@ -556,15 +557,14 @@ class SynaptiConn(SpikeManager):
             Dictionary containing cross-correlograms and bins for all pairs of spike trains.
         """
 
-        # get spike unit ids
-        spike_unit_ids = self.spike_unit_ids()
+        # validate spike pairs
+        valid_spike_pairs = _validate_spike_pairs(spike_pairs, self.spike_unit_ids())
 
-        # filter passed spike pairs for available spike units
-        valid_spike_pairs, _ = self._filter_spike_pairs(spike_pairs, spike_unit_ids)
-        valid_spike_units = self._get_valid_spike_unit_ids(spike_pairs, spike_unit_ids)
+        # unpack the spike pairs to find spike IDs
+        spike_ids = flatten_list(valid_spike_pairs)
+        # and retrieve spike times and compute cross-correlogram data
+        spike_times = self.get_spike_times_for_units(spike_ids)
 
-        # retrieve spike times and compute cross-correlogram data
-        spike_times = self.get_spike_times_for_units(valid_spike_units)
         crosscorrelogram_data = compute_crosscorrelogram(
             spike_times, valid_spike_pairs, bin_size_t=self.bin_size_t, max_lag_t=self.max_lag_t)
 
@@ -594,18 +594,18 @@ class SynaptiConn(SpikeManager):
             If the method is not implemented in the current package version.
         """
 
-        assert spike_pair is not None, "Please provide a valid spike pair to plot."
-        assert isinstance(spike_pair, tuple), "Spike pair must be a tuple."
-
         if not hasattr(self, 'pair_synaptic_strength'):
             raise DataError("No synaptic strength data found. Please run "
                             "the synaptic_strength method first.")
+
+        # validate spike pair selection
+        valid_spike_pair = _validate_spike_pairs([spike_pair], self.spike_unit_ids())
 
         # check if the method is implemented
         # note that only the 'cross-correlation' method is currently implemented
         # and for future versions, this will be expanded to include other types of correlation methods
         if self.method == 'cross-correlation':
-            plot_ccg_synaptic_strength(self.pair_synaptic_strength, spike_pair, self.time_unit, **kwargs)
+            plot_ccg_synaptic_strength(self.pair_synaptic_strength, valid_spike_pair, self.time_unit, **kwargs)
         else:
             raise NotImplementedError("Only the 'cross-correlation' method is currently"
                                       " implemented for plot. Please choose this method.")
@@ -627,15 +627,10 @@ class SynaptiConn(SpikeManager):
         The bin size and maximum lag are set by the object parameters.
         """
 
-        # get spike unit ids
-        spike_unit_ids = self.spike_unit_ids()
+        spike_times = self.get_spike_times_for_units(spike_units)
 
-        # find valid spike units to plot
-        spike_units_to_collect = self._get_valid_spike_unit_ids(spike_units, spike_unit_ids)
-        print(f'Plotting autocorrelogram for spike units: {spike_units_to_collect}')
-
-        # retrieve spike times for the selected spike units
-        spike_times = self.get_spike_times_for_units(spike_units_to_collect)
+        if len(spike_times) == 0:
+            raise SpikeTimesError("No valid spike units to plot.")
 
         # plot the autocorrelogram
         plot_acg(spike_times,
@@ -688,80 +683,6 @@ class SynaptiConn(SpikeManager):
                                       f"Error with spike units: {e}")
 
         plot_spiketrain(spktimes_plotting, **kwargs)
-
-
-    def _get_valid_spike_unit_ids(self, spike_units: list = None,
-                                  spike_unit_ids: list = None):
-        """ Validate and filter spike unit ids.
-
-        Note that this method is used to filter spike units
-        against the available spike unit IDs.
-
-        Parameters
-        ----------
-        spike_units : list
-            List of spike units to select for.
-        spike_unit_ids : list
-            List of spike unit labels.
-
-        Returns
-        -------
-        spike_unit_ids : list
-            List of valid spike units to plot.
-        """
-
-        if spike_units is None:
-            raise SpikeTimesError('Please provide spike units to plot.')
-
-        if not isinstance(spike_units, np.ndarray):
-            spike_units = np.array(spike_units)
-
-        spike_unit_ids = spike_units[np.isin(spike_units, spike_unit_ids)]
-        if len(spike_unit_ids) == 0:
-            raise SpikeTimesError('No valid spike units to plot.')
-
-        return spike_unit_ids
-
-
-    def _filter_spike_pairs(self, spike_pairs: List[Tuple] = None,
-                            spike_unit_ids: list = None):
-        """ Filter spike pairs for valid spike units.
-
-        Parameters
-        ----------
-        spike_pairs : List[Tuple]
-            List of spike pairs.
-        spike_unit_ids : list
-            List of spike unit labels.
-
-        Returns
-        -------
-        valid_spike_pairs : List[Tuple]
-            List of valid spike pairs.
-        invalid_spike_pairs : List[Tuple]
-            List of invalid spike pairs.
-        """
-
-        # check if spike pairs are valid
-        spike_pairs = _spike_pairs_check(spike_pairs)
-
-        # filter passed spike pairs for available spike units
-        valid_spike_units = self._get_valid_spike_unit_ids(spike_pairs, spike_unit_ids)
-
-        invalid_spike_pairs = [pair for pair in spike_pairs if pair[0] not in valid_spike_units \
-                               or pair[1] not in valid_spike_units]
-        valid_spike_pairs = [pair for pair in spike_pairs if pair[0] in valid_spike_units \
-                             and pair[1] in valid_spike_units]
-
-        if invalid_spike_pairs:
-            warnings.warn(
-                f"Invalid spike pairs found: {invalid_spike_pairs}. These pairs will be ignored.",
-                UserWarning
-            )
-        if not valid_spike_pairs:
-            raise SpikeTimesError("No valid spike pairs found for the given spike unit labels.")
-
-        return valid_spike_pairs, invalid_spike_pairs
 
 
     def _bin_size_check(self, bin_size_t, max_lag_t):

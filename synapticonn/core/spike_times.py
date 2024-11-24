@@ -140,10 +140,33 @@ class SpikeManager():
 
         Returns
         -------
-        spike_times : dict
-            Dictionary containing spike times for the selected units.
+        filtered_spike_times : dict
+            Filtered dictionary containing spike times for the selected units.
+
+        Notes
+        -----
+        By default, this method returns all spike times if no units are specified.
+        If specific units are specified, then the method will return the spike times
+        for those units only.
         """
-        return {key: self.spike_times[key] for key in spike_units_to_collect}
+
+        if not isinstance(spike_units_to_collect, list):
+            raise TypeError("Expected list of spike units. "
+                            f"Got {type(spike_units_to_collect)} instead.")
+
+        # return all spike times if no units are specified
+        if spike_units_to_collect is None:
+            print("No units specified. Returning all spike times.")
+            filtered_spike_times = self.spike_times
+
+        # return the selected units
+        else:
+            try:
+                filtered_spike_times = {key: self.spike_times[key] for key in spike_units_to_collect}
+            except KeyError as e:
+                raise SpikeTimesError(f"Unit {e} not found in the spike times dictionary.")
+
+        return filtered_spike_times
 
 
     def spike_unit_quality(self,
