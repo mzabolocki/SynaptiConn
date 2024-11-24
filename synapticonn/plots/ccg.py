@@ -68,7 +68,16 @@ def plot_ccg(cross_correlograms_data,
         bin_size_t = bins[1] - bins[0]
 
         ax[count].bar(bins[:-1], cross_corr, width=bin_size_t, align='center', color=CCG_COLORS['pairs'], **kwargs)
-        ax[count].set_title(f'Pair {pair_id}')
+
+        try:
+            pair_id_iter = tuple(pair_id)
+        except TypeError:
+            pair_id_iter = (pair_id,)
+
+        pair_id_str = ", ".join(map(str, map(int, pair_id_iter)))
+
+        print(f'Pair {pair_id_str} cross-correlogram plotted.')
+        ax[count].set_title(f'Pair {pair_id_str}')
 
         if show_axes:
             ax[count].set_xlabel(TIME_UNIT_TIMELAG_LABELS[time_unit])
