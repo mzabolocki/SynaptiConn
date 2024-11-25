@@ -3,7 +3,7 @@ SynaptiConn
 =========================
 
 
-|ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
+|ProjectStatus| |Version| |BuildStatus| |Docs| |License| |PythonVersions|
 
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
    :target: https://www.repostatus.org/#active
@@ -32,6 +32,7 @@ SynaptiConn
 .. image:: https://github.com/mzabolocki/SynaptiConn/blob/main/docs/img/synapti_conn_logo_v2.png
    :alt: SynaptiConn
    :align: center
+   :width: 60%
 
 
 Overview
@@ -135,11 +136,11 @@ An example how to use the package is shown below:
     # fit the model and report the monosynaptic connection results
     snc.report(spike_pairs)
 
-An example of the report output is shown below:
+.. An example of the report output is shown below:
 
-.. image:: https://github.com/mzabolocki/SynaptiConn/blob/main/docs/img/report_summary.png
-   :alt: report_summary
-   :align: center
+.. .. image:: https://github.com/mzabolocki/SynaptiConn/blob/main/docs/img/report_summary.png
+..    :alt: report_summary
+..    :align: center
 
 **Define the settings**
 
