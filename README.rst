@@ -9,24 +9,24 @@ SynaptiConn
    :target: https://www.repostatus.org/#active
    :alt: project status
 
-.. |Version| image:: https://img.shields.io/pypi/v/fooof.svg
-   :target: https://pypi.python.org/pypi/fooof/
+.. |Version| image:: https://img.shields.io/pypi/v/synapticonn.svg
+   :target: https://pypi.python.org/pypi/synapticonn/
    :alt: version
 
-.. |BuildStatus| image:: https://github.com/fooof-tools/fooof/actions/workflows/build.yml/badge.svg
-   :target: https://github.com/fooof-tools/fooof/actions/workflows/build.yml
+.. |BuildStatus| image:: https://github.com/mzabolocki/SynaptiConn/actions/workflows/tests.yml/badge.svg
+   :target: https://github.com/mzabolocki/SynaptiConn/actions/workflows/tests.yml
    :alt: build status
 
-.. |Coverage| image:: https://codecov.io/gh/fooof-tools/fooof/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/fooof-tools/fooof
-   :alt: coverage
+.. .. |Coverage| image:: https://codecov.io/gh/synapticonn/synapticonn/branch/main/graph/badge.svg
+..    :target: https://codecov.io/gh/synapticonn/synapticonn
+..    :alt: coverage
 
-.. |License| image:: https://img.shields.io/pypi/l/fooof.svg
+.. |License| image:: https://img.shields.io/pypi/l/synapticonn.svg
    :target: https://opensource.org/licenses/Apache-2.0
    :alt: license
 
-.. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/fooof.svg
-   :target: https://pypi.python.org/pypi/fooof/
+.. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/synapticonn.svg
+   :target: https://pypi.python.org/pypi/synapticonn/
    :alt: python versions
 
 
@@ -50,7 +50,7 @@ Installation
 To install the stable version of SynaptiConn, you can use pip:
 
 SynaptiConn (stable version)
-~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
 
@@ -83,14 +83,14 @@ To install an editable version, download the development version as above, and r
     $ pip install -e .
 
 Documentation
---------
+--------------
 The 'synapticonn' package includes a full set of code documentation.
 
 To see the documentation for the candidate release, see
 `here <https://mzabolocki.github.io/SynaptiConn/>`_.
 
 Dependencies
-------------
+-------------
 
 `synapticonn` is written in Python, and requires Python >= 3.7 to run.
 
@@ -156,7 +156,7 @@ These provide a more detailed overview of how to use the package, and how to int
 Documentation will be maintained and updated regularly, and we welcome feedback and suggestions for improvements.
 
 Spike-train data
----------
+-----------------
 SynaptiConn is designed to work with spike-train data, which can be provided in the form of a dict of spike times for each neuron.
 These are to be organised as a dictionary, where the keys are the neuron IDs, and the values are arrays of spike times.
 
@@ -169,8 +169,3 @@ If unsure of the data quality, SynaptiConn has simple quality control checks bui
 
 *In future versions, we plan to include additional spike-time data types, such as NWB files, and other file formats. Further, 
 we plan to include additional spike-time data loaders, to make it easier to load and organize spike-time data, along with additional quality control checks.*
-
-
-
-.. ## References
-.. 1. https://star-protocols.cell.com/protocols/3438
