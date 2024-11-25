@@ -8,8 +8,8 @@ The tests here are not strong enough to be considered a full test suite.
 They serve rather as 'smoke tests', for if anything fails completely.
 """
 
-import synapticonn
-import unittest
+from synapticonn import SynaptiConn
+import pytest
 import pathlib
 import os
 import pandas as pd
@@ -20,25 +20,27 @@ from tests.tutils import test_data_path, load_spiketimes
 ################################
 
 
-class TestLoader(unittest.TestCase):
-    """Test the spike time loader functions in synapticonn."""
+@pytest.mark.parametrize("data_type", ['.mat', 'spikeinterface'])
+def test_base_init(data_type):
+    """ Test the SynaptiConn model object with different spike time data types. """
 
-    def setUp(self):
-        """ Set up the test. """
+    # load spike times based on the data type
+    spiketimes = load_spiketimes(data_type)
 
-        self.mat_spiketimes = load_spiketimes('.mat')
-        self.spikeinterface_spiketimes = load_spiketimes('spikeinterface')
+    # initialize the SynaptiConn model
+    model = SynaptiConn(
+        spike_times=spiketimes,
+        bin_size_t=0.0005,
+        time_unit='s',
+        max_lag_t=0.20,
+        srate=20_000,
+        recording_length_t=1000,
+    )
 
-        # initialize the model object
-        self.snc = synapticonn.SynaptiConn(self.mat_spiketimes,
-                                           bin_size_t=0.0005,
-                                           time_unit='s',
-                                           max_lag_t=0.20,
-                                           srate=20_000,
-                                           recording_length_t=1000)
-
-    def test_model_object(self):
-        """ Test the model object. """
-
-        self.assertIsInstance(self.snc, synapticonn.SynaptiConn)
-
+    # assert that the model is correctly initialized
+    assert isinstance(model, SynaptiConn)
+    assert model.bin_size_t == 0.0005
+    assert model.time_unit == 's'
+    assert model.max_lag_t == 0.20
+    assert model.srate == 20_000
+    assert model.recording_length_t == 1000
