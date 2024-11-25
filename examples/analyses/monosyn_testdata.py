@@ -103,10 +103,10 @@ print(spk_unit_report)
 # Low contamination (or no contamination) in the refractory periods are important
 # for correct assesments of spike-units and their monosynaptic connections.
 #
+# For further quality metrics, and explanations, please refer to the following: https://github.com/SpikeInterface/spikeinterface/blob/main/src/spikeinterface/qualitymetrics/misc_metrics.py#L1183.
+#
 # **NOTE** here, more simple and core metric assessments are performed.
 # In the future, these will be extended.
-#
-# For further quality metrics, and explanations, please refer to the following: https://github.com/SpikeInterface/spikeinterface/blob/main/src/spikeinterface/qualitymetrics/misc_metrics.py#L1183.
 #
 
 ################################################################
@@ -228,19 +228,20 @@ snc.report_correlogram_settings()
 # - `First, compute synaptic strength for a set of neuron IDs. If a given unit consistently fires after a second unit, indicated by a peak in the CCG, there is high chance that these cells are functionally linked either directly through an excitatory synaptic connection or indirectly through a third neuron providing a common input.`
 # - `To compute synaptic strength, the firing of a single unit in a pair was jittered across a number of iterations (num_iterations) within a time range (jitter_range_ms).`
 # - `These were used to calculate a confidence interval (CI) between 1% and 99%. If the real CCG peak passed the 99% CI, the corresponding functional connection would be considered significant and not random.`
-# - `A z-score was then performed using the following equation: `Z = x_real - mean_jitter / std_jitter``
+# - `A z-score was then performed using the following equation: Z = x_real - mean_jitter / std_jitter`
 #
 #
 # Note that the output contains the following keys:
-# - 1. ccg bins
-# - 2. ccg counts (from original spike trains)
-# - 3. ccg counts (post jitter)
-# - 4. synaptic strength
-# - 5. high confidence interval (99%), calculated on jittered ccg
-# - 6. low confidence interval (1%), calculation on jittered ccg
-# - 7. ccg counts (within jitter range window)
-# - 8. low confidence interal (1%), within jitter range window
-# - 9. high confidence interal (99%), within jitter range window
+#
+# - `ccg bins``
+# - `ccg counts (from original spike trains)`
+# - `ccg counts (post jitter)`
+# - `synaptic strength`
+# - `high confidence interval (99%), calculated on jittered ccg`
+# - `low confidence interval (1%), calculation on jittered ccg`
+# - `ccg counts (within jitter range window)`
+# - `low confidence interal (1%), within jitter range window`
+# - `high confidence interal (99%), within jitter range window`
 #
 
 ################################################################
@@ -262,11 +263,11 @@ synaptic_strength_data[pair]
 
 ################################################################
 
-snc.plot_synaptic_strength(spike_pair=(0,6))
+snc.plot_synaptic_strength(spike_pair=(0, 6))
 
 ################################################################
 #
-# **Next, check the connection type.** 
+# **Next, check the connection type.**
 #
 # Here, we can perform a putative detection using the z-score (synaptic strength) output.
 #
@@ -306,6 +307,7 @@ merged_df
 ################################################################
 # Fit & report
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#
 # Alternatively, there is a simpler method to compute monosynaptic connections. Simply, monosynaptic connections can be inferred in one line. This combines the period methods.
 #
 # For feature extractions, this can be performed separately and combined.
@@ -320,6 +322,7 @@ connections
 ################################################################
 #
 # Summarize the data outputs using report. This is a convience method that calls a series of methods:
+#
 # - `fit()`
 # - `print_results()`
 #
@@ -339,13 +342,15 @@ snc.report(spike_pairs, synaptic_strength_threshold=5, num_iterations=1000)
 # To do so, there are several in-built modules to check the quality of the outputs. These are based on the type of connections and time-lag threshold estimates.
 #
 # **Acceptance criteria**
-# - `1. Excitatory connections between cells located near each other should occur within 2 ms.`
-# - `2. The monosynaptic peak should also be shaped as a double expontential function with a fast rise and a slower decay. Inhibitory connections have a slower decay, and should be factored into your QC metrics.`
+#
+# - `Excitatory connections between cells located near each other should occur within 2 ms.`
+# - `The monosynaptic peak should also be shaped as a double expontential function with a fast rise and a slower decay. Inhibitory connections have a slower decay, and should be factored into your QC metrics.`
 #
 # **Rejection criteria**
-# - `1. If the CCG shows a maintained refractory period, it suggests that the spikes should have been merged in the spike-sorting process. Hence, if a monosynaptic peak is seen, then it is likely because it is the same neuron which has not been correctly merged.`
-# - `2. If the CCG peak coincides with the ACG peak (usually slower than 2 ms), the unit likely should have been merged in the spike sorting process, of the cell-pair is probably contaminated with a 3rd pair.`
-# - `3. A broad centrally aligned CCG peak indicates common drive, and therefore should be rejected. This is often seen when comparing two cells located at different shanks (> hundreds of um apart). This can be difficult to differentiate.`
+#
+# - `If the CCG shows a maintained refractory period, it suggests that the spikes should have been merged in the spike-sorting process. Hence, if a monosynaptic peak is seen, then it is likely because it is the same neuron which has not been correctly merged.`
+# - `If the CCG peak coincides with the ACG peak (usually slower than 2 ms), the unit likely should have been merged in the spike sorting process, of the cell-pair is probably contaminated with a 3rd pair.`
+# - `A broad centrally aligned CCG peak indicates common drive, and therefore should be rejected. This is often seen when comparing two cells located at different shanks (> hundreds of um apart). This can be difficult to differentiate.`
 #
 
 ################################################################

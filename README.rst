@@ -4,7 +4,7 @@ SynaptiConn
 
 .. raw:: html
 
-   <img src="docs/img/synapti_conn_logo_v2.png" style="width: 150px;">
+   <img src="docs/img/synapti_conn_logo_v2.png" style="width: 150px; float: right;">
 
 |ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
 
