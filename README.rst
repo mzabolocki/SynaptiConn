@@ -133,12 +133,12 @@ An example how to use the package is shown below:
     # fit the model and report the monosynaptic connection results
     snc.report(spike_pairs)
 
-Example output for a report of a computational analysis of single-unit spike-train data is shown below:
+.. Example output for a report of a computational analysis of single-unit spike-train data is shown below:
 
-.. image:: docs/img/report_summary.png  # to change when live with full path
-   :alt: report_summary
-   :align: center
-   :width: 400px
+.. .. image:: docs/img/report_summary.png  # to change when live with full path
+..    :alt: report_summary
+..    :align: center
+..    :width: 400px
 
 **Note that a full set of examples and tutorials are provided in the documentation.
 These provide a more detailed overview of how to use the package, and how to interpret the results.**
