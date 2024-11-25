@@ -6,7 +6,7 @@ SynaptiConn
 
    <img src="docs/img/synapti_conn_logo_v2.png" style="width: 150px; float: right;">
 
-|ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
+|ProjectStatus| |Version| |BuildStatus| |Coverage| |PythonVersions|
 
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
    :target: https://www.repostatus.org/#active
@@ -23,10 +23,6 @@ SynaptiConn
 .. |Coverage| image:: https://codecov.io/gh/fooof-tools/fooof/branch/main/graph/badge.svg
    :target: https://codecov.io/gh/fooof-tools/fooof
    :alt: coverage
-
-.. |License| image:: https://img.shields.io/pypi/l/fooof.svg
-   :target: https://opensource.org/licenses/Apache-2.0
-   :alt: license
 
 .. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/fooof.svg
    :target: https://pypi.python.org/pypi/fooof/
