@@ -32,7 +32,7 @@ SynaptiConn
 .. image:: https://github.com/mzabolocki/SynaptiConn/blob/main/docs/img/synapti_conn_logo_v2.png
    :alt: SynaptiConn
    :align: center
-   :width: 60%
+   :width: 40%
 
 
 Overview
