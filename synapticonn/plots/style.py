@@ -1,11 +1,10 @@
 """ Style and aesthetics definitions for plots. """
 
 import pathlib
+import pkg_resources
 
-from itertools import cycle
 from functools import wraps
 
-from matplotlib.pyplot import style
 import matplotlib.pyplot as plt
 
 
@@ -17,7 +16,7 @@ def apply_plot_style(style_path=None):
     """Decorator to apply matplotlib style before a plotting function."""
 
     if style_path is None:
-        style_path = pathlib.Path('synapticonn', 'plots', 'plots.mplstyle')
+        style_path = pkg_resources.resource_filename('synapticonn.plots', 'settings.mplstyle')
 
     def decorator_plot_style(func):
         @wraps(func)
