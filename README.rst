@@ -13,9 +13,13 @@ SynaptiConn
    :target: https://pypi.python.org/pypi/synapticonn/
    :alt: version
 
-.. |BuildStatus| image:: https://github.com/mzabolocki/SynaptiConn/actions/workflows/tests.yml/badge.svg
-   :target: https://github.com/mzabolocki/SynaptiConn/actions/workflows/tests.yml
+.. |BuildStatus| image:: https://github.com/mzabolocki/SynaptiConn/actions/workflows/build.yml/badge.svg
+   :target: https://github.com/mzabolocki/SynaptiConn/actions/workflows/build.yml
    :alt: build status
+
+.. |Docs| image:: https://github.com/mzabolocki/SynaptiConn/actions/workflows/docs.yml/badge.svg
+   :target: https://github.com/mzabolocki/SynaptiConn/actions/workflows/docs.yml
+   :alt: docs status
 
 .. .. |Coverage| image:: https://codecov.io/gh/synapticonn/synapticonn/branch/main/graph/badge.svg
 ..    :target: https://codecov.io/gh/synapticonn/synapticonn

@@ -1,4 +1,4 @@
-name: Deploy sphinx docs
+name: docs
 
 on:
   push:
