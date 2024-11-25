@@ -121,7 +121,11 @@ An example how to use the package is shown below:
     from synapticonn import SynaptiConn
 
     # initialize the model object
-    snc = SynaptiConn(spike_times, method="cross-correlation", time_unit="ms", srate=30_000, recording_length_t=600*1000)
+    snc = SynaptiConn(spike_times,
+                      method="cross-correlation",
+                      time_unit="ms",
+                      srate=30_000,
+                      recording_length_t=600*1000)
  
     # set the spike unit ids to be used for the analysis
     spike_pairs = [(0, 6), (0, 7), (0, 8), (0, 9)]
@@ -134,7 +138,7 @@ Example output for a report of a computational analysis of single-unit spike-tra
 .. image:: docs/img/report_summary.png  # to change when live with full path
    :alt: report_summary
    :align: center
-   :width: 100px
+   :width: 400px
 
 **Note that a full set of examples and tutorials are provided in the documentation.
 These provide a more detailed overview of how to use the package, and how to interpret the results.**
