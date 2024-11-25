@@ -14,9 +14,9 @@ SynaptiConn
 
   ----------------
 
-.. figure::  docs/img/synapticonn_logo.png
-   :align:   center
-   :width: 150ps
+.. figure::  docs/img/synapti_conn_logo_v2.png
+   :align: center
+   :width: 150px
 
 
 Overview
