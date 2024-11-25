@@ -146,12 +146,6 @@ An example how to use the package is shown below:
     # fit the model and report the monosynaptic connection results
     snc.report(spike_pairs)
 
-.. An example of the report output is shown below:
-
-.. .. image:: https://github.com/mzabolocki/SynaptiConn/blob/main/docs/img/report_summary.png
-..    :alt: report_summary
-..    :align: center
-
 **Define the settings**
 
 The `SynaptiConn` object is initialized with the following settings:
