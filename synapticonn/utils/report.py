@@ -102,7 +102,7 @@ def gen_model_results_str(connection_types, concise, params):
     ]
 
     # add excitatory connection types if exc_pairs exists
-    if exc_pairs:
+    if exc_count > 0:
         str_lst.append(f'{exc_count} excitatory connections were found:')
         str_lst.extend(map(str, exc_pairs))
     else:
@@ -111,7 +111,7 @@ def gen_model_results_str(connection_types, concise, params):
     str_lst.append('')
 
     # add inhibitory connections
-    if inh_pairs:
+    if inh_count > 0:
         str_lst.append(f'{inh_count} inhibitory connections were found:')
         str_lst.extend(map(str, inh_pairs))
     else:

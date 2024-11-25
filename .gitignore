@@ -71,3 +71,6 @@ coverage.xml
 
 # Examples / dev
 examples/batch_processing/notebooks/**
+
+# WIP
+examples/deprecated/**

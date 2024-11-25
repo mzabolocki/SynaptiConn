@@ -69,12 +69,6 @@ Development version
     cd SynaptiConn
     pip install .
 
-    # test package import
-    python
-    >>> import synapticonn
-    >>> print(synapticonn.__version__)
-
-
 Documentation
 --------
 The 'synapticonn' package includes a full set of code documentation.

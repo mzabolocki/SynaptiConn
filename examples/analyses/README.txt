@@ -1,4 +1,4 @@
-Plotting
---------
+Test datasets
+--------------
 
-Example demonstrating the plot functions.
+Tests of monosynaptic connection analysis using existing published datasets.
