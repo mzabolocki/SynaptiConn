@@ -4,9 +4,10 @@ SynaptiConn
 
 .. raw:: html
 
-   <div style="text-align: center; margin-top: 20px;">
+   <div style="display: flex; justify-content: center; align-items: center; margin-top: 20px;">
        <img src="docs/img/synapti_conn_logo_v2.png" style="width: 180px;" alt="SynaptiConn Logo">
    </div>
+
 
 
 |ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
