@@ -1,9 +1,9 @@
 """
-Monosynaptic pair analysis demo
+Single-unit spike data demo
 ===============================
 
-An example analysis applied to single-unit spiketrain data, demonstrating
-best practices for monosynaptic pair analysis with the 'synapticonn' package.
+An example analysis applied to single-unit spike-sorted spiketrain data, demonstrating
+best practices for monosynaptic pair analysis with the synapticonn package.
 """
 
 #############################################################
@@ -14,6 +14,7 @@ best practices for monosynaptic pair analysis with the 'synapticonn' package.
 #
 # Here, we use an existing published dataset of single-unit spiketrains
 # recorded from the primary visual cortex of an anesthetized mouse.
+#
 # The dataset is available via the link: 10.1016/j.celrep.2023.113475
 #
 

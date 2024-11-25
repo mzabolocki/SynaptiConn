@@ -5,7 +5,7 @@ SynaptiConn
 .. image:: docs/img/synapti_conn_logo_v2.png
    :alt: SynaptiConn
    :align: right
-   :width: 100px
+   :width: 150px
 
 |ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
 
