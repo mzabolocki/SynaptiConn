@@ -30,7 +30,7 @@ SynaptiConn
    :alt: python versions
 
 
-
+----
 
 
 
@@ -47,6 +47,7 @@ SynaptiConn
 Overview
 --------
 SynaptiConn is a python package for inferring monosynaptic connections from single-unit spike-train data.
+
 The package provides a set of tools for analyzing spike-train data, including spike-train cross-correlation analysis, and for inferring monosynaptic connections using a model-based approach.
 The package is designed to be user-friendly and flexible, and can be used to analyze spike-train data from a variety of experimental paradigms.
 
