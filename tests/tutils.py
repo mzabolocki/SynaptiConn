@@ -37,7 +37,11 @@ def load_mat_file(data_path):
     """ Load the .mat file and return the spiketimes. """
 
     data = scipy.io.loadmat(data_path)
-    spiketimes = {i: data['unit_t'][0][i].T[0] for i in range(len(data['unit_t'][0]))}
+    num_units = len(data['unit_t'][0])
+
+    spiketimes = {}
+    for i in range(num_units):
+        spiketimes[i] = data['unit_t'][0][i].T[0]
 
     return spiketimes
 
@@ -48,7 +52,15 @@ def load_spikeinterface_file(data_path):
     if data_path.suffix != '.pkl':
         raise ValueError(f"File is not a pickle file: {data_path}")
 
-    return np.load(data_path, allow_pickle=True)
+    data = np.load(data_path, allow_pickle=True)
+
+    spiketimes = data['spike_time_set']
+
+    # convert the spiketimes to milliseconds
+    for i in spiketimes.keys():
+        spiketimes[i] = (spiketimes[i] / 30000) * 1000
+
+    return spiketimes
 
 
 def load_spiketimes(data_file_type: str) -> pd.DataFrame:
