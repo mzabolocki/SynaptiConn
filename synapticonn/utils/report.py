@@ -57,8 +57,8 @@ def gen_model_results_str(connection_types, concise, params):
 
         # count the number of excitatory and inhibitory connections
         connections = pd.DataFrame(connection_types).T
-        exc_connections = connections[connections.putative_exc_connection_type == 'excitatory']
-        inh_connections = connections[connections.putative_exc_connection_type == 'inhibitory']
+        exc_connections = connections[connections.putative_exc_connection_type == 'excitatory monosynaptic']
+        inh_connections = connections[connections.putative_exc_connection_type == 'inhibitory monosynaptic']
 
         exc_count = len(exc_connections)
         inh_count = len(inh_connections)
