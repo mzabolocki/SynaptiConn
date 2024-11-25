@@ -1,4 +1,3 @@
-# requirements for building the documentation site
 ghp-import
 sphinx
 sphinx-gallery
