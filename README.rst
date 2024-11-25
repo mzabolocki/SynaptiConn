@@ -32,7 +32,7 @@ SynaptiConn
 
 .. raw:: html
 
-   <div align="center" style="margin-top: 1000px; text-align: center;">
+   <div align="center" style="margin-top: 100px; text-align: center;">
        <img src="https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png" 
             alt="SynaptiConn" style="width: 40%; display: block; margin: auto;">
    </div>
