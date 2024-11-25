@@ -107,7 +107,7 @@ To see the documentation for the candidate release, see
 Dependencies
 -------------
 
-`synapticonn` is written in Python, and requires Python >= 3.7 to run.
+`synapticonn` is written in Python, and requires Python >= 3.8 to run.
 
 It requires the following dependencies:
 
