@@ -99,8 +99,8 @@ html_theme_options = {
     'navbar_sidebarrel': False,
     'navbar_links': [
         ("API", "api"),
-        ("GitHub", "https://github.com/mzabolocki/SynaptiConn", True),
         ("Examples", "auto_examples/index"),
+        ("GitHub", "https://github.com/mzabolocki/SynaptiConn", True),
     ],
 
     # Set the page width to not be restricted to hardset value
@@ -128,8 +128,8 @@ sphinx_gallery_conf = {
     'examples_dirs': ['../examples'],
     'gallery_dirs': ['auto_examples'],
     'subsection_order': ExplicitOrder(['../examples/analyses']),
-    # 'within_subsection_order': FileNameSortKey,
-    'default_thumb_file': 'img/synapti_conn_logo_v2.png',
+    'within_subsection_order': FileNameSortKey,
+    'default_thumb_file': os.path.abspath('img/synapti_conn_logo_v2.png'),
     'backreferences_dir': 'generated',   # Where to drop linking files between examples & API
     'doc_module': ('synapticonn',),
     'reference_url': {'synapticonn': None},
