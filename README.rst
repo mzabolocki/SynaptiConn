@@ -32,18 +32,17 @@ SynaptiConn
 
 .. raw:: html
 
-   <div align="center">
-   <div style="text-align:center">
-
-.. image:: https://github.com/mzabolocki/SynaptiConn/blob/main/docs/img/synapti_conn_logo_v2.png
-   :alt: SynaptiConn
-   :width: 40%
-   :align: center
+   <div align="center" style="margin-top: 50px;">
+       <img src="https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png" 
+            alt="SynaptiConn" style="width: 40%; text-align: center;">
+   </div>
 
 
 
+.. raw:: html
 
-
+   <div align="left">
+   <div style="text-align:left">
 
 Overview
 --------
