@@ -33,29 +33,32 @@ def test_data_path(data_file_type: str) -> pathlib.Path:
     return data_path
 
 
-def load_spiketimes(data_file_type: str) -> pd.DataFrame:
-    """Load the spike times from the data file."""
+def load_mat_file(data_path):
+    """ Load the .mat file and return the spiketimes. """
 
-    # --- mat file ---
-    if data_file_type == '.mat':
-
-        data_path = test_data_path(data_file_type)
-
-        # open mat file
-        data = scipy.io.loadmat(data_path)
-
-        # re-organize data
-        num_units = len(data['unit_t'][0])
-        spiketimes = {}
-        for i in range(num_units):
-            spiketimes[i] = data['unit_t'][0][i].T[0]
-
-    # --- spikeinterface ---
-    elif data_file_type == 'spikeinterface':
-        data_path = test_data_path(data_file_type)
-        spiketimes = np.load(data_path, allow_pickle=True)
-
-    else:
-        raise ValueError(f"Unknown data file type: {data_file_type}")
+    data = scipy.io.loadmat(data_path)
+    spiketimes = {i: data['unit_t'][0][i].T[0] for i in range(len(data['unit_t'][0]))}
 
     return spiketimes
+
+
+def load_spikeinterface_file(data_path):
+    """ Load the *.pkl spikeinterface file and return the spiketimes. """
+
+    if data_path.suffix != '.pkl':
+        raise ValueError(f"File is not a pickle file: {data_path}")
+
+    return np.load(data_path, allow_pickle=True)
+
+
+def load_spiketimes(data_file_type: str) -> pd.DataFrame:
+    """ Load the spiketimes from the test data directory. """
+
+    data_path = test_data_path(data_file_type)
+
+    if data_file_type == '.mat':
+        return load_mat_file(data_path)
+    elif data_file_type == 'spikeinterface':
+        return load_spikeinterface_file(data_path)
+    else:
+        raise ValueError(f"Unknown data file type: {data_file_type}")
