@@ -9,8 +9,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest] # windows-latest, ubuntu-latest
-        python-version: ['3.8', '3.9', '3.10'] # '3.11'
+        os: [macos-latest, windows-latest, ubuntu-latest]
+        python-version: ['3.8', '3.9', '3.10']
 
     steps:
     - uses: actions/checkout@v2
@@ -25,3 +25,10 @@ jobs:
     - name: Test with tox
       run: |
         tox
+
+    # - name: Upload test results
+    #   if: always()
+    #   uses: actions/upload-artifact@v3
+    #   with:
+    #     name: test-results
+    #     path: .tox/log
