@@ -139,7 +139,6 @@ An example of the report output is shown below:
 
 .. image:: https://github.com/mzabolocki/SynaptiConn/blob/main/docs/img/report_summary.png
    :alt: report_summary
-   :width: 50%
    :align: center
 
 **Define the settings**
