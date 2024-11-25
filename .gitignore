@@ -39,16 +39,12 @@ dist/
 todo.txt
 docs/_build/
 logs/
+deploy_venv/**
 
 # Exports
 figure_exports/**
 exports/**
 analysis_exports/**
-
-# Data / outputs 
-TSC2_Ephys_Data/*
-TSC2_EPhys_Paper/*
-TSC2_EPhys_Coderepo/*
 
 # Jupyter Notebooks
 .ipynb_checkpoints
