@@ -30,9 +30,10 @@ SynaptiConn
    :alt: python versions
 
 
-----
+.. raw:: html
 
-
+   <div align="center">
+   <div style="text-align:center">
 
 .. image:: https://github.com/mzabolocki/SynaptiConn/blob/main/docs/img/synapti_conn_logo_v2.png
    :alt: SynaptiConn
