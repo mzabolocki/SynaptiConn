@@ -121,7 +121,9 @@ An example how to use the package is shown below:
                       method="cross-correlation",
                       time_unit="ms",
                       srate=30_000,
-                      recording_length_t=600*1000)
+                      recording_length_t=600*1000,
+                      bin_size_t=1,
+                      max_lag_t=100,)
  
     # set the spike unit ids to be used for the analysis
     spike_pairs = [(0, 6), (0, 7), (0, 8), (0, 9)]
@@ -129,12 +131,24 @@ An example how to use the package is shown below:
     # fit the model and report the monosynaptic connection results
     snc.report(spike_pairs)
 
-.. Example output for a report of a computational analysis of single-unit spike-train data is shown below:
+**Define the settings**
 
-.. .. image:: docs/img/report_summary.png  # to change when live with full path
-..    :alt: report_summary
-..    :align: center
-..    :width: 400px
+The `SynaptiConn` object is initialized with the following settings:
+
+- `spike_times` : dict
+    A dictionary of spike times for each neuron, where the keys are the neuron IDs, and the values are arrays of spike times.
+- `method` : str
+      The method to use for inferring connections. Currently, only 'cross-correlation' is supported. This will be expanded in future versions.
+- `time_unit` : str
+      The time unit of the spike times. Currently, only 'ms' is supported. This will be expanded in future versions.
+- `srate` : float
+      The sampling rate of the spike times, in Hz.
+- `recording_length_t` : float
+      The length of the recording, in the same time unit as the spike times.
+- `bin_size_t` : float
+      The size of the bins to use for the cross-correlation analysis, in the same time unit as the spike times.
+- `max_lag_t` : float
+      The maximum lag to use for the cross-correlation analysis, in the same time unit as the spike times.
 
 **Note that a full set of examples and tutorials are provided in the documentation.
 These provide a more detailed overview of how to use the package, and how to interpret the results.**
