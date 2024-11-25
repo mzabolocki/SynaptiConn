@@ -34,7 +34,7 @@ SynaptiConn
 
    <div align="center" style="margin-top: 400px;">
        <img src="https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png" 
-            alt="SynaptiConn" style="width: 40%; text-align: center;">
+            alt="SynaptiConn" style="width: 40%; display: block; margin: auto;">
    </div>
 
 
