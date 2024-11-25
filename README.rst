@@ -64,10 +64,18 @@ Development version
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: bash
-
+    
     git clone https://github.com/mzabolocki/SynaptiConn
-    cd synapticonn
+    cd SynaptiConn
     pip install .
+
+    # check the version
+    pip list | grep synapticonn
+    
+    # test package import
+    python
+    >>> import synapticonn
+    >>> print(synapticonn.__version__)
 
 
 Documentation
