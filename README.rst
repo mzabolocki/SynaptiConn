@@ -28,7 +28,6 @@ SynaptiConn
    :target: https://pypi.python.org/pypi/fooof/
    :alt: python versions
 
-
 .. .. image:: docs/img/synapti_conn_logo_v2.png  # to change when live with full path
 ..    :alt: SynaptiConn
 ..    :align: center
