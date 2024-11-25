@@ -2,7 +2,6 @@
 SynaptiConn
 =========================
 
-
 |ProjectStatus| |Version| |BuildStatus| |Docs| |License| |PythonVersions|
 
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
@@ -30,19 +29,11 @@ SynaptiConn
    :alt: python versions
 
 
-.. raw:: html
+.. image:: https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png
+   :alt: SynaptiConn
+   :width: 40%
+   :align: center
 
-   <div align="center" style="margin-top: 100px; text-align: center;">
-       <img src="https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png" 
-            alt="SynaptiConn" style="width: 40%; display: block; margin: auto;">
-   </div>
-
-
-
-.. raw:: html
-
-   <div align="left">
-   <div style="text-align:left">
 
 Overview
 ---------
