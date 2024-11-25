@@ -127,7 +127,8 @@ html_show_sourcelink = False
 sphinx_gallery_conf = {
     'examples_dirs': ['../examples'],
     'gallery_dirs': ['auto_examples'],
-    'subsection_order': ExplicitOrder(['../examples/analyses']),
+    'filename_pattern': r'\.py$',
+    'plot_gallery': 'True',
     'within_subsection_order': FileNameSortKey,
     'default_thumb_file': os.path.abspath('img/synapti_conn_logo_v2.png'),
     'backreferences_dir': 'generated',   # Where to drop linking files between examples & API
