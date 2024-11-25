@@ -20,8 +20,8 @@ Model Objects
 
 Objects that manage spike-train data and fit the model to determine monosynaptic connections.
 
-Base Object
-~~~~~~~~~~~
+SynaptiConn Object
+~~~~~~~~~~~~~~~~~~~
 
 The SynaptiConn object is the base object for the model, and can be used to infer monosynaptic connections from individual spike-units.
 
@@ -29,3 +29,14 @@ The SynaptiConn object is the base object for the model, and can be used to infe
    :toctree: generated/
 
    synapticonn.core.connections.SynaptiConn
+
+
+SpikeManager Object
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The SpikeManager object is used to manage spike-train data and prepare it for analysis.
+
+.. autosummary::
+   :toctree: generated/
+
+   synapticonn.core.connections.SpikeManager
