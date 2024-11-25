@@ -47,7 +47,7 @@ class SynaptiConn(SpikeManager):
     Parameters
     ----------
     spike_times : dict
-        Dictionary containing spike times for each unit, indexed by unit ID. Spike 
+        Dictionary containing spike times for each unit, indexed by unit ID. Spike
         times should be a NumPy array of floats.
     time_unit : str
         Unit of time for the spike times. Options are 'ms' (milliseconds) or 's' (seconds).
@@ -56,8 +56,8 @@ class SynaptiConn(SpikeManager):
     max_lag_t : float
         Maximum lag to consider when computing cross-correlograms.
     method : str, optional
-        Method for computing synaptic strength. Default is 'cross-correlation'. 
-        Currently, only this method is implemented, but future versions may 
+        Method for computing synaptic strength. Default is 'cross-correlation'.
+        Currently, only this method is implemented, but future versions may
         include additional methods.
     recording_length_t : float
         Duration of the recording, in the same time unit as `time_unit`.
@@ -289,8 +289,8 @@ class SynaptiConn(SpikeManager):
         --------------
         pair_synaptic_strength : dict
             Dictionary containing the synaptic strength for each pair of neurons.
-            This is stored in the object for future reference, and can be accessed using the 'pair_synaptic_strength' attribute.
-            This is used to compute the connection types and features, and perform visualizations.
+            This is stored in the object for future reference, and can be accessed using the 'pair_synaptic_strength'
+            attribute. This is used to compute the connection types and features, and perform visualizations.
 
         Raises
         ------
@@ -357,8 +357,8 @@ class SynaptiConn(SpikeManager):
         --------------
         pair_synaptic_strength : dict
             Dictionary containing the synaptic strength for each pair of neurons.
-            This is stored in the object for future reference, and can be accessedusing the 'pair_synaptic_strength' attribute.
-            This is used to compute the connection types and features, and perform visualizations.
+            This is stored in the object for future reference, and can be accessedusing the 'pair_synaptic_strength'
+            attribute. This is used to compute the connection types and features, and perform visualizations.
         """
 
         # find default settings for reporting
@@ -444,8 +444,8 @@ class SynaptiConn(SpikeManager):
         --------------
         pair_synaptic_strength : dict
             Dictionary containing the synaptic strength for each pair of neurons.
-            This is stored in the object for future reference, and can be accessed using the 'pair_synaptic_strength' attribute.
-            This is used to compute the connection types and features, and perform visualizations.
+            This is stored in the object for future reference, and can be accessed using the 'pair_synaptic_strength'
+            attribute. This is used to compute the connection types and features, and perform visualizations.
 
         References
         ----------
