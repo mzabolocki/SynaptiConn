@@ -100,6 +100,7 @@ html_theme_options = {
     'navbar_links': [
         ("API", "api"),
         ("GitHub", "https://github.com/mzabolocki/SynaptiConn", True),
+        ("Examples", "auto_examples/index"),
     ],
 
     # Set the page width to not be restricted to hardset value
