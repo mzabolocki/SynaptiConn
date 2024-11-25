@@ -124,11 +124,7 @@ qc
 
 ################################################################
 #
-# Filter the spike times for 'good units' based on the quality control metrics.
-#
-# These will then be used for all further processing. The spike times will be updated accordingly.
-#
-# A log of the excluded units can be found and kept.
+# Filter the spike times for 'good units' based on the quality control metrics. These will then be used for all further processing. The spike times will be updated accordingly. A log of the excluded units can be found and kept.
 #
 ################################################################
 
@@ -222,34 +218,35 @@ snc.report_correlogram_settings()
 # Compute excitatory and inhibitory monosynaptic connections between spike trains. 
 #
 # This analysis was based on the following reference by Najafi.
-# A link to the paper can be found here: https://www.sciencedirect.com/science/article/pii/S0896627319308487.
+# A link to the paper can be found here: https://doi.org/10.1016/j.neuron.2019.09.045.
 #
-# This protocol was based on data and experimental analyses provided in the paper, found here: https://www.cell.com/cell-reports/fulltext/S2211-1247(23)01487-0?_returnURL=https%3A%2F%2Flinkinghub.elsevier.com%2Fretrieve%2Fpii%2FS2211124723014870%3Fshowall%3Dtrue.
+# This protocol was based on data and experimental analyses provided in the paper, found here: 10.1016/j.celrep.2023.113475.
 #
 # **Computational strength calculations notes**
 #
-# - First, compute synaptic strength for a set of neuron IDs. If a given unit consistently fires after a second unit, indicated by a peak in the CCG, there is high chance that these cells are functionally linked either directly through an excitatory synaptic connection or indirectly through a third neuron providing a common input.
-# - To compute synaptic strength, the firing of a single unit in a pair was jittered across a number of iterations (num_iterations) within a time range (jitter_range_ms). 
-# - These were used to calculate a confidence interval (CI) between 1% and 99%. If the real CCG peak passed the 99% CI, the corresponding functional connection would be considered significant and not random.
-# - A z-score was then performed using the following equation:
-# - ```Z = x_real - mean_jitter / std_jitter```
+# - `First, compute synaptic strength for a set of neuron IDs. If a given unit consistently fires after a second unit, indicated by a peak in the CCG, there is high chance that these cells are functionally linked either directly through an excitatory synaptic connection or indirectly through a third neuron providing a common input.`
+# - `To compute synaptic strength, the firing of a single unit in a pair was jittered across a number of iterations (num_iterations) within a time range (jitter_range_ms).`
+# - `These were used to calculate a confidence interval (CI) between 1% and 99%. If the real CCG peak passed the 99% CI, the corresponding functional connection would be considered significant and not random.`
+# - `A z-score was then performed using the following equation: `Z = x_real - mean_jitter / std_jitter``
 #
 #
 # Note that the output contains the following keys:
-# 1. ccg bins
-# 2. ccg counts (from original spike trains)
-# 3. ccg counts (post jitter)
-# 4. synaptic strength
-# 5. high confidence interval (99%), calculated on jittered ccg
-# 6. low confidence interval (1%), calculation on jittered ccg
-# 7. ccg counts (within jitter range window)
-# 8. low confidence interal (1%), within jitter range window
-# 9. high confidence interal (99%), within jitter range window
+# - 1. ccg bins
+# - 2. ccg counts (from original spike trains)
+# - 3. ccg counts (post jitter)
+# - 4. synaptic strength
+# - 5. high confidence interval (99%), calculated on jittered ccg
+# - 6. low confidence interval (1%), calculation on jittered ccg
+# - 7. ccg counts (within jitter range window)
+# - 8. low confidence interal (1%), within jitter range window
+# - 9. high confidence interal (99%), within jitter range window
 #
 
 ################################################################
 
-synaptic_strength_data = snc.synaptic_strength(spike_pairs=spike_pairs, num_iterations=1000, jitter_range_t=10)
+synaptic_strength_data = snc.synaptic_strength(spike_pairs=spike_pairs,
+                                               num_iterations=1000,
+                                               jitter_range_t=10)
 
 # isolate single neuron pair
 pair = (0, 6)
@@ -320,11 +317,11 @@ connections = pd.DataFrame(connections).T
 connections
 
 ################################################################
-# 
-# Summarize the data outputs using report. This is a convience method that calls a series of methods: 
-# - fit()
-# - print_results()
-
+#
+# Summarize the data outputs using report. This is a convience method that calls a series of methods:
+# - `fit()`
+# - `print_results()`
+#
 # Each of these methods can be used individually.
 #
 
@@ -341,13 +338,13 @@ snc.report(spike_pairs, synaptic_strength_threshold=5, num_iterations=1000)
 # To do so, there are several in-built modules to check the quality of the outputs. These are based on the type of connections and time-lag threshold estimates.
 #
 # **Acceptance criteria**
-# 1. Excitatory connections between cells located near each other should occur within 2 ms.
-# 2. The monosynaptic peak should also be shaped as a double expontential function with a fast rise and a slower decay. Inhibitory connections have a slower decay, and should be factored into your QC metrics.
+# - `1. Excitatory connections between cells located near each other should occur within 2 ms.`
+# - `2. The monosynaptic peak should also be shaped as a double expontential function with a fast rise and a slower decay. Inhibitory connections have a slower decay, and should be factored into your QC metrics.`
 #
 # **Rejection criteria**
-# 1. If the CCG shows a maintained refractory period, it suggests that the spikes should have been merged in the spike-sorting process. Hence, if a monosynaptic peak is seen, then it is likely because it is the same neuron which has not been correctly merged.
-# 2. If the CCG peak coincides with the ACG peak (usually slower than 2 ms), the unit likely should have been merged in the spike sorting process, of the cell-pair is probably contaminated with a 3rd pair.
-# 3. A broad centrally aligned CCG peak indicates common drive, and therefore should be rejected. This is often seen when comparing two cells located at different shanks (> hundreds of um apart). This can be difficult to differentiate.
+# - `1. If the CCG shows a maintained refractory period, it suggests that the spikes should have been merged in the spike-sorting process. Hence, if a monosynaptic peak is seen, then it is likely because it is the same neuron which has not been correctly merged.`
+# - `2. If the CCG peak coincides with the ACG peak (usually slower than 2 ms), the unit likely should have been merged in the spike sorting process, of the cell-pair is probably contaminated with a 3rd pair.`
+# - `3. A broad centrally aligned CCG peak indicates common drive, and therefore should be rejected. This is often seen when comparing two cells located at different shanks (> hundreds of um apart). This can be difficult to differentiate.`
 #
 
 ################################################################

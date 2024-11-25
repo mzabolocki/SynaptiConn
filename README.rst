@@ -2,6 +2,11 @@
 SynaptiConn
 =========================
 
+.. image:: docs/img/synapti_conn_logo_v2.png
+   :alt: SynaptiConn
+   :align: right
+   :width: 100px
+
 |ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
 
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
@@ -28,10 +33,6 @@ SynaptiConn
    :target: https://pypi.python.org/pypi/fooof/
    :alt: python versions
 
-.. .. image:: docs/img/synapti_conn_logo_v2.png  # to change when live with full path
-..    :alt: SynaptiConn
-..    :align: center
-..    :width: 200px
 
 Overview
 --------
