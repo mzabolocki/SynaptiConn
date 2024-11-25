@@ -21,10 +21,6 @@ SynaptiConn
    :target: https://github.com/mzabolocki/SynaptiConn/actions/workflows/docs.yml
    :alt: docs status
 
-.. .. |Coverage| image:: https://codecov.io/gh/synapticonn/synapticonn/branch/main/graph/badge.svg
-..    :target: https://codecov.io/gh/synapticonn/synapticonn
-..    :alt: coverage
-
 .. |License| image:: https://img.shields.io/pypi/l/synapticonn.svg
    :target: https://opensource.org/licenses/Apache-2.0
    :alt: license
