@@ -4,8 +4,7 @@ Modules for plotting autocorrelograms.
 """
 
 import pathlib
-
-import numpy as np
+import pkg_resources
 import matplotlib.pyplot as plt
 
 from synapticonn.postprocessing.autocorrelograms import compute_autocorrelogram
@@ -20,8 +19,8 @@ from synapticonn.plots.aesthetics import TIME_UNIT_TIMELAG_LABELS
 ##########################################################
 
 
-style_path = pathlib.Path('synapticonn', 'plots', 'settings.mplstyle')
-plt.style.use(style_path)  # set globally
+style_path = pkg_resources.resource_filename('synapticonn.plots', 'settings.mplstyle')
+plt.style.use(style_path)
 
 
 ##########################################################
@@ -29,7 +28,7 @@ plt.style.use(style_path)  # set globally
 
 
 @savefig
-@apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
+@apply_plot_style(style_path=style_path)
 @check_dependency(plt, 'matplotlib')
 @check_spktime_ax_length
 @acg_ax

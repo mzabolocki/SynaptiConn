@@ -10,7 +10,7 @@ directly by the user.
 """
 
 import pathlib
-
+import pkg_resources
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -25,8 +25,8 @@ from synapticonn.plots.aesthetics import TIME_UNIT_TIMELAG_LABELS
 ##########################################################
 
 
-style_path = pathlib.Path('synapticonn', 'plots', 'settings.mplstyle')
-plt.style.use(style_path)  # set globally
+style_path = pkg_resources.resource_filename('synapticonn.plots', 'settings.mplstyle')
+plt.style.use(style_path)
 
 
 ####################################################
@@ -34,7 +34,7 @@ plt.style.use(style_path)  # set globally
 
 
 @savefig
-@apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
+@apply_plot_style(style_path=style_path)
 @check_dependency(plt, 'matplotlib')
 @spktrain_ax
 def plot_spiketrain(spike_times,
@@ -92,7 +92,7 @@ def check_spiketrain_ndim(func):
 
 def check_spiketrain_millisecond(func):
     """ Decorator to check if array is in milliseconds before function execution.
-    
+
     To be performed on a single spike train (1D).
 
     Notes:

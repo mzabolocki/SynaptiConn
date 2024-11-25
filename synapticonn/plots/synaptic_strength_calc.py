@@ -4,8 +4,8 @@ Modules for plotting ccg and synaptic strength calculations.
 """
 
 import pathlib
+import pkg_resources
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 from synapticonn.utils.mod_utils import check_dependency
@@ -18,15 +18,15 @@ from synapticonn.plots.aesthetics import SYN_STRENGTH_COLORS, TIME_UNIT_TIMELAG_
 ##########################################################
 
 
-style_path = pathlib.Path('synapticonn', 'plots', 'settings.mplstyle')
-plt.style.use(style_path)  # set globally
+style_path = pkg_resources.resource_filename('synapticonn.plots', 'settings.mplstyle')
+plt.style.use(style_path)
 
 
 ##########################################################
 ##########################################################
 
 @savefig
-@apply_plot_style(style_path=pathlib.Path('synapticonn', 'plots', 'settings.mplstyle'))
+@apply_plot_style(style_path=style_path)
 @check_dependency(plt, 'matplotlib')
 def plot_ccg_synaptic_strength(pair_synaptic_strength_data,
                                spike_pair,
