@@ -29,14 +29,13 @@ SynaptiConn
    :target: https://pypi.python.org/pypi/synapticonn/
    :alt: python versions
 
+
 .. raw:: html
 
-   <div style="height: 200px;"></div>
-
-.. image:: https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png
-   :alt: SynaptiConn
-   :align: center
-   :width: 40%
+   <div align="center" style="margin-top: 1000px; text-align: center;">
+       <img src="https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png" 
+            alt="SynaptiConn" style="width: 40%; display: block; margin: auto;">
+   </div>
 
 
 
