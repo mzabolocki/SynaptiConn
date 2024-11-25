@@ -4,10 +4,7 @@ SynaptiConn
 
 .. raw:: html
 
-   <div style="display: flex; align-items: right; justify-content: space-between;">
-       <h1>SynaptiConn</h1>
-       <img src="docs/img/synapti_conn_logo_v2.png" alt="SynaptiConn Logo" style="width: 150px;">
-   </div>
+   <img src="docs/img/synapti_conn_logo_v2.png" style="width: 150px;">
 
 |ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
 
