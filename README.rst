@@ -69,9 +69,6 @@ Development version
     cd SynaptiConn
     pip install .
 
-    # check the version
-    pip list | grep synapticonn
-    
     # test package import
     python
     >>> import synapticonn
