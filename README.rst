@@ -29,10 +29,19 @@ SynaptiConn
    :target: https://pypi.python.org/pypi/synapticonn/
    :alt: python versions
 
+
+
+
+
+
 .. image:: https://github.com/mzabolocki/SynaptiConn/blob/main/docs/img/synapti_conn_logo_v2.png
    :alt: SynaptiConn
-   :align: center
    :width: 40%
+   :align: center
+
+
+
+
 
 
 Overview
