@@ -2,10 +2,12 @@
 SynaptiConn
 =========================
 
-.. image:: docs/img/synapti_conn_logo_v2.png
-   :alt: SynaptiConn
-   :align: right
-   :width: 150px
+.. raw:: html
+
+   <div style="display: flex; align-items: right; justify-content: space-between;">
+       <h1>SynaptiConn</h1>
+       <img src="docs/img/synapti_conn_logo_v2.png" alt="SynaptiConn Logo" style="width: 150px;">
+   </div>
 
 |ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
 
