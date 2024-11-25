@@ -31,7 +31,10 @@ SynaptiConn
 
 .. raw:: html
 
-   <img src="docs/img/synapti_conn_logo_v2.png" style="center: 250;">
+   <div style="text-align: center;">
+       <img src="docs/img/synapti_conn_logo_v2.png" style="width: 180px;" alt="SynaptiConn Logo">
+   </div>
+
 
 Overview
 --------
