@@ -76,7 +76,7 @@ To install this cloned copy, move into the directory you just cloned, and run:
 
     $ pip install .
 
-**Editable Version**
+Editable Version
 ~~~~~~~~~~~~~~~~~~~~~~
 
 To install an editable version, download the development version as above, and run:

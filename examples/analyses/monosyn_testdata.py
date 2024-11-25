@@ -27,7 +27,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-os.chdir('../..')
 import synapticonn
 
 #############################################################
@@ -43,23 +42,15 @@ import synapticonn
 
 data_fpath = pathlib.Path('examples', 'analyses', 'data', 'all_unit.mat')
 
-# check if file exists
-if not data_fpath.exists():
-    raise FileNotFoundError(f"File not found: {data_fpath}")
-
 # open mat file
 data = scipy.io.loadmat(data_fpath)
-
-# re-organize data
-num_units = len(data['unit_t'][0])
-all_units = {}
-for i in range(num_units):
-    all_units[i] = data['unit_t'][0][i].T[0] * 1000
+# get all spiketrain units and convert to milliseconds
+all_units = {i: data['unit_t'][0][i].T[0] * 1000 for i in range(len(data['unit_t'][0]))}
 
 ################################################################
 # Initialize the object
 # ~~~~~~~~~~~~~~~~~~~~~
-# Initialize the MonosynapticPairAnalysis object with the spike times data.
+# Initialize the SynaptiConn object.
 #
 # Before doing so, it is important to ensure your spike times data is in the
 # correct format. The spike times data should be a dictionary where the keys
@@ -73,7 +64,9 @@ for i in range(num_units):
 # the cross-correlation between the spike trains is computed. The bin size for the cross-correlation
 # should be specified in the time unit used for the spike times data. In future versions of the package,
 # more methods will be supported.
+#
 
+################################################################
 
 snc = synapticonn.SynaptiConn(all_units,
                               method='cross-correlation',
@@ -83,5 +76,48 @@ snc = synapticonn.SynaptiConn(all_units,
                               srate=20_000,
                               recording_length_t=1000*1000,
                               spike_id_type=int)
+
+################################################################
+#
+# Now, we have initialized the SynaptiConn object. We can now proceed to the
+# analysis. However, before proceeding, it is important to check the loaded
+# spike times data. The spike times data should be in the correct format.
+#
+# to do so, SynaptiConn provides a method 'report_spike_units' to check the spike times data.
+#
+
+################################################################
+
+spk_unit_report = snc.report_spike_units()
+print(spk_unit_report)
+
+################################################################
+# Spike isolation quality metrics
+# ~~~~~~~~~~~~~~~~~~~~~
+#
+# Before continuining, it is important to cross-check the quality of the spike sorted neurons. 
+# Metrics related to the spike quality can be found below. Notably, the autocorrelograms
+# for each unit should also be cross-referenced prior to continuing.
+# Low contamination (or no contamination) in the refractory periods are important
+# for correct assesments of spike-units and their monosynaptic connections.
+#
+# **NOTE** here, more simple and core metric assessments are performed.
+# In the future, these will be extended. For further quality metrics,
+# and explanations, please refer to the following: https://github.com/SpikeInterface/spikeinterface/blob/main/src/spikeinterface/qualitymetrics/misc_metrics.py#L1183). Further, Allen Brain have core documentation which can be found [here](https://allensdk.readthedocs.io/en/latest/_static/examples/nb/ecephys_quality_metrics.html#ISI-violations
+#
+
+################################################################
+
+# note :: isi min should be based on the
+# miniimum possible refractory period (e.g. spikes removed would constitute this)
+# isi threshold should be based on the refractory period of the neuron
+
+params = {'isi_threshold_ms': 1.5,
+          'min_isi_ms': 0,
+          'presence_ratio_bin_duration_sec': 60,
+          'presence_ratio_mean_fr_ratio_thresh': 0.0}
+
+qc = snc.spike_unit_quality(**params)
+qc
 
 ################################################################
