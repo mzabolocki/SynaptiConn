@@ -31,15 +31,12 @@ SynaptiConn
 
 .. raw:: html
 
-   <div style="height: 50px;"></div>
+   <div style="height: 200px;"></div>
 
-
-.. raw:: html
-
-   <div align="center" style="margin-top: 400px;">
-       <img src="https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png" 
-            alt="SynaptiConn" style="width: 40%; display: block; margin: auto;">
-   </div>
+.. image:: https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png
+   :alt: SynaptiConn
+   :align: center
+   :width: 40%
 
 
 
