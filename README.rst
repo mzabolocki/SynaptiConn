@@ -41,9 +41,12 @@ The package provides a set of tools for analyzing spike-train data, including sp
 The package is designed to be user-friendly and flexible, and can be used to analyze spike-train data from a variety of experimental paradigms.
 
 Monosynaptic connections, both excitatory and inhibitory connections, are determined with a model-based approach that fits a set of connection features to the observed spike-train cross-correlation.
-Using a Bayesian model selection approach, the package can determine the most likely set of connections that underlie the observed cross-correlation.
+The package can determine the most likely set of connections that underlie the observed cross-correlation. The package also provides a set of tools for visualizing the data and model fits,
+and for exporting the connection features. 
 
-Please Star the project to support us and Watch to always stay up-to-date!
+In future versions, the package will include additional tools for analyzing spike-train data, and for inferring connections from other types of data, using a variety of models.
+
+**Please Star the project to support us and Watch to always stay up-to-date!**
 
 Installation
 ------------
@@ -62,12 +65,26 @@ installing using pip:
 
 Development version
 ~~~~~~~~~~~~~~~~~~~~~~
+To get the current development version, first clone this repository:
 
 .. code-block:: bash
     
     git clone https://github.com/mzabolocki/SynaptiConn
-    cd SynaptiConn
-    pip install .
+
+To install this cloned copy, move into the directory you just cloned, and run:
+
+.. code-block:: shell
+
+    $ pip install .
+
+**Editable Version**
+~~~~~~~~~~~~~~~~~~~~~~
+
+To install an editable version, download the development version as above, and run:
+
+.. code-block:: shell
+
+    $ pip install -e .
 
 Documentation
 --------
@@ -104,13 +121,20 @@ An example how to use the package is shown below:
     from synapticonn import SynaptiConn
 
     # initialize the model object
-    snc = SynaptiConn(spike_times, method="cross-correlation", srate=30_000, recording_length_t=600*1000)
+    snc = SynaptiConn(spike_times, method="cross-correlation", time_unit="ms", srate=30_000, recording_length_t=600*1000)
  
     # set the spike unit ids to be used for the analysis
-    spike_pairs = [(0, 1), (0, 2), (0, 3), (1, 2), (1, 3), (2, 3)]
+    spike_pairs = [(0, 6), (0, 7), (0, 8), (0, 9)]
  
     # fit the model and report the monosynaptic connection results
     snc.report(spike_pairs)
+
+Example output for a report of a computational analysis of single-unit spike-train data is shown below:
+
+.. image:: docs/img/report_summary.png  # to change when live with full path
+   :alt: report_summary
+   :align: center
+   :width: 100px
 
 **Note that a full set of examples and tutorials are provided in the documentation.
 These provide a more detailed overview of how to use the package, and how to interpret the results.**
