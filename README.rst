@@ -2,6 +2,13 @@
 SynaptiConn
 =========================
 
+.. raw:: html
+
+   <div style="text-align: center; margin-top: 20px;">
+       <img src="docs/img/synapti_conn_logo_v2.png" style="width: 180px;" alt="SynaptiConn Logo">
+   </div>
+
+
 |ProjectStatus| |Version| |BuildStatus| |Coverage| |License| |PythonVersions|
 
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
@@ -27,13 +34,6 @@ SynaptiConn
 .. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/fooof.svg
    :target: https://pypi.python.org/pypi/fooof/
    :alt: python versions
-
-
-.. raw:: html
-
-   <div style="text-align: center; margin-top: 20px;">
-       <img src="docs/img/synapti_conn_logo_v2.png" style="width: 180px;" alt="SynaptiConn Logo">
-   </div>
 
 
 Overview
