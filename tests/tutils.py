@@ -26,7 +26,7 @@ def test_data_path(data_file_type: str) -> pathlib.Path:
         # https://github.com/matildebalbilab/STARProtocol_Wangetal2024 
         data_path = pathlib.Path(base_path, "mat_file", "all_unit.mat")
     elif data_file_type == 'spikeinterface':
-        data_path = pathlib.Path(base_path, "spikeinterface", "BD0187_spikesorting_array.pkl")
+        data_path = pathlib.Path(base_path, "spikeinterface", "si_spikesorting_array.pkl")
     else:
         raise ValueError(f"Unknown data file type: {data_file_type}")
 
