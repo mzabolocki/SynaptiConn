@@ -9,7 +9,6 @@ They are not expected to be used outside of this module or used
 directly by the user.
 """
 
-import pathlib
 import pkg_resources
 import numpy as np
 import matplotlib.pyplot as plt
