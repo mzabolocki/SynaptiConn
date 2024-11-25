@@ -29,6 +29,10 @@ SynaptiConn
    :target: https://pypi.python.org/pypi/synapticonn/
    :alt: python versions
 
+.. raw:: html
+
+   <div style="height: 50px;"></div>
+
 
 .. raw:: html
 
