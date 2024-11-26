@@ -2,7 +2,7 @@
 SynaptiConn
 =========================
 
-|ProjectStatus| |Version| |BuildStatus| |Docs| |License| |PythonVersions| |Downloads/Month| |Downloads|
+|ProjectStatus| |Version| |BuildStatus| |Docs| |License| |PythonVersions| |Downloads| |Downloads|
 
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
    :target: https://www.repostatus.org/#active
