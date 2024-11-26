@@ -2,7 +2,7 @@
 SynaptiConn
 =========================
 
-|ProjectStatus| |Version| |BuildStatus| |Docs| |License| |PythonVersions| |Downloads| |Downloads|
+|ProjectStatus| |Version| |BuildStatus| |Docs| |License| |PythonVersions| |Downloads|
 
 .. |ProjectStatus| image:: http://www.repostatus.org/badges/latest/active.svg
    :target: https://www.repostatus.org/#active
@@ -27,10 +27,6 @@ SynaptiConn
 .. |PythonVersions| image:: https://img.shields.io/pypi/pyversions/synapticonn.svg
    :target: https://pypi.python.org/pypi/synapticonn/
    :alt: python versions
-
-.. |Downloads| image:: https://static.pepy.tech/badge/synapticonn/month
-   :target: https://static.pepy.tech/badge/synapticonn/month
-   :alt: downloads per month
 
 .. |Downloads| image:: https://static.pepy.tech/badge/synapticonn
    :target: https://static.pepy.tech/badge/synapticonn
