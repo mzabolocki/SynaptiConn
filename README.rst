@@ -28,7 +28,7 @@ SynaptiConn
    :target: https://pypi.python.org/pypi/synapticonn/
    :alt: python versions
 
-.. |Download/Month| image:: https://static.pepy.tech/badge/synapticonn/month
+.. |Downloads| image:: https://static.pepy.tech/badge/synapticonn/month
    :target: https://static.pepy.tech/badge/synapticonn/month
    :alt: downloads per month
 
