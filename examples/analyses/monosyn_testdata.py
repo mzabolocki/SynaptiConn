@@ -13,7 +13,7 @@ best practices for monosynaptic pair analysis with the synapticonn package.
 # This example demonstrates how to perform a monosynaptic connection analysis.
 #
 # Here, we use an existing published dataset of single-unit spiketrains
-# recorded from the primary visual cortex of an anesthetized mouse.
+# recorded from mice.
 #
 # The dataset is available via the link: 10.1016/j.celrep.2023.113475
 #
