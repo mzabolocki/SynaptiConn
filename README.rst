@@ -135,7 +135,7 @@ An example how to use the package is shown below:
                       srate=30_000,
                       recording_length_t=600*1000,
                       bin_size_t=1,
-                      max_lag_t=100,)
+                      max_lag_t=10)
  
     # set the spike unit ids to be used for the analysis
     spike_pairs = [(0, 6), (0, 7), (0, 8), (0, 9)]

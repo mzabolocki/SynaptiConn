@@ -1,13 +1,12 @@
 # Contributing Guidelines
 
-Thank you for your interest in contributing to `specparam`!
+Thank you for your interest in contributing to `synapticonn`!
 
 We welcome all contributions to the project that extend or improve code and/or documentation!
 
 This page includes information for how to get involved and contribute to the project, and guidelines for how to do so.
 
-This project adheres to a
-[code of conduct]()
+This project adheres to a code of conduct
 that you are expected to uphold when participating in this project.
 
 On this page, you can find information on:
@@ -50,14 +49,6 @@ If you are interested in getting involved and helping with the project, a great 
 [issues]() or
 [development]() page
 and see if there is anything you would be interested in helping with. If so, join the conversation, and project developers can help get you started.
-
-## Project Scope
-<!-- 
-All contributions must be within the scope of the module.
-
-`specparam` is a module for parameterizing neural power spectra. This includes model fitting, management and analysis of resulting parameters, and utilities to visualize power spectra and model results. This module also includes functionality to simulate power spectra based on the model.
-
-Procedures and utilities that do not deal with operating upon power spectra or on model outputs will most likely be considered out of scope. Notably, this model does not include doing spectral estimation or time-domain analysis. For approaches such as these, the [neurodsp](https://github.com/neurodsp-tools/neurodsp/) module may be a more appropriate target. -->
 
 ## Making a Contribution
 
@@ -112,7 +103,7 @@ All code contributed to the module should follow these conventions:
     * Merge candidates must pass all existing tests, and add new tests such as to not reduce test coverage
     * To run the tests locally, pytest needs to be installed (`pip install pytest`)
         * To run the tests on a local copy of the module, move into the folder and run `pytest .`
-<!-- 
+
 6. Documentation Website
     * This project uses a documentation website, created using [sphinx](https://www.sphinx-doc.org/)
     * Any new public functions or classes should be added to the `doc/api.rst` file, so they get included in the API list
@@ -120,8 +111,8 @@ All code contributed to the module should follow these conventions:
         * If a new approach is added, a new tutorial or example may be appropriate
     * To build and check the documentation locally:
         * Install the requirements for the docsite (`pip install -r requirements-doc.txt`)
-        * Move to the `specparam/doc` directory (`cd doc`)
+        * Move to the `synapticonn/doc` directory (`cd doc`)
         * Run `make html` to create a local copy of the documentation website
-        * The documentation can then be opened in a web browser by opening the file `specparam/doc/_build/html/index.html` -->
+        * The documentation can then be opened in a web browser by opening the file `synapticonn/doc/_build/html/index.html`
 
 For more guidelines on how to write well formated and organized code, check out the [Python API Checklist](http://python.apichecklist.com).
