@@ -171,9 +171,9 @@ def _return_synaptic_strength_zscore(ccg_bins, original_ccg_counts,
     assert len(original_ccg_counts) == (jittered_ccg_counts.shape[1]), "Original and jittered CCG counts must have the same length."
 
     # define the window around the zero-lag time
-    window_bins = int((half_window_t*2) / (2 * bin_size_t))
+    window_bins = math.ceil((half_window_t * 2) / (2 * bin_size_t)) # math.ceil to include fractional bins
     mid_bin = len(ccg_bins) // 2  # the center bin corresponds to zero lag
-    window_slice = slice(mid_bin - window_bins, mid_bin + window_bins + 1)  # slice the window
+    window_slice = slice(mid_bin - window_bins, mid_bin + window_bins)  # slice the window // remove + 1 to prevent binning issues
 
     # identify the peak bin count within window
     x_real = np.max(original_ccg_counts[window_slice])
