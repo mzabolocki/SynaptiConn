@@ -5,6 +5,7 @@ cross-correlograms (CCGs).
 """
 
 import warnings
+import math
 import numpy as np
 
 from joblib import Parallel, delayed
