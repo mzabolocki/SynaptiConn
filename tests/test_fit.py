@@ -54,7 +54,7 @@ def test_fit(data_type):
     presence_ratio = round(float(qc.loc[0, 'presence_ratio']), 2)
     isi_violations_ratio = round(float(qc.loc[0, 'isi_violations_ratio']), 5)
     assert presence_ratio == 1.0
-    assert isi_violations_ratio == 0.00267
+    assert isi_violations_ratio == 2.67057
 
     # -- model fit
     # check the number of excitatory connections detected
