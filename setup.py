@@ -13,7 +13,7 @@ def long_description():
 
 setup(
     name="synapticonn",
-    version="0.0.1rc3",
+    version="0.0.1rc4",
     description="Inferring monosynaptic connections in neural circuits.",
     long_description=long_description(),
     long_description_content_type="text/x-rst",
