@@ -39,6 +39,8 @@ def compute_isi_violations(spike_train,
     -----
     All times are in milliseconds (ms) by default.
     If not, the recording length and spike times will be converted to milliseconds.
+    
+    Edge cases are included in the ISI violations count.
 
     References
     ----------
@@ -87,12 +89,12 @@ def compute_isi_violations(spike_train,
 
     isis = np.diff(spike_times_ms)
     num_spikes = len(spike_times_ms)
-    num_violations = np.sum(isis < isi_threshold_ms)
+    num_violations = np.sum(isis <= isi_threshold_ms)  # this will include the first spike
 
     violation_time = 2 * num_spikes * (isi_threshold_ms - min_isi_ms)
 
     if num_spikes > 0:
-        total_rate = num_spikes / (recording_length_ms / 1000)
+        total_rate = num_spikes / (recording_length_ms)
         violation_rate = num_violations / violation_time
         isi_violations_ratio = violation_rate / total_rate
         isi_violations_count = num_violations
