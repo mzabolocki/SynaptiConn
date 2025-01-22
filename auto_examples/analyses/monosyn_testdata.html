@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Single-unit spike data demo &#8212; SynaptiConn 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../_static/documentation_options.js?v=5aa371e9"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../_static/copybutton.js?v=a56c686a"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          SynaptiConn</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../index.html">Examples</a></li>
+                <li><a href="https://github.com/mzabolocki/SynaptiConn">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">Single-unit spike data demo</a><ul>
+<li><a class="reference internal" href="#monosynaptic-connection-analysis-demo">Monosynaptic connection analysis demo</a><ul>
+<li><a class="reference internal" href="#load-spike-times-data">Load spike times data</a></li>
+<li><a class="reference internal" href="#initialize-the-object">Initialize the object</a></li>
+<li><a class="reference internal" href="#spike-unit-quality-metrics">Spike-unit quality metrics</a></li>
+<li><a class="reference internal" href="#auto-correlograms">Auto-correlograms</a></li>
+<li><a class="reference internal" href="#cross-correlograms">Cross-correlograms</a></li>
+<li><a class="reference internal" href="#cross-correlogram-data">Cross-correlogram data</a></li>
+<li><a class="reference internal" href="#compute-monosynaptic-connections">Compute monosynaptic connections</a></li>
+<li><a class="reference internal" href="#fit-report">Fit &amp; report</a></li>
+<li><a class="reference internal" href="#monosnyaptic-connection-quality-control">Monosnyaptic connection quality control</a></li>
+<li><a class="reference internal" href="#conclusion">Conclusion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<form action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-auto-examples-analyses-monosyn-testdata-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="single-unit-spike-data-demo">
+<span id="sphx-glr-auto-examples-analyses-monosyn-testdata-py"></span><h1>Single-unit spike data demo<a class="headerlink" href="#single-unit-spike-data-demo" title="Link to this heading">¶</a></h1>
+<p>An example analysis applied to single-unit spike-sorted spiketrain data, demonstrating
+best practices for monosynaptic pair analysis with the synapticonn package.</p>
+<section id="monosynaptic-connection-analysis-demo">
+<h2>Monosynaptic connection analysis demo<a class="headerlink" href="#monosynaptic-connection-analysis-demo" title="Link to this heading">¶</a></h2>
+<p>This example demonstrates how to perform a monosynaptic connection analysis.</p>
+<p>Here, we use an existing published dataset of single-unit spiketrains
+recorded from mice.</p>
+<p>The dataset is available via the link: 10.1016/j.celrep.2023.113475</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import necessary modules</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">synapticonn</span>
+</pre></div>
+</div>
+<section id="load-spike-times-data">
+<h3>Load spike times data<a class="headerlink" href="#load-spike-times-data" title="Link to this heading">¶</a></h3>
+<p>First, load your spike times data. Here, we load the spike times data from a
+.mat file. The spike times data should be a list of spike times for each
+neuron in the dataset. The spike times should be in seconds or milliseconds.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">data_fpath</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;examples&#39;</span><span class="p">,</span> <span class="s1">&#39;analyses&#39;</span><span class="p">,</span> <span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="s1">&#39;all_unit.mat&#39;</span><span class="p">)</span>
+
+<span class="c1"># open mat file</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">loadmat</span><span class="p">(</span><span class="n">data_fpath</span><span class="p">)</span>
+<span class="c1"># get all spiketrain units and convert to milliseconds</span>
+<span class="n">all_units</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;unit_t&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">1000</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;unit_t&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]))}</span>
+</pre></div>
+</div>
+</section>
+<section id="initialize-the-object">
+<h3>Initialize the object<a class="headerlink" href="#initialize-the-object" title="Link to this heading">¶</a></h3>
+<p>Initialize the SynaptiConn object.</p>
+<p>Before doing so, it is important to ensure your spike times data is in the
+correct format. The spike times data should be a dictionary where the keys
+are the unit IDs and the values are the spike times for each unit.</p>
+<p>The spike times should be in seconds or milliseconds. Please change the time_unit
+accordingly to relfect this.The sampling rate should be specified in Hz, and is
+essential for the analysis. The recording length should also be specified in seconds or milliseconds.</p>
+<p>Currently, the method ‘cross-correlation’ is supported for monosynaptic pair analysis. In this method,
+the cross-correlation between the spike trains is computed. The bin size for the cross-correlation
+should be specified in the time unit used for the spike times data. In future versions of the package,
+more methods will be supported.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">snc</span> <span class="o">=</span> <span class="n">synapticonn</span><span class="o">.</span><span class="n">SynaptiConn</span><span class="p">(</span><span class="n">all_units</span><span class="p">,</span>
+                              <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cross-correlation&#39;</span><span class="p">,</span>
+                              <span class="n">bin_size_t</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                              <span class="n">time_unit</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span>
+                              <span class="n">max_lag_t</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                              <span class="n">srate</span><span class="o">=</span><span class="mi">20_000</span><span class="p">,</span>
+                              <span class="n">recording_length_t</span><span class="o">=</span><span class="mi">1000</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span>
+                              <span class="n">spike_id_type</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we have initialized the SynaptiConn object. We can now proceed to the
+analysis. However, before proceeding, it is important to check the loaded
+spike times data. The spike times data should be in the correct format.</p>
+<p>to do so, SynaptiConn provides a method ‘report_spike_units’ to check the spike times data.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">spk_unit_report</span> <span class="o">=</span> <span class="n">snc</span><span class="o">.</span><span class="n">report_spike_units</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">spk_unit_report</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="spike-unit-quality-metrics">
+<h3>Spike-unit quality metrics<a class="headerlink" href="#spike-unit-quality-metrics" title="Link to this heading">¶</a></h3>
+<p>Before continuining, it is important to cross-check the quality of the spike sorted neurons.
+Metrics related to the spike quality can be found below. Notably, the autocorrelograms
+for each unit should also be cross-referenced prior to continuing.
+Low contamination (or no contamination) in the refractory periods are important
+for correct assesments of spike-units and their monosynaptic connections.</p>
+<p>For further quality metrics, and explanations, please refer to the following: <a class="reference external" href="https://github.com/SpikeInterface/spikeinterface/blob/main/src/spikeinterface/qualitymetrics/misc_metrics.py#L1183">https://github.com/SpikeInterface/spikeinterface/blob/main/src/spikeinterface/qualitymetrics/misc_metrics.py#L1183</a>.</p>
+<p><strong>NOTE</strong> here, more simple and core metric assessments are performed.
+In the future, these will be extended.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># note :: isi min should be based on the</span>
+<span class="c1"># miniimum possible refractory period (e.g. spikes removed would constitute this)</span>
+<span class="c1"># isi threshold should be based on the refractory period of the neuron</span>
+
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;isi_threshold_ms&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span>
+          <span class="s1">&#39;min_isi_ms&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+          <span class="s1">&#39;presence_ratio_bin_duration_sec&#39;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+          <span class="s1">&#39;presence_ratio_mean_fr_ratio_thresh&#39;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">}</span>
+
+<span class="n">qc</span> <span class="o">=</span> <span class="n">snc</span><span class="o">.</span><span class="n">spike_unit_quality</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+<span class="n">qc</span>
+</pre></div>
+</div>
+<p>Filter the spike times for ‘good units’ based on the quality control metrics. These will then be used for all further processing. The spike times will be updated accordingly. A log of the excluded units can be found and kept.</p>
+<hr class="docutils" />
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;firing_rate_hz &gt; 0.5&#39;</span>
+<span class="n">good_units</span> <span class="o">=</span> <span class="n">snc</span><span class="o">.</span><span class="n">filter_spike_units</span><span class="p">(</span><span class="n">qc</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">good_units</span>
+</pre></div>
+</div>
+</section>
+<section id="auto-correlograms">
+<h3>Auto-correlograms<a class="headerlink" href="#auto-correlograms" title="Link to this heading">¶</a></h3>
+<p>Before proceeding with the monosynaptic pair analysis, visualize
+the auto-correlograms for each unit. This is important to check for
+contamination in the refractory period.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">snc</span><span class="o">.</span><span class="n">plot_autocorrelogram</span><span class="p">(</span><span class="n">spike_units</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the bin parameters after initialization, and re-plot.</p>
+<p>This can be used to change the binning on the plots, and max time lags.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">snc</span><span class="o">.</span><span class="n">set_bin_settings</span><span class="p">(</span><span class="n">bin_size_t</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">max_lag_t</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">)</span>
+<span class="n">snc</span><span class="o">.</span><span class="n">plot_autocorrelogram</span><span class="p">(</span><span class="n">spike_units</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;blue&#39;</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="cross-correlograms">
+<h3>Cross-correlograms<a class="headerlink" href="#cross-correlograms" title="Link to this heading">¶</a></h3>
+<p>Visualize cross-correlograms between pairs.</p>
+<p>Bin size and time lag can be changed by re-setting the bins.
+However, for improved visualizations and reporting a smaller bin size and time lag is recommended.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">spk_units</span> <span class="o">=</span> <span class="n">snc</span><span class="o">.</span><span class="n">spike_times</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+
+<span class="c1"># make a list of all possible pairs</span>
+<span class="n">pairs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">unit1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spk_units</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">unit2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">spk_units</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">j</span><span class="p">:</span>
+            <span class="n">pairs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">unit1</span><span class="p">,</span> <span class="n">unit2</span><span class="p">))</span>
+
+<span class="c1"># subselect for select pairs</span>
+<span class="n">spike_pairs</span> <span class="o">=</span> <span class="n">pairs</span><span class="p">[</span><span class="mi">4</span><span class="p">:</span><span class="mi">8</span><span class="p">]</span>
+
+<span class="c1"># plot cross-correlograms</span>
+<span class="n">snc</span><span class="o">.</span><span class="n">plot_crosscorrelogram</span><span class="p">(</span><span class="n">spike_pairs</span><span class="o">=</span><span class="n">spike_pairs</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+</pre></div>
+</div>
+</section>
+<section id="cross-correlogram-data">
+<h3>Cross-correlogram data<a class="headerlink" href="#cross-correlogram-data" title="Link to this heading">¶</a></h3>
+<p>Next, try returning the correlogram data.</p>
+<p>Each key in ‘cross_correlations’ is indexed by the unit pairs.
+The corresponding numbers refer to the spike counts, per bin.</p>
+<p>Each key in ‘bins’ is also indexed by the unit pairs.
+The corresponding numbers refer to the bins edges.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">correlogram_data</span> <span class="o">=</span> <span class="n">snc</span><span class="o">.</span><span class="n">return_crosscorrelogram_data</span><span class="p">(</span><span class="n">spike_pairs</span><span class="o">=</span><span class="n">spike_pairs</span><span class="p">)</span>
+<span class="n">correlogram_data</span>
+</pre></div>
+</div>
+<p>Check the bin settings using for correlogram generations.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">snc</span><span class="o">.</span><span class="n">report_correlogram_settings</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="compute-monosynaptic-connections">
+<h3>Compute monosynaptic connections<a class="headerlink" href="#compute-monosynaptic-connections" title="Link to this heading">¶</a></h3>
+<p>Compute excitatory and inhibitory monosynaptic connections between spike trains.</p>
+<p>This analysis was based on the following reference by Najafi.
+A link to the paper can be found here: <a class="reference external" href="https://doi.org/10.1016/j.neuron.2019.09.045">https://doi.org/10.1016/j.neuron.2019.09.045</a>.</p>
+<p>This protocol was based on data and experimental analyses provided in the paper, found here: 10.1016/j.celrep.2023.113475.</p>
+<p><strong>Computational strength calculations notes</strong></p>
+<ul class="simple">
+<li><p><cite>First, compute synaptic strength for a set of neuron IDs. If a given unit consistently fires after a second unit, indicated by a peak in the CCG, there is high chance that these cells are functionally linked either directly through an excitatory synaptic connection or indirectly through a third neuron providing a common input.</cite></p></li>
+<li><p><cite>To compute synaptic strength, the firing of a single unit in a pair was jittered across a number of iterations (num_iterations) within a time range (jitter_range_ms).</cite></p></li>
+<li><p><cite>These were used to calculate a confidence interval (CI) between 1% and 99%. If the real CCG peak passed the 99% CI, the corresponding functional connection would be considered significant and not random.</cite></p></li>
+<li><p><cite>A z-score was then performed using the following equation: Z = x_real - mean_jitter / std_jitter</cite></p></li>
+</ul>
+<p>Note that the output contains the following keys:</p>
+<ul class="simple">
+<li><p><cite>ccg bins`</cite></p></li>
+<li><p><cite>ccg counts (from original spike trains)</cite></p></li>
+<li><p><cite>ccg counts (post jitter)</cite></p></li>
+<li><p><cite>synaptic strength</cite></p></li>
+<li><p><cite>high confidence interval (99%), calculated on jittered ccg</cite></p></li>
+<li><p><cite>low confidence interval (1%), calculation on jittered ccg</cite></p></li>
+<li><p><cite>ccg counts (within jitter range window)</cite></p></li>
+<li><p><cite>low confidence interal (1%), within jitter range window</cite></p></li>
+<li><p><cite>high confidence interal (99%), within jitter range window</cite></p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">synaptic_strength_data</span> <span class="o">=</span> <span class="n">snc</span><span class="o">.</span><span class="n">synaptic_strength</span><span class="p">(</span><span class="n">spike_pairs</span><span class="o">=</span><span class="n">spike_pairs</span><span class="p">,</span>
+                                               <span class="n">num_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+                                               <span class="n">jitter_range_t</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># isolate single neuron pair</span>
+<span class="n">pair</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+<span class="n">synaptic_strength_data</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Check the synaptic strength data for a select pair.</p>
+<p>This can be done automatically by plotting the original ccg, and the z-scored value.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">snc</span><span class="o">.</span><span class="n">plot_synaptic_strength</span><span class="p">(</span><span class="n">spike_pair</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><strong>Next, check the connection type.</strong></p>
+<p>Here, we can perform a putative detection using the z-score (synaptic strength) output.</p>
+<p>Thresholds should be set as &gt; 5 for excitatory-connections, or inhibitory connections
+as &lt; -5 based on the reference protocol.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">exc_connection_types</span> <span class="o">=</span> <span class="n">snc</span><span class="o">.</span><span class="n">monosynaptic_connection_types</span><span class="p">(</span><span class="n">synaptic_strength_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">exc_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">exc_connection_types</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">exc_df</span>
+</pre></div>
+</div>
+<p>Output a features dataframe containing selected spike pair connections and associated ccg features.</p>
+<p>These can be used to provide simple information on the quality of the CCG, and associated connection types.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">synaptic_features</span> <span class="o">=</span> <span class="n">snc</span><span class="o">.</span><span class="n">monosynaptic_connection_features</span><span class="p">()</span>
+<span class="n">synaptic_features_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">synaptic_features</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">synaptic_features_df</span>
+</pre></div>
+</div>
+<p>The output dataframes can be merged for simplicity and further analyses.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">merged_df</span> <span class="o">=</span> <span class="n">exc_df</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">synaptic_features_df</span><span class="p">)</span>
+<span class="n">merged_df</span>
+</pre></div>
+</div>
+</section>
+<section id="fit-report">
+<h3>Fit &amp; report<a class="headerlink" href="#fit-report" title="Link to this heading">¶</a></h3>
+<p>Alternatively, there is a simpler method to compute monosynaptic connections. Simply, monosynaptic connections can be inferred in one line. This combines the period methods.</p>
+<p>For feature extractions, this can be performed separately and combined.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">connections</span> <span class="o">=</span> <span class="n">snc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">spike_pairs</span><span class="p">,</span> <span class="n">synaptic_strength_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">num_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">connections</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">connections</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="n">connections</span>
+</pre></div>
+</div>
+<p>Summarize the data outputs using report. This is a convience method that calls a series of methods:</p>
+<ul class="simple">
+<li><p><cite>fit()</cite></p></li>
+<li><p><cite>print_results()</cite></p></li>
+</ul>
+<p>Each of these methods can be used individually.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">snc</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">spike_pairs</span><span class="p">,</span> <span class="n">synaptic_strength_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">num_iterations</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="monosnyaptic-connection-quality-control">
+<h3>Monosnyaptic connection quality control<a class="headerlink" href="#monosnyaptic-connection-quality-control" title="Link to this heading">¶</a></h3>
+<p>Next, check the results. It is important to ensure the connections are truely monosynaptic, and not polysynaptic or simply a byproduct of poorly isolated spike-units.</p>
+<p>To do so, there are several in-built modules to check the quality of the outputs. These are based on the type of connections and time-lag threshold estimates.</p>
+<p><strong>Acceptance criteria</strong></p>
+<ul class="simple">
+<li><p><cite>Excitatory connections between cells located near each other should occur within 2 ms.</cite></p></li>
+<li><p><cite>The monosynaptic peak should also be shaped as a double expontential function with a fast rise and a slower decay. Inhibitory connections have a slower decay, and should be factored into your QC metrics.</cite></p></li>
+</ul>
+<p><strong>Rejection criteria</strong></p>
+<ul class="simple">
+<li><p><cite>If the CCG shows a maintained refractory period, it suggests that the spikes should have been merged in the spike-sorting process. Hence, if a monosynaptic peak is seen, then it is likely because it is the same neuron which has not been correctly merged.</cite></p></li>
+<li><p><cite>If the CCG peak coincides with the ACG peak (usually slower than 2 ms), the unit likely should have been merged in the spike sorting process, of the cell-pair is probably contaminated with a 3rd pair.</cite></p></li>
+<li><p><cite>A broad centrally aligned CCG peak indicates common drive, and therefore should be rejected. This is often seen when comparing two cells located at different shanks (&gt; hundreds of um apart). This can be difficult to differentiate.</cite></p></li>
+</ul>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="c1"># simply, a way to filter the connections based on the peak time of the ccg</span>
+<span class="c1"># is to convert the connection data to a dataframe and then query it using pandas</span>
+
+<span class="n">query</span> <span class="o">=</span> <span class="s1">&#39;ccg_peak_time_ms &gt; 1 &amp; ccg_peak_time_ms &lt; 4&#39;</span>
+<span class="n">connection_df_filtered</span> <span class="o">=</span> <span class="n">connections</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of exc connections: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">connections</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Number of exc connections after filtering: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">connection_df_filtered</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Beyond a simply df query, the main object can be filtered for units to be rejected. Here, a log can be
+provided.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">snc</span><span class="o">.</span><span class="n">filter_connections</span><span class="p">(</span><span class="n">connections</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="conclusion">
+<h3>Conclusion<a class="headerlink" href="#conclusion" title="Link to this heading">¶</a></h3>
+<p>For more information on the methods and classes used in this example, please refer to the documentation.</p>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-analyses-monosyn-testdata-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/af9f1af2f4766d70b07be3e721bd8a98/monosyn_testdata.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">monosyn_testdata.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/e8698b6f21d0e191a04ab168c291dcbb/monosyn_testdata.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">monosyn_testdata.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../../_downloads/0acbd602f9c4082803b92ae0663640c3/monosyn_testdata.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">monosyn_testdata.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2024, Michael Zabolocki.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

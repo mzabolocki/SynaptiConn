@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>synapticonn.core.connections.SynaptiConn &#8212; SynaptiConn 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=5aa371e9"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=a56c686a"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          SynaptiConn</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/mzabolocki/SynaptiConn">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">synapticonn.core.connections.SynaptiConn</a><ul>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn"><code class="docutils literal notranslate"><span class="pre">SynaptiConn</span></code></a><ul>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.bin_size_t"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.bin_size_t</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.max_lag_t"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.max_lag_t</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.method"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.method</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.recording_length_t"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.recording_length_t</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.srate"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.srate</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.spike_id_type"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.spike_id_type</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.time_unit"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.time_unit</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.pair_synaptic_strength"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.pair_synaptic_strength</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.__init__"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.add_spike_time_data"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.add_spike_time_data()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.connections_filtering"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.connections_filtering</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.filter_connections"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.filter_connections()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.filter_spike_units"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.filter_spike_units()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.fit"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.fit()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.get_spike_times_for_units"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.get_spike_times_for_units()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.monosynaptic_connection_features"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.monosynaptic_connection_features()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.monosynaptic_connection_types"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.monosynaptic_connection_types()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.plot_autocorrelogram"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.plot_autocorrelogram()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.plot_crosscorrelogram"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.plot_crosscorrelogram()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.plot_spike_train"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.plot_spike_train()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.plot_synaptic_strength"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.plot_synaptic_strength()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.print_connection_results"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.print_connection_results()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.report"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.report()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.report_correlogram_settings"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.report_correlogram_settings()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.report_spike_units"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.report_spike_units()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.reset_pair_synaptic_strength"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.reset_pair_synaptic_strength()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.return_crosscorrelogram_data"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.return_crosscorrelogram_data()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.set_bin_settings"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.set_bin_settings()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.set_time_unit"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.set_time_unit()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.spike_unit_filtering"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.spike_unit_filtering</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.spike_unit_ids"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.spike_unit_ids()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.spike_unit_labels"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.spike_unit_labels()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.spike_unit_quality"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.spike_unit_quality()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.synaptic_strength"><code class="docutils literal notranslate"><span class="pre">SynaptiConn.synaptic_strength()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <section id="synapticonn-core-connections-synapticonn">
+<h1>synapticonn.core.connections.SynaptiConn<a class="headerlink" href="#synapticonn-core-connections-synapticonn" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">synapticonn.core.connections.</span></span><span class="sig-name descname"><span class="pre">SynaptiConn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_times:</span> <span class="pre">dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_size_t:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_lag_t:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'cross-correlation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recording_length_t:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srate:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spike_id_type:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="synapticonn.core.connections.SpikeManager.html#synapticonn.core.connections.SpikeManager" title="synapticonn.core.spike_times.SpikeManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikeManager</span></code></a></p>
+<p>Base class for quantifying monosynaptic connections between neurons.</p>
+<p>This class builds upon the <cite>SpikeManager</cite> to provide functionality for
+computing, analyzing, and visualizing monosynaptic connections between
+pairs of neurons based on their spike trains. Key features include
+cross-correlogram computation, synaptic strength estimation, and connection
+classification.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_times</strong> (<em>dict</em>) – Dictionary containing spike times for each unit, indexed by unit ID. Spike
+times should be a NumPy array of floats.</p></li>
+<li><p><strong>time_unit</strong> (<em>str</em>) – Unit of time for the spike times. Options are ‘ms’ (milliseconds) or ‘s’ (seconds).</p></li>
+<li><p><strong>bin_size_t</strong> (<em>float</em>) – Bin size for computing cross-correlograms.</p></li>
+<li><p><strong>max_lag_t</strong> (<em>float</em>) – Maximum lag to consider when computing cross-correlograms.</p></li>
+<li><p><strong>method</strong> (<em>str</em><em>, </em><em>optional</em>) – Method for computing synaptic strength. Default is ‘cross-correlation’.
+Currently, only this method is implemented, but future versions may
+include additional methods.</p></li>
+<li><p><strong>recording_length_t</strong> (<em>float</em>) – Duration of the recording, in the same time unit as <cite>time_unit</cite>.</p></li>
+<li><p><strong>srate</strong> (<em>float</em>) – Sampling rate of the recording in Hz.</p></li>
+<li><p><strong>spike_id_type</strong> (<em>type</em>) – Data type of spike unit identifiers. Typically <cite>int</cite> or <cite>str</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.bin_size_t">
+<span class="sig-name descname"><span class="pre">bin_size_t</span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.bin_size_t" title="Link to this definition">¶</a></dt>
+<dd><p>Bin size used for cross-correlogram computations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.max_lag_t">
+<span class="sig-name descname"><span class="pre">max_lag_t</span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.max_lag_t" title="Link to this definition">¶</a></dt>
+<dd><p>Maximum lag used for cross-correlogram computations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.method">
+<span class="sig-name descname"><span class="pre">method</span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.method" title="Link to this definition">¶</a></dt>
+<dd><p>The method used for synaptic strength computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.recording_length_t">
+<span class="sig-name descname"><span class="pre">recording_length_t</span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.recording_length_t" title="Link to this definition">¶</a></dt>
+<dd><p>Total duration of the recording, in the specified time unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.srate">
+<span class="sig-name descname"><span class="pre">srate</span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.srate" title="Link to this definition">¶</a></dt>
+<dd><p>Sampling rate of the spike data, in Hz.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.spike_id_type">
+<span class="sig-name descname"><span class="pre">spike_id_type</span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.spike_id_type" title="Link to this definition">¶</a></dt>
+<dd><p>Type of spike unit identifiers (e.g., <cite>int</cite> or <cite>str</cite>).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.time_unit">
+<span class="sig-name descname"><span class="pre">time_unit</span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.time_unit" title="Link to this definition">¶</a></dt>
+<dd><p>Unit of time used for computations and spike data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.pair_synaptic_strength">
+<span class="sig-name descname"><span class="pre">pair_synaptic_strength</span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.pair_synaptic_strength" title="Link to this definition">¶</a></dt>
+<dd><p>Dictionary containing synaptic strength data for each spike pair. This
+is populated after running the <cite>fit</cite> or <cite>synaptic_strength</cite> methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The <cite>SynaptiConn</cite> class is designed to process and analyze spike train data
+for determining monosynaptic connections.</p></li>
+<li><p>If the spike times are provided in seconds, they are converted to milliseconds
+internally to maintain consistency.</p></li>
+<li><p>The class assumes that the recording duration (<cite>recording_length_t</cite>) and
+time unit (<cite>time_unit</cite>) are accurately specified.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>Initialize the SynaptiConn object and compute synaptic strength:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">synapti_conn</span> <span class="o">=</span> <span class="n">SynaptiConn</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">spike_times</span><span class="o">=</span><span class="n">spike_data</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">time_unit</span><span class="o">=</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">bin_size_t</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">max_lag_t</span><span class="o">=</span><span class="mf">50.0</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cross-correlation&#39;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">recording_length_t</span><span class="o">=</span><span class="mi">60000</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">srate</span><span class="o">=</span><span class="mi">20000</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">synapti_conn</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">spike_pairs</span><span class="o">=</span><span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">synapti_conn</span><span class="o">.</span><span class="n">pair_synaptic_strength</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_times:</span> <span class="pre">dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bin_size_t:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_lag_t:</span> <span class="pre">float</span> <span class="pre">=</span> <span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'cross-correlation'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recording_length_t:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srate:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spike_id_type:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the SynaptiConn object.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.__init__" title="synapticonn.core.connections.SynaptiConn.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([spike_times, time_unit, ...])</p></td>
+<td><p>Initialize the SynaptiConn object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.add_spike_time_data" title="synapticonn.core.connections.SynaptiConn.add_spike_time_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_spike_time_data</span></code></a>([spike_times, ...])</p></td>
+<td><p>Add spike time data to the SpikeManager object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.filter_connections" title="synapticonn.core.connections.SynaptiConn.filter_connections"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_connections</span></code></a>(connections_df[, query, ...])</p></td>
+<td><p>Filter connections based on a query string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.filter_spike_units" title="synapticonn.core.connections.SynaptiConn.filter_spike_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_spike_units</span></code></a>(quality_metrics[, query, ...])</p></td>
+<td><p>Filter spike units based on quality metrics.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.fit" title="synapticonn.core.connections.SynaptiConn.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.get_spike_times_for_units" title="synapticonn.core.connections.SynaptiConn.get_spike_times_for_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_spike_times_for_units</span></code></a>([...])</p></td>
+<td><p>Retrieve spike times for the selected units.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.monosynaptic_connection_features" title="synapticonn.core.connections.SynaptiConn.monosynaptic_connection_features"><code class="xref py py-obj docutils literal notranslate"><span class="pre">monosynaptic_connection_features</span></code></a>([n_bootstraps])</p></td>
+<td><p>Extract connection features from synaptic strength data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.monosynaptic_connection_types" title="synapticonn.core.connections.SynaptiConn.monosynaptic_connection_types"><code class="xref py py-obj docutils literal notranslate"><span class="pre">monosynaptic_connection_types</span></code></a>([...])</p></td>
+<td><p>Categorize monosynaptic connection types based on synaptic strength data output.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.plot_autocorrelogram" title="synapticonn.core.connections.SynaptiConn.plot_autocorrelogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_autocorrelogram</span></code></a>([spike_units])</p></td>
+<td><p>Plot the autocorrelogram.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.plot_crosscorrelogram" title="synapticonn.core.connections.SynaptiConn.plot_crosscorrelogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_crosscorrelogram</span></code></a>([spike_pairs])</p></td>
+<td><p>Plot the cross-correlogram for valid spike pairs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.plot_spike_train" title="synapticonn.core.connections.SynaptiConn.plot_spike_train"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_spike_train</span></code></a>([spike_units])</p></td>
+<td><p>Plot the spike train for the given spike units.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.plot_synaptic_strength" title="synapticonn.core.connections.SynaptiConn.plot_synaptic_strength"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_synaptic_strength</span></code></a>([spike_pair])</p></td>
+<td><p>Plot the synaptic strength for the given spike pair.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.print_connection_results" title="synapticonn.core.connections.SynaptiConn.print_connection_results"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_connection_results</span></code></a>([connection_types, ...])</p></td>
+<td><p>Print the results of the synaptic strength and connection types.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.report" title="synapticonn.core.connections.SynaptiConn.report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report</span></code></a>([spike_pairs, ...])</p></td>
+<td><p>Compute the synaptic strength and connection types, and display a report.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.report_correlogram_settings" title="synapticonn.core.connections.SynaptiConn.report_correlogram_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_correlogram_settings</span></code></a>()</p></td>
+<td><p>Report the bin settings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.report_spike_units" title="synapticonn.core.connections.SynaptiConn.report_spike_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_spike_units</span></code></a>()</p></td>
+<td><p>Report the spike units.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.reset_pair_synaptic_strength" title="synapticonn.core.connections.SynaptiConn.reset_pair_synaptic_strength"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_pair_synaptic_strength</span></code></a>()</p></td>
+<td><p>Reset the synaptic strength data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.return_crosscorrelogram_data" title="synapticonn.core.connections.SynaptiConn.return_crosscorrelogram_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">return_crosscorrelogram_data</span></code></a>([spike_pairs])</p></td>
+<td><p>Compute and return the cross-correlogram data for valid spike pairs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.set_bin_settings" title="synapticonn.core.connections.SynaptiConn.set_bin_settings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_bin_settings</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.set_time_unit" title="synapticonn.core.connections.SynaptiConn.set_time_unit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_time_unit</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.spike_unit_ids" title="synapticonn.core.connections.SynaptiConn.spike_unit_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spike_unit_ids</span></code></a>()</p></td>
+<td><p>Return the spike unit labels.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.spike_unit_labels" title="synapticonn.core.connections.SynaptiConn.spike_unit_labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spike_unit_labels</span></code></a>()</p></td>
+<td><p>Retrieve the spike unit labels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.spike_unit_quality" title="synapticonn.core.connections.SynaptiConn.spike_unit_quality"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spike_unit_quality</span></code></a>([isi_threshold_ms, ...])</p></td>
+<td><p>Compute spike isolation quality metrics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.synaptic_strength" title="synapticonn.core.connections.SynaptiConn.synaptic_strength"><code class="xref py py-obj docutils literal notranslate"><span class="pre">synaptic_strength</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.connections_filtering" title="synapticonn.core.connections.SynaptiConn.connections_filtering"><code class="xref py py-obj docutils literal notranslate"><span class="pre">connections_filtering</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SynaptiConn.spike_unit_filtering" title="synapticonn.core.connections.SynaptiConn.spike_unit_filtering"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spike_unit_filtering</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.add_spike_time_data">
+<span class="sig-name descname"><span class="pre">add_spike_time_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_times:</span> <span class="pre">dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recording_length_t:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srate:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spike_id_type:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.add_spike_time_data" title="Link to this definition">¶</a></dt>
+<dd><p>Add spike time data to the SpikeManager object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_times</strong> (<em>dict</em>) – Dictionary containing spike times for each unit.
+Indexed by unit ID.</p></li>
+<li><p><strong>recording_length_t</strong> (<em>float</em>) – Length of the recording in time units.</p></li>
+<li><p><strong>time_unit</strong> (<em>str</em>) – Unit of time for the spike times. Default is ‘ms’.
+Options include ‘s’, ‘ms’.</p></li>
+<li><p><strong>srate</strong> (<em>float</em>) – Sampling rate of the recording in Hz.</p></li>
+<li><p><strong>spike_id_type</strong> (<em>type</em>) – Type of the spike unit ID. Default is int or str.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.connections_filtering">
+<span class="sig-name descname"><span class="pre">connections_filtering</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.connections_filtering" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.filter_connections">
+<span class="sig-name descname"><span class="pre">filter_connections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connections_df</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.filter_connections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.filter_connections" title="Link to this definition">¶</a></dt>
+<dd><p>Filter connections based on a query string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connections_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing the connection data.
+This DataFrame should contain the synaptic strength data
+for all select pairs of spike trains.</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – Query string to filter the DataFrame.</p></li>
+<li><p><strong>log</strong> (<em>bool</em>) – If True, print the query string used for filtering.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – If True, overwrite the DataFrame with the filtered data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>connections_df_filtered</strong> (<em>pd.DataFrame</em>) – DataFrame containing the filtered connection data.</p></li>
+<li><p><em>Log</em></p></li>
+<li><p><em>—</em></p></li>
+<li><p><em>The log parameter is used to track the removed spike pairs with</em></p></li>
+<li><p><em>detected monosynaptic connections. This is useful for tracking</em></p></li>
+<li><p><em>the removed spike pairs from the original DataFrame.</em></p></li>
+<li><p><em>The output is saved in a log file in the</em></p></li>
+<li><p><em>’removed_spikepair_connections’ folder. The file is named</em></p></li>
+<li><p><em>’low_quality_connections_removed.log’.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.filter_spike_units">
+<span class="sig-name descname"><span class="pre">filter_spike_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quality_metrics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.filter_spike_units" title="Link to this definition">¶</a></dt>
+<dd><p>Filter spike units based on quality metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quality_metrics</strong> (<em>pd.DataFrame</em>) – DataFrame containing the quality metrics for each spike unit.
+This is the dataframe outputted from the spike_unit_quality method
+and will be used to filter spike units.</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – Query to filter spike units based on the quality metrics.
+This query should be a valid pandas query</p></li>
+<li><p><strong>log</strong> (<em>bool</em>) – Whether to log the filtered spike units. Default is False.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – Whether to overwrite the existing spike_times dictionary with the filtered units.
+Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>filtered_units_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing the filtered spike units based on the query.</p></li>
+<li><p><em>Log</em></p></li>
+<li><p><em>—</em></p></li>
+<li><p><em>If log is True, the method will log the removed spike units</em></p></li>
+<li><p><em>based on the query. The log will contain the unit ID and the</em></p></li>
+<li><p><em>query used to filter the units.</em></p></li>
+<li><p><em>The log file will be saved in the ‘removed_spike_units’ folder</em></p></li>
+<li><p><em>in the current working directory. The log file will be named</em></p></li>
+<li><p><em>’low_quality_units_removed.log’.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.fit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.get_spike_times_for_units">
+<span class="sig-name descname"><span class="pre">get_spike_times_for_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_units_to_collect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.get_spike_times_for_units" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve spike times for the selected units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>spike_units_to_collect</strong> (<em>list</em>) – List of spike units to collect.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>filtered_spike_times</strong> – Filtered dictionary containing spike times for the selected units.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default, this method returns all spike times if no units are specified.
+If specific units are specified, then the method will return the spike times
+for those units only.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.monosynaptic_connection_features">
+<span class="sig-name descname"><span class="pre">monosynaptic_connection_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_bootstraps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.monosynaptic_connection_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.monosynaptic_connection_features" title="Link to this definition">¶</a></dt>
+<dd><p>Extract connection features from synaptic strength data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_bootstraps</strong> (<em>int</em>) – Number of bootstraps to compute the confidence intervals.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>connection_features</strong> – Dictionary containing connection features for all pairs of spike trains.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.monosynaptic_connection_types">
+<span class="sig-name descname"><span class="pre">monosynaptic_connection_types</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">synaptic_strength_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.monosynaptic_connection_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.monosynaptic_connection_types" title="Link to this definition">¶</a></dt>
+<dd><p>Categorize monosynaptic connection types based on synaptic strength data output.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>synaptic_strength_threshold</strong> (<em>float</em>) – Threshold value for categorizing connection types.
+Default is None. This is used to categorize the
+connection types based on the synaptic strength values.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>connection_types</strong> (<em>dict</em>) – Dictionary containing connection types for all pairs of spike trains.</p></li>
+<li><p><em>Cross-correlation method notes</em></p></li>
+<li><p><em>——————————</em></p></li>
+<li><p><em>Based on [1], for excitatory connections, a threshold of  5 is recommended.</em></p></li>
+<li><p><em>For inhibitory connections, a threshold of  -5 is recommended. Thresholds</em></p></li>
+<li><p><em>can be adjusted based on the synaptic strength data.</em></p></li>
+<li><p><em>Please see [1] for more details.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Currently, connection types are based on the synaptic strength values. This is
+computed using the cross-correlation method. In future versions, this will be expanded
+to include other types of correlation methods.</p>
+<p class="rubric">References</p>
+<p>[1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.plot_autocorrelogram">
+<span class="sig-name descname"><span class="pre">plot_autocorrelogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.plot_autocorrelogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.plot_autocorrelogram" title="Link to this definition">¶</a></dt>
+<dd><p>Plot the autocorrelogram.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_units</strong> (<em>list</em>) – List of spike units to plot.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to <cite>plot_acg</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Autocorrelograms are computed for each spike unit and plotted.
+The bin size and maximum lag are set by the object parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.plot_crosscorrelogram">
+<span class="sig-name descname"><span class="pre">plot_crosscorrelogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_pairs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.plot_crosscorrelogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.plot_crosscorrelogram" title="Link to this definition">¶</a></dt>
+<dd><p>Plot the cross-correlogram for valid spike pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_pairs</strong> (<em>List</em><em>[</em><em>Tuple</em><em>]</em>) – List of spike pairs to plot.</p></li>
+<li><p><strong>ax</strong> (<em>Any</em>) – Axis to plot on.</p></li>
+<li><p><strong>show_axes</strong> (<em>bool</em>) – Whether to add axis labels. Default is True.</p></li>
+<li><p><strong>**kwargs</strong> (<em>Any</em>) – Additional keyword arguments passed to <cite>plot_ccg</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.plot_spike_train">
+<span class="sig-name descname"><span class="pre">plot_spike_train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.plot_spike_train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.plot_spike_train" title="Link to this definition">¶</a></dt>
+<dd><p>Plot the spike train for the given spike units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_units</strong> (<em>list</em>) – List of spike units to plot.
+If None, all spike units are plotted.</p></li>
+<li><p><strong>**kwargs</strong> (<em>Any</em>) – Additional keyword arguments passed to <cite>plot_spike_train</cite>
+for customizing the plot using <cite>matplotlib</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.plot_synaptic_strength">
+<span class="sig-name descname"><span class="pre">plot_synaptic_strength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_pair</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.plot_synaptic_strength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.plot_synaptic_strength" title="Link to this definition">¶</a></dt>
+<dd><p>Plot the synaptic strength for the given spike pair.</p>
+<p>Note, this method requires the synaptic strength data to be computed first.
+It only plots the synaptic strength for a single pair of spike trains.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_pair</strong> (<em>tuple</em>) – Spike pair to plot the synaptic strength.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments passed to <cite>plot_ccg_synaptic_strength</cite>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>DataError</strong> – If no synaptic strength data is found.</p></li>
+<li><p><strong>SpikePairError</strong> – If spike pair is not provided.</p></li>
+<li><p><strong>NotImplementedError</strong> – If the method is not implemented in the current package version.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.print_connection_results">
+<span class="sig-name descname"><span class="pre">print_connection_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection_types</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.print_connection_results"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.print_connection_results" title="Link to this definition">¶</a></dt>
+<dd><p>Print the results of the synaptic strength and connection types.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>connection_types</strong> (<em>dict</em>) – Dictionary containing connection types for all pairs of spike trains.
+This is computed using the ‘fit’ method.</p></li>
+<li><p><strong>concise</strong> (<em>bool</em>) – If True, print a concise summary of the results.
+If False, print a detailed summary of the results.</p></li>
+<li><p><strong>params</strong> (<em>dict</em>) – Additional parameters used for computing the model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.report">
+<span class="sig-name descname"><span class="pre">report</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_pairs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">synaptic_strength_threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">concise</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.report"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.report" title="Link to this definition">¶</a></dt>
+<dd><p>Compute the synaptic strength and connection types, and display a report.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_pairs</strong> (<em>List</em><em>[</em><em>Tuple</em><em>]</em>) – List of spike pairs to compute the synaptic strength.
+These are tuples of pre- and post-synaptic neuron IDs.
+Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.</p></li>
+<li><p><strong>synaptic_strength_threshold</strong> (<em>float</em>) – Threshold value for categorizing connection types. Default is 5.
+This is used to categorize the connection types based on the synaptic strength values.</p></li>
+<li><p><strong>concise</strong> (<em>bool</em>) – If True, print a concise summary of the results. This excludes blank lines.</p></li>
+<li><p><strong>**kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – <p>Additional parameters for customizing the computation. Includes:
+- num_iterations : int</p>
+<blockquote>
+<div><p>Number of iterations for computing synaptic strength (default: 1000).</p>
+</div></blockquote>
+<ul>
+<li><dl class="simple">
+<dt>max_lag_t<span class="classifier">float</span></dt><dd><p>Maximum lag to compute the synaptic strength (in ms, default: 25.0).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>bin_size_t<span class="classifier">float</span></dt><dd><p>Bin size for computing the synaptic strength (in ms, default: 0.5).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>jitter_range_t<span class="classifier">float</span></dt><dd><p>Jitter range for synaptic strength computation (in ms, default: 10.0).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>half_window_t<span class="classifier">float</span></dt><dd><p>Half window size for synaptic strength computation (in ms, default: 5).</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>n_jobs<span class="classifier">int</span></dt><dd><p>Number of parallel jobs to use (default: -1, all cores).</p>
+</dd>
+</dl>
+</li>
+</ul>
+</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Data is computed and displayed in a report format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.report_correlogram_settings">
+<span class="sig-name descname"><span class="pre">report_correlogram_settings</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.report_correlogram_settings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.report_correlogram_settings" title="Link to this definition">¶</a></dt>
+<dd><p>Report the bin settings.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.report_spike_units">
+<span class="sig-name descname"><span class="pre">report_spike_units</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.report_spike_units" title="Link to this definition">¶</a></dt>
+<dd><p>Report the spike units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>spk_unit_summary</strong> – Dictionary containing the spike unit summary.
+Includes the unit ID, number of spikes, and
+firing rate in Hz.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The spike unit summary is computed for each unit
+in the spike_times dictionary. Firing rates
+are calculated based on the total number of spikes
+and the recording length. If the time unit is in seconds,
+the firing rate is converted to Hz.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.reset_pair_synaptic_strength">
+<span class="sig-name descname"><span class="pre">reset_pair_synaptic_strength</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.reset_pair_synaptic_strength"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.reset_pair_synaptic_strength" title="Link to this definition">¶</a></dt>
+<dd><p>Reset the synaptic strength data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.return_crosscorrelogram_data">
+<span class="sig-name descname"><span class="pre">return_crosscorrelogram_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_pairs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.return_crosscorrelogram_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.return_crosscorrelogram_data" title="Link to this definition">¶</a></dt>
+<dd><p>Compute and return the cross-correlogram data for valid spike pairs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>spike_pairs</strong> (<em>List</em><em>[</em><em>Tuple</em><em>]</em>) – List of spike pairs to compute the cross-correlogram data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>crosscorrelogram_data</strong> – Dictionary containing cross-correlograms and bins for all pairs of spike trains.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.set_bin_settings">
+<span class="sig-name descname"><span class="pre">set_bin_settings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.set_bin_settings" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.set_time_unit">
+<span class="sig-name descname"><span class="pre">set_time_unit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.set_time_unit" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.spike_unit_filtering">
+<span class="sig-name descname"><span class="pre">spike_unit_filtering</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.spike_unit_filtering" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.spike_unit_ids">
+<span class="sig-name descname"><span class="pre">spike_unit_ids</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/connections.html#SynaptiConn.spike_unit_ids"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.spike_unit_ids" title="Link to this definition">¶</a></dt>
+<dd><p>Return the spike unit labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.spike_unit_labels">
+<span class="sig-name descname"><span class="pre">spike_unit_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.spike_unit_labels" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the spike unit labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.spike_unit_quality">
+<span class="sig-name descname"><span class="pre">spike_unit_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">isi_threshold_ms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_isi_ms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">presence_ratio_bin_duration_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">presence_ratio_mean_fr_ratio_thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.spike_unit_quality" title="Link to this definition">¶</a></dt>
+<dd><p>Compute spike isolation quality metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>isi_threshold_ms</strong> (<em>float</em>) – Threshold for the interspike interval (ISI) violations, in milliseconds.</p></li>
+<li><p><strong>min_isi_ms</strong> (<em>float</em>) – Minimum ISI value, in milliseconds.</p></li>
+<li><p><strong>presence_ratio_bin_duration_sec</strong> (<em>float</em>) – Duration of each bin for the presence ratio, in seconds.</p></li>
+<li><p><strong>presence_ratio_mean_fr_ratio_thresh</strong> (<em>float</em>) – Minimum mean firing rate ratio threshold for the presence ratio.
+This is the minimum mean firing rate that must be present in a bin
+for the unit to be considered “present” in that bin.
+By default, this is set to 0.0. This means that the unit must have
+at least one spike in each bin to be considered “present.”</p></li>
+<li><p><strong>time_unit</strong> (<em>str</em>) – Unit of time for the spike times. Default is ‘ms’.
+This is used to compute the features in the quality metrics.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>quality_metrics</strong> – DataFrame containing the quality metrics for each spike unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Quality metrics include:
+- isi_violations_ratio: Fraction of ISIs that violate the threshold.
+- isi_violations_count: Number of ISIs that violate the threshold.
+- isi_violations_of_total_spikes: Fraction of ISIs that violate the threshold out of total spikes.
+- presence_ratio: Fraction of time during a session in which a unit is spiking.
+- mean_firing_rate: Mean firing rate of the unit.
+- recording_length_sec: Length of the recording in seconds.
+- n_spikes: Number of spikes for the unit.</p>
+<p>These are computed for each spike unit in the spike_times dictionary.</p>
+<p>For further information on the quality metric calculations,
+see the respective functions in the quality_metrics module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SynaptiConn.synaptic_strength">
+<span class="sig-name descname"><span class="pre">synaptic_strength</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#synapticonn.core.connections.SynaptiConn.synaptic_strength" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2024, Michael Zabolocki.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

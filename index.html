@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SynaptiConn &#8212; SynaptiConn 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="_static/documentation_options.js?v=5aa371e9"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=a56c686a"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          SynaptiConn</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="api.html">API</a></li>
+                <li><a href="auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/mzabolocki/SynaptiConn">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">SynaptiConn</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#installation">Installation</a><ul>
+<li><a class="reference internal" href="#synapticonn-stable-version">SynaptiConn (stable version)</a></li>
+<li><a class="reference internal" href="#development-version">Development version</a></li>
+<li><a class="reference internal" href="#editable-version">Editable Version</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#documentation">Documentation</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#quick-start">Quick start</a></li>
+<li><a class="reference internal" href="#spike-train-data">Spike-train data</a></li>
+</ul>
+</li>
+</ul>
+
+<form action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <section id="synapticonn">
+<h1>SynaptiConn<a class="headerlink" href="#synapticonn" title="Link to this heading">¶</a></h1>
+<p><a class="reference external" href="https://www.repostatus.org/#active"><img alt="project status" src="http://www.repostatus.org/badges/latest/active.svg" /></a> <a class="reference external" href="https://pypi.python.org/pypi/synapticonn/"><img alt="version" src="https://img.shields.io/pypi/v/synapticonn.svg" /></a> <a class="reference external" href="https://github.com/mzabolocki/SynaptiConn/actions/workflows/build.yml"><img alt="build status" src="https://github.com/mzabolocki/SynaptiConn/actions/workflows/build.yml/badge.svg" /></a> <a class="reference external" href="https://github.com/mzabolocki/SynaptiConn/actions/workflows/docs.yml"><img alt="docs status" src="https://github.com/mzabolocki/SynaptiConn/actions/workflows/docs.yml/badge.svg" /></a> <a class="reference external" href="https://opensource.org/licenses/Apache-2.0"><img alt="license" src="https://img.shields.io/pypi/l/synapticonn.svg" /></a> <a class="reference external" href="https://pypi.python.org/pypi/synapticonn/"><img alt="python versions" src="https://img.shields.io/pypi/pyversions/synapticonn.svg" /></a> <a class="reference external" href="https://static.pepy.tech/badge/synapticonn"><img alt="downloads" src="https://static.pepy.tech/badge/synapticonn" /></a></p>
+<a class="reference internal image-reference" href="https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png"><img alt="SynaptiConn" class="align-center" src="https://github.com/mzabolocki/SynaptiConn/raw/main/docs/img/synapti_conn_logo_v2.png" style="width: 40%;" />
+</a>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>SynaptiConn is a python package for inferring monosynaptic connections from single-unit spike-train data.</p>
+<p>The package provides a set of tools for analyzing spike-train data, including spike-train cross-correlation analysis, and for inferring monosynaptic connections using a model-based approach.
+The package is designed to be user-friendly and flexible, and can be used to analyze spike-train data from a variety of experimental paradigms.</p>
+<p>Monosynaptic connections, both excitatory and inhibitory connections, are determined with a model-based approach that fits a set of connection features to the observed spike-train cross-correlation.
+The package can determine the most likely set of connections that underlie the observed cross-correlation. The package also provides a set of tools for visualizing the data and model fits,
+and for exporting the connection features.</p>
+<p>In future versions, the package will include additional tools for analyzing spike-train data, and for inferring connections from other types of data, using a variety of models.</p>
+<p><strong>Please Star the project to support us and Watch to always stay up-to-date!</strong></p>
+</section>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<p>To install the stable version of SynaptiConn, you can use pip:</p>
+<section id="synapticonn-stable-version">
+<h3>SynaptiConn (stable version)<a class="headerlink" href="#synapticonn-stable-version" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>synapticonn
+</pre></div>
+</div>
+<p>The development version of SynaptiConn can be installed by cloning the repository and
+installing using pip:</p>
+</section>
+<section id="development-version">
+<h3>Development version<a class="headerlink" href="#development-version" title="Link to this heading">¶</a></h3>
+<p>To get the current development version, first clone this repository:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mzabolocki/SynaptiConn
+</pre></div>
+</div>
+<p>To install this cloned copy, move into the directory you just cloned, and run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+<section id="editable-version">
+<h3>Editable Version<a class="headerlink" href="#editable-version" title="Link to this heading">¶</a></h3>
+<p>To install an editable version, download the development version as above, and run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+</section>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
+<p>The ‘synapticonn’ package includes a full set of code documentation.</p>
+<p>To see the documentation for the candidate release, see
+<a class="reference external" href="https://mzabolocki.github.io/SynaptiConn/">here</a>.</p>
+</section>
+<section id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Link to this heading">¶</a></h2>
+<p><cite>synapticonn</cite> is written in Python, and requires Python &gt;= 3.8 to run.</p>
+<p>It requires the following dependencies:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/numpy/numpy">numpy</a></p></li>
+<li><p><a class="reference external" href="https://github.com/scipy/scipy">scipy</a> &gt;= 0.19</p></li>
+<li><p><a class="reference external" href="https://github.com/matplotlib/matplotlib">matplotlib</a> is needed to visualize data and model fits</p></li>
+<li><p><a class="reference external" href="https://github.com/pandas-dev/pandas">pandas</a> is needed for exporting connection features to dataframes</p></li>
+<li><p><a class="reference external" href="https://github.com/joblib/joblib">joblib</a> is needed for parallel processing</p></li>
+<li><p><a class="reference external" href="https://github.com/theorchard/openpyxl">openpyxl</a> is needed for exporting connection features to excel files</p></li>
+</ul>
+<p>We recommend using the <a class="reference external" href="https://www.anaconda.com/distribution/">Anaconda</a> distribution to manage these requirements.</p>
+</section>
+<section id="quick-start">
+<h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading">¶</a></h2>
+<p>The module is object orientated, and the main class is <cite>SynaptiConn</cite>, which is used to analyze spike-train data and infer monosynaptic connections.</p>
+<p>An example how to use the package is shown below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># import the model object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn</span><span class="w"> </span><span class="kn">import</span> <span class="n">SynaptiConn</span>
+
+<span class="c1"># initialize the model object</span>
+<span class="n">snc</span> <span class="o">=</span> <span class="n">SynaptiConn</span><span class="p">(</span><span class="n">spike_times</span><span class="p">,</span>
+                  <span class="n">method</span><span class="o">=</span><span class="s2">&quot;cross-correlation&quot;</span><span class="p">,</span>
+                  <span class="n">time_unit</span><span class="o">=</span><span class="s2">&quot;ms&quot;</span><span class="p">,</span>
+                  <span class="n">srate</span><span class="o">=</span><span class="mi">30_000</span><span class="p">,</span>
+                  <span class="n">recording_length_t</span><span class="o">=</span><span class="mi">600</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span>
+                  <span class="n">bin_size_t</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                  <span class="n">max_lag_t</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="c1"># set the spike unit ids to be used for the analysis</span>
+<span class="n">spike_pairs</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">9</span><span class="p">)]</span>
+
+<span class="c1"># fit the model and report the monosynaptic connection results</span>
+<span class="n">snc</span><span class="o">.</span><span class="n">report</span><span class="p">(</span><span class="n">spike_pairs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>Define the settings</strong></p>
+<p>The <cite>SynaptiConn</cite> object is initialized with the following settings:</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt><cite>spike_times</cite><span class="classifier">dict</span></dt><dd><p>A dictionary of spike times for each neuron, where the keys are the neuron IDs, and the values are arrays of spike times.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>method</cite><span class="classifier">str</span></dt><dd><p>The method to use for inferring connections. Currently, only ‘cross-correlation’ is supported. This will be expanded in future versions.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>time_unit</cite><span class="classifier">str</span></dt><dd><p>The time unit of the spike times. Currently, only ‘ms’ is supported. This will be expanded in future versions.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>srate</cite><span class="classifier">float</span></dt><dd><p>The sampling rate of the spike times, in Hz.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>recording_length_t</cite><span class="classifier">float</span></dt><dd><p>The length of the recording, in the same time unit as the spike times.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>bin_size_t</cite><span class="classifier">float</span></dt><dd><p>The size of the bins to use for the cross-correlation analysis, in the same time unit as the spike times.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><cite>max_lag_t</cite><span class="classifier">float</span></dt><dd><p>The maximum lag to use for the cross-correlation analysis, in the same time unit as the spike times.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p><strong>Note that a full set of examples and tutorials are provided in the documentation.
+These provide a more detailed overview of how to use the package, and how to interpret the results.</strong></p>
+<p>Documentation will be maintained and updated regularly, and we welcome feedback and suggestions for improvements.</p>
+</section>
+<section id="spike-train-data">
+<h2>Spike-train data<a class="headerlink" href="#spike-train-data" title="Link to this heading">¶</a></h2>
+<p>SynaptiConn is designed to work with spike-train data, which can be provided in the form of a dict of spike times for each neuron.
+These are to be organised as a dictionary, where the keys are the neuron IDs, and the values are arrays of spike times.</p>
+<p>It is recommended to use the <a class="reference external" href="https://spikeinterface.readthedocs.io/en/latest/modules/sorters.html">SpikeInterface</a> package to process, load and organize spike-train data.
+All spike-units should be subject to appropriate spike-sorting procedures before being analyzed with SynaptiConn. This includes removing noise and artifacts,
+and ensuring that the spike times are accurate. For further information, please see the quality control metric outline from
+<a class="reference external" href="https://allensdk.readthedocs.io/en/latest/_static/examples/nb/ecephys_quality_metrics.html#d-prime">Allen Brain documentation</a>.</p>
+<p>If unsure of the data quality, SynaptiConn has simple quality control checks built in, which can be used to filter out poor quality data.</p>
+<p><em>In future versions, we plan to include additional spike-time data types, such as NWB files, and other file formats. Further,
+we plan to include additional spike-time data loaders, to make it easier to load and organize spike-time data, along with additional quality control checks.</em></p>
+</section>
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2024, Michael Zabolocki.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

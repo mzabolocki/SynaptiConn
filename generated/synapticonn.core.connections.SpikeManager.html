@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>synapticonn.core.connections.SpikeManager &#8212; SynaptiConn 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../_static/documentation_options.js?v=5aa371e9"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=a56c686a"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          SynaptiConn</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/mzabolocki/SynaptiConn">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary"><ul>
+<li><a class="reference internal" href="#">synapticonn.core.connections.SpikeManager</a><ul>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager"><code class="docutils literal notranslate"><span class="pre">SpikeManager</span></code></a><ul>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.spike_times"><code class="docutils literal notranslate"><span class="pre">SpikeManager.spike_times</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.time_unit"><code class="docutils literal notranslate"><span class="pre">SpikeManager.time_unit</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.recording_length_t"><code class="docutils literal notranslate"><span class="pre">SpikeManager.recording_length_t</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.spike_id_type"><code class="docutils literal notranslate"><span class="pre">SpikeManager.spike_id_type</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.srate"><code class="docutils literal notranslate"><span class="pre">SpikeManager.srate</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.spike_unit_filtering"><code class="docutils literal notranslate"><span class="pre">SpikeManager.spike_unit_filtering</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.__init__"><code class="docutils literal notranslate"><span class="pre">SpikeManager.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.add_spike_time_data"><code class="docutils literal notranslate"><span class="pre">SpikeManager.add_spike_time_data()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.filter_spike_units"><code class="docutils literal notranslate"><span class="pre">SpikeManager.filter_spike_units()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.get_spike_times_for_units"><code class="docutils literal notranslate"><span class="pre">SpikeManager.get_spike_times_for_units()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.report_spike_units"><code class="docutils literal notranslate"><span class="pre">SpikeManager.report_spike_units()</span></code></a></li>
+<li><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">SpikeManager.spike_unit_filtering</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.spike_unit_labels"><code class="docutils literal notranslate"><span class="pre">SpikeManager.spike_unit_labels()</span></code></a></li>
+<li><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.spike_unit_quality"><code class="docutils literal notranslate"><span class="pre">SpikeManager.spike_unit_quality()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+<form action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <section id="synapticonn-core-connections-spikemanager">
+<h1>synapticonn.core.connections.SpikeManager<a class="headerlink" href="#synapticonn-core-connections-spikemanager" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">synapticonn.core.connections.</span></span><span class="sig-name descname"><span class="pre">SpikeManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_times:</span> <span class="pre">dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srate:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recording_length_t:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spike_id_type:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/spike_times.html#SpikeManager"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SpikeManager" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for managing and processing spike time data.</p>
+<p>This class provides methods for validating, organizing, and analyzing
+spike time data for neuroscience studies. It facilitates quality control
+metrics computation, spike unit filtering, and retrieval of relevant spike
+unit information.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_times</strong> (<em>dict</em>) – Dictionary containing spike times for each unit, indexed by unit ID.</p></li>
+<li><p><strong>time_unit</strong> (<em>str</em>) – Unit of time for the spike times. Default is ‘ms’. Options include ‘s’, ‘ms’.</p></li>
+<li><p><strong>srate</strong> (<em>float</em>) – Sampling rate of the recording in Hz.</p></li>
+<li><p><strong>recording_length_t</strong> (<em>float</em>) – Length of the recording in the specified time unit.</p></li>
+<li><p><strong>spike_id_type</strong> (<em>type</em>) – Data type of the spike unit ID. Default is <cite>int</cite> or <cite>str</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.spike_times">
+<span class="sig-name descname"><span class="pre">spike_times</span></span><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.spike_times" title="Link to this definition">¶</a></dt>
+<dd><p>Validated dictionary of spike times, indexed by unit ID.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.time_unit">
+<span class="sig-name descname"><span class="pre">time_unit</span></span><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.time_unit" title="Link to this definition">¶</a></dt>
+<dd><p>The time unit used for spike times (‘ms’ or ‘s’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.recording_length_t">
+<span class="sig-name descname"><span class="pre">recording_length_t</span></span><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.recording_length_t" title="Link to this definition">¶</a></dt>
+<dd><p>The duration of the recording in the specified time unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.spike_id_type">
+<span class="sig-name descname"><span class="pre">spike_id_type</span></span><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.spike_id_type" title="Link to this definition">¶</a></dt>
+<dd><p>Data type of spike unit identifiers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>type</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.srate">
+<span class="sig-name descname"><span class="pre">srate</span></span><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.srate" title="Link to this definition">¶</a></dt>
+<dd><p>Sampling rate of the recording in Hz.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.spike_unit_filtering">
+<span class="sig-name descname"><span class="pre">spike_unit_filtering</span></span><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.spike_unit_filtering" title="Link to this definition">¶</a></dt>
+<dd><p>Tracks whether spike units have been filtered.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Notes</p>
+<p>The SpikeManager object is used to manage spike time data.
+This object is used to store and process spike times for
+each unit in the recording. The object provides methods
+for computing quality metrics, filtering spike units,
+and reporting spike unit information.</p>
+<p>The SpikeManager object is initialized with the spike times,
+time unit, sampling rate, recording length, and spike ID type.
+The spike times are stored in a dictionary, indexed by the unit ID.</p>
+<p>The SpikeManager object provides methods for computing quality metrics
+for each unit, filtering spike units based on quality metrics,
+and reporting spike unit information. These methods are used to
+analyze and process the spike time data.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_times:</span> <span class="pre">dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srate:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recording_length_t:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spike_id_type:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/spike_times.html#SpikeManager.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.__init__" title="Link to this definition">¶</a></dt>
+<dd><p>Initialize the spike manager.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.__init__" title="synapticonn.core.connections.SpikeManager.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([spike_times, time_unit, srate, ...])</p></td>
+<td><p>Initialize the spike manager.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.add_spike_time_data" title="synapticonn.core.connections.SpikeManager.add_spike_time_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_spike_time_data</span></code></a>([spike_times, ...])</p></td>
+<td><p>Add spike time data to the SpikeManager object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.filter_spike_units" title="synapticonn.core.connections.SpikeManager.filter_spike_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">filter_spike_units</span></code></a>(quality_metrics[, query, ...])</p></td>
+<td><p>Filter spike units based on quality metrics.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.get_spike_times_for_units" title="synapticonn.core.connections.SpikeManager.get_spike_times_for_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_spike_times_for_units</span></code></a>([...])</p></td>
+<td><p>Retrieve spike times for the selected units.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.report_spike_units" title="synapticonn.core.connections.SpikeManager.report_spike_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">report_spike_units</span></code></a>()</p></td>
+<td><p>Report the spike units.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.spike_unit_labels" title="synapticonn.core.connections.SpikeManager.spike_unit_labels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spike_unit_labels</span></code></a>()</p></td>
+<td><p>Retrieve the spike unit labels.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#synapticonn.core.connections.SpikeManager.spike_unit_quality" title="synapticonn.core.connections.SpikeManager.spike_unit_quality"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spike_unit_quality</span></code></a>([isi_threshold_ms, ...])</p></td>
+<td><p>Compute spike isolation quality metrics.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#id0" title="synapticonn.core.connections.SpikeManager.spike_unit_filtering"><code class="xref py py-obj docutils literal notranslate"><span class="pre">spike_unit_filtering</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.add_spike_time_data">
+<span class="sig-name descname"><span class="pre">add_spike_time_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_times:</span> <span class="pre">dict</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recording_length_t:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time_unit:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'ms'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">srate:</span> <span class="pre">float</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spike_id_type:</span> <span class="pre">type</span> <span class="pre">=</span> <span class="pre">&lt;class</span> <span class="pre">'int'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/spike_times.html#SpikeManager.add_spike_time_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.add_spike_time_data" title="Link to this definition">¶</a></dt>
+<dd><p>Add spike time data to the SpikeManager object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spike_times</strong> (<em>dict</em>) – Dictionary containing spike times for each unit.
+Indexed by unit ID.</p></li>
+<li><p><strong>recording_length_t</strong> (<em>float</em>) – Length of the recording in time units.</p></li>
+<li><p><strong>time_unit</strong> (<em>str</em>) – Unit of time for the spike times. Default is ‘ms’.
+Options include ‘s’, ‘ms’.</p></li>
+<li><p><strong>srate</strong> (<em>float</em>) – Sampling rate of the recording in Hz.</p></li>
+<li><p><strong>spike_id_type</strong> (<em>type</em>) – Type of the spike unit ID. Default is int or str.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.filter_spike_units">
+<span class="sig-name descname"><span class="pre">filter_spike_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">quality_metrics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/synapticonn/core/spike_times.html#SpikeManager.filter_spike_units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.filter_spike_units" title="Link to this definition">¶</a></dt>
+<dd><p>Filter spike units based on quality metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>quality_metrics</strong> (<em>pd.DataFrame</em>) – DataFrame containing the quality metrics for each spike unit.
+This is the dataframe outputted from the spike_unit_quality method
+and will be used to filter spike units.</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – Query to filter spike units based on the quality metrics.
+This query should be a valid pandas query</p></li>
+<li><p><strong>log</strong> (<em>bool</em>) – Whether to log the filtered spike units. Default is False.</p></li>
+<li><p><strong>overwrite</strong> (<em>bool</em>) – Whether to overwrite the existing spike_times dictionary with the filtered units.
+Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>filtered_units_df</strong> (<em>pd.DataFrame</em>) – DataFrame containing the filtered spike units based on the query.</p></li>
+<li><p><em>Log</em></p></li>
+<li><p><em>—</em></p></li>
+<li><p><em>If log is True, the method will log the removed spike units</em></p></li>
+<li><p><em>based on the query. The log will contain the unit ID and the</em></p></li>
+<li><p><em>query used to filter the units.</em></p></li>
+<li><p><em>The log file will be saved in the ‘removed_spike_units’ folder</em></p></li>
+<li><p><em>in the current working directory. The log file will be named</em></p></li>
+<li><p><em>’low_quality_units_removed.log’.</em></p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.get_spike_times_for_units">
+<span class="sig-name descname"><span class="pre">get_spike_times_for_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spike_units_to_collect</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="reference internal" href="../_modules/synapticonn/core/spike_times.html#SpikeManager.get_spike_times_for_units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.get_spike_times_for_units" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve spike times for the selected units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>spike_units_to_collect</strong> (<em>list</em>) – List of spike units to collect.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>filtered_spike_times</strong> – Filtered dictionary containing spike times for the selected units.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>By default, this method returns all spike times if no units are specified.
+If specific units are specified, then the method will return the spike times
+for those units only.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.report_spike_units">
+<span class="sig-name descname"><span class="pre">report_spike_units</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/spike_times.html#SpikeManager.report_spike_units"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.report_spike_units" title="Link to this definition">¶</a></dt>
+<dd><p>Report the spike units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>spk_unit_summary</strong> – Dictionary containing the spike unit summary.
+Includes the unit ID, number of spikes, and
+firing rate in Hz.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The spike unit summary is computed for each unit
+in the spike_times dictionary. Firing rates
+are calculated based on the total number of spikes
+and the recording length. If the time unit is in seconds,
+the firing rate is converted to Hz.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">spike_unit_filtering</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#id0" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.spike_unit_labels">
+<span class="sig-name descname"><span class="pre">spike_unit_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/synapticonn/core/spike_times.html#SpikeManager.spike_unit_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.spike_unit_labels" title="Link to this definition">¶</a></dt>
+<dd><p>Retrieve the spike unit labels.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="synapticonn.core.connections.SpikeManager.spike_unit_quality">
+<span class="sig-name descname"><span class="pre">spike_unit_quality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">isi_threshold_ms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_isi_ms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">presence_ratio_bin_duration_sec</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">presence_ratio_mean_fr_ratio_thresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">DataFrame</span></span></span><a class="reference internal" href="../_modules/synapticonn/core/spike_times.html#SpikeManager.spike_unit_quality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#synapticonn.core.connections.SpikeManager.spike_unit_quality" title="Link to this definition">¶</a></dt>
+<dd><p>Compute spike isolation quality metrics.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>isi_threshold_ms</strong> (<em>float</em>) – Threshold for the interspike interval (ISI) violations, in milliseconds.</p></li>
+<li><p><strong>min_isi_ms</strong> (<em>float</em>) – Minimum ISI value, in milliseconds.</p></li>
+<li><p><strong>presence_ratio_bin_duration_sec</strong> (<em>float</em>) – Duration of each bin for the presence ratio, in seconds.</p></li>
+<li><p><strong>presence_ratio_mean_fr_ratio_thresh</strong> (<em>float</em>) – Minimum mean firing rate ratio threshold for the presence ratio.
+This is the minimum mean firing rate that must be present in a bin
+for the unit to be considered “present” in that bin.
+By default, this is set to 0.0. This means that the unit must have
+at least one spike in each bin to be considered “present.”</p></li>
+<li><p><strong>time_unit</strong> (<em>str</em>) – Unit of time for the spike times. Default is ‘ms’.
+This is used to compute the features in the quality metrics.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>quality_metrics</strong> – DataFrame containing the quality metrics for each spike unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Quality metrics include:
+- isi_violations_ratio: Fraction of ISIs that violate the threshold.
+- isi_violations_count: Number of ISIs that violate the threshold.
+- isi_violations_of_total_spikes: Fraction of ISIs that violate the threshold out of total spikes.
+- presence_ratio: Fraction of time during a session in which a unit is spiking.
+- mean_firing_rate: Mean firing rate of the unit.
+- recording_length_sec: Length of the recording in seconds.
+- n_spikes: Number of spikes for the unit.</p>
+<p>These are computed for each spike unit in the spike_times dictionary.</p>
+<p>For further information on the quality metric calculations,
+see the respective functions in the quality_metrics module.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2024, Michael Zabolocki.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

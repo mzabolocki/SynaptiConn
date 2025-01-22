@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>synapticonn.core.spike_times &#8212; SynaptiConn 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../../_static/documentation_options.js?v=5aa371e9"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=a56c686a"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          SynaptiConn</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/mzabolocki/SynaptiConn">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<form action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <h1>Source code for synapticonn.core.spike_times</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; spike_times.py</span>
+
+<span class="sd">Object for handling spike time data.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.utils.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpikeTimesError</span><span class="p">,</span> <span class="n">DataError</span><span class="p">,</span> <span class="n">RecordingLengthError</span><span class="p">,</span> <span class="n">SamplingRateError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.utils.attribute_checks</span><span class="w"> </span><span class="kn">import</span> <span class="n">requires_arguments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.quality_metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_isi_violations</span><span class="p">,</span> <span class="n">compute_presence_ratio</span><span class="p">,</span> <span class="n">compute_firing_rates</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.core.core_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.core.info</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_unit_time_types</span><span class="p">,</span> <span class="n">get_quality_metric_keys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.utils.warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">custom_formatwarning</span>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">###############################################################################</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">formatwarning</span> <span class="o">=</span> <span class="n">custom_formatwarning</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">###############################################################################</span>
+
+
+<div class="viewcode-block" id="SpikeManager">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SpikeManager.html#synapticonn.core.connections.SpikeManager">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpikeManager</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for managing and processing spike time data.</span>
+
+<span class="sd">    This class provides methods for validating, organizing, and analyzing</span>
+<span class="sd">    spike time data for neuroscience studies. It facilitates quality control</span>
+<span class="sd">    metrics computation, spike unit filtering, and retrieval of relevant spike</span>
+<span class="sd">    unit information.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spike_times : dict</span>
+<span class="sd">        Dictionary containing spike times for each unit, indexed by unit ID.</span>
+<span class="sd">    time_unit : str</span>
+<span class="sd">        Unit of time for the spike times. Default is &#39;ms&#39;. Options include &#39;s&#39;, &#39;ms&#39;.</span>
+<span class="sd">    srate : float</span>
+<span class="sd">        Sampling rate of the recording in Hz.</span>
+<span class="sd">    recording_length_t : float</span>
+<span class="sd">        Length of the recording in the specified time unit.</span>
+<span class="sd">    spike_id_type : type</span>
+<span class="sd">        Data type of the spike unit ID. Default is `int` or `str`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spike_times : dict</span>
+<span class="sd">        Validated dictionary of spike times, indexed by unit ID.</span>
+<span class="sd">    time_unit : str</span>
+<span class="sd">        The time unit used for spike times (&#39;ms&#39; or &#39;s&#39;).</span>
+<span class="sd">    recording_length_t : float</span>
+<span class="sd">        The duration of the recording in the specified time unit.</span>
+<span class="sd">    spike_id_type : type</span>
+<span class="sd">        Data type of spike unit identifiers.</span>
+<span class="sd">    srate : float</span>
+<span class="sd">        Sampling rate of the recording in Hz.</span>
+<span class="sd">    spike_unit_filtering : bool</span>
+<span class="sd">        Tracks whether spike units have been filtered.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The SpikeManager object is used to manage spike time data.</span>
+<span class="sd">    This object is used to store and process spike times for</span>
+<span class="sd">    each unit in the recording. The object provides methods</span>
+<span class="sd">    for computing quality metrics, filtering spike units,</span>
+<span class="sd">    and reporting spike unit information.</span>
+
+<span class="sd">    The SpikeManager object is initialized with the spike times,</span>
+<span class="sd">    time unit, sampling rate, recording length, and spike ID type.</span>
+<span class="sd">    The spike times are stored in a dictionary, indexed by the unit ID.</span>
+
+<span class="sd">    The SpikeManager object provides methods for computing quality metrics</span>
+<span class="sd">    for each unit, filtering spike units based on quality metrics,</span>
+<span class="sd">    and reporting spike unit information. These methods are used to</span>
+<span class="sd">    analyze and process the spike time data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="c1"># spike unit filtering flag to track if units have been filtered</span>
+    <span class="n">spike_unit_filtering</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="SpikeManager.__init__">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SpikeManager.html#synapticonn.core.connections.SpikeManager.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_times</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;ms&#39;</span><span class="p">,</span>
+                 <span class="n">srate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">recording_length_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">spike_id_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize the spike manager. &quot;&quot;&quot;</span>
+
+        <span class="c1"># prepare the spike time data</span>
+            <span class="c1"># set the spike times, time unit, recording length, and spike ID type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_id_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">srate</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_spiketime_data</span><span class="p">(</span><span class="n">spike_times</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">,</span> <span class="n">recording_length_t</span><span class="p">,</span> <span class="n">spike_id_type</span><span class="p">,</span> <span class="n">srate</span><span class="p">)</span></div>
+
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_spike_time_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Reset the spike times data. &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">srate</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spike_id_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spike_unit_filtering</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># reset the spike unit filtering flag</span>
+
+
+<div class="viewcode-block" id="SpikeManager.add_spike_time_data">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SpikeManager.html#synapticonn.core.connections.SpikeManager.add_spike_time_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_spike_time_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_times</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">recording_length_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;ms&#39;</span><span class="p">,</span>
+                            <span class="n">srate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                            <span class="n">spike_id_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Add spike time data to the SpikeManager object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_times : dict</span>
+<span class="sd">            Dictionary containing spike times for each unit.</span>
+<span class="sd">            Indexed by unit ID.</span>
+<span class="sd">        recording_length_t : float</span>
+<span class="sd">            Length of the recording in time units.</span>
+<span class="sd">        time_unit : str</span>
+<span class="sd">            Unit of time for the spike times. Default is &#39;ms&#39;.</span>
+<span class="sd">            Options include &#39;s&#39;, &#39;ms&#39;.</span>
+<span class="sd">        srate : float</span>
+<span class="sd">            Sampling rate of the recording in Hz.</span>
+<span class="sd">        spike_id_type : type</span>
+<span class="sd">            Type of the spike unit ID. Default is int or str.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if any data is already present, then clear</span>
+        <span class="c1"># and the results to ensure object consistency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_spike_time_data</span><span class="p">()</span>
+
+        <span class="c1"># prepare the spike time data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_id_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">srate</span> <span class="o">=</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">_prepare_spiketime_data</span><span class="p">(</span><span class="n">spike_times</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">,</span> <span class="n">recording_length_t</span><span class="p">,</span> <span class="n">spike_id_type</span><span class="p">,</span> <span class="n">srate</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SpikeManager.report_spike_units">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SpikeManager.html#synapticonn.core.connections.SpikeManager.report_spike_units">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report_spike_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Report the spike units.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        spk_unit_summary : dict</span>
+<span class="sd">            Dictionary containing the spike unit summary.</span>
+<span class="sd">            Includes the unit ID, number of spikes, and</span>
+<span class="sd">            firing rate in Hz.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        The spike unit summary is computed for each unit</span>
+<span class="sd">        in the spike_times dictionary. Firing rates</span>
+<span class="sd">        are calculated based on the total number of spikes</span>
+<span class="sd">        and the recording length. If the time unit is in seconds,</span>
+<span class="sd">        the firing rate is converted to Hz.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">labels</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_unit_labels</span><span class="p">()</span>
+
+        <span class="c1"># number of spikes for each unit</span>
+        <span class="n">n_spks</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+
+        <span class="c1"># calculate firing rates for each unit</span>
+            <span class="c1"># convert to Hz if time unit is in seconds</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+            <span class="n">firing_rates</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span> <span class="o">==</span> <span class="s1">&#39;ms&#39;</span><span class="p">:</span>
+            <span class="n">firing_rates</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="p">[</span><span class="n">label</span><span class="p">])</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span> <span class="o">*</span> <span class="mi">1000</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid time_unit: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">. Must be &#39;s&#39; or &#39;ms&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="n">spk_unit_summary</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;unit_id&#39;</span><span class="p">:</span> <span class="n">labels</span><span class="p">,</span>
+                            <span class="s1">&#39;n_spikes&#39;</span><span class="p">:</span> <span class="n">n_spks</span><span class="p">,</span>
+                            <span class="s1">&#39;firing_rate_hz&#39;</span><span class="p">:</span> <span class="n">firing_rates</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">spk_unit_summary</span></div>
+
+
+
+<div class="viewcode-block" id="SpikeManager.spike_unit_labels">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SpikeManager.html#synapticonn.core.connections.SpikeManager.spike_unit_labels">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spike_unit_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Retrieve the spike unit labels. &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+
+<div class="viewcode-block" id="SpikeManager.get_spike_times_for_units">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SpikeManager.html#synapticonn.core.connections.SpikeManager.get_spike_times_for_units">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_spike_times_for_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_units_to_collect</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Retrieve spike times for the selected units.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_units_to_collect : list</span>
+<span class="sd">            List of spike units to collect.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        filtered_spike_times : dict</span>
+<span class="sd">            Filtered dictionary containing spike times for the selected units.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        By default, this method returns all spike times if no units are specified.</span>
+<span class="sd">        If specific units are specified, then the method will return the spike times</span>
+<span class="sd">        for those units only.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_units_to_collect</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Expected list of spike units. &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">spike_units_to_collect</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># return all spike times if no units are specified</span>
+        <span class="k">if</span> <span class="n">spike_units_to_collect</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No units specified. Returning all spike times.&quot;</span><span class="p">)</span>
+            <span class="n">filtered_spike_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span>
+
+        <span class="c1"># return the selected units</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">filtered_spike_times</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">spike_units_to_collect</span><span class="p">}</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SpikeTimesError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unit </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2"> not found in the spike times dictionary.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">filtered_spike_times</span></div>
+
+
+
+<div class="viewcode-block" id="SpikeManager.spike_unit_quality">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SpikeManager.html#synapticonn.core.connections.SpikeManager.spike_unit_quality">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spike_unit_quality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                           <span class="n">isi_threshold_ms</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
+                           <span class="n">min_isi_ms</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                           <span class="n">presence_ratio_bin_duration_sec</span><span class="o">=</span><span class="mi">60</span><span class="p">,</span>
+                           <span class="n">presence_ratio_mean_fr_ratio_thresh</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute spike isolation quality metrics.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        isi_threshold_ms : float</span>
+<span class="sd">            Threshold for the interspike interval (ISI) violations, in milliseconds.</span>
+<span class="sd">        min_isi_ms : float</span>
+<span class="sd">            Minimum ISI value, in milliseconds.</span>
+<span class="sd">        presence_ratio_bin_duration_sec : float</span>
+<span class="sd">            Duration of each bin for the presence ratio, in seconds.</span>
+<span class="sd">        presence_ratio_mean_fr_ratio_thresh : float</span>
+<span class="sd">            Minimum mean firing rate ratio threshold for the presence ratio.</span>
+<span class="sd">            This is the minimum mean firing rate that must be present in a bin</span>
+<span class="sd">            for the unit to be considered &quot;present&quot; in that bin.</span>
+<span class="sd">            By default, this is set to 0.0. This means that the unit must have</span>
+<span class="sd">            at least one spike in each bin to be considered &quot;present.&quot;</span>
+<span class="sd">        time_unit : str</span>
+<span class="sd">            Unit of time for the spike times. Default is &#39;ms&#39;.</span>
+<span class="sd">            This is used to compute the features in the quality metrics.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        quality_metrics : pd.DataFrame</span>
+<span class="sd">            DataFrame containing the quality metrics for each spike unit.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Quality metrics include:</span>
+<span class="sd">        - isi_violations_ratio: Fraction of ISIs that violate the threshold.</span>
+<span class="sd">        - isi_violations_count: Number of ISIs that violate the threshold.</span>
+<span class="sd">        - isi_violations_of_total_spikes: Fraction of ISIs that violate the threshold out of total spikes.</span>
+<span class="sd">        - presence_ratio: Fraction of time during a session in which a unit is spiking.</span>
+<span class="sd">        - mean_firing_rate: Mean firing rate of the unit.</span>
+<span class="sd">        - recording_length_sec: Length of the recording in seconds.</span>
+<span class="sd">        - n_spikes: Number of spikes for the unit.</span>
+
+<span class="sd">        These are computed for each spike unit in the spike_times dictionary.</span>
+
+<span class="sd">        For further information on the quality metric calculations,</span>
+<span class="sd">        see the respective functions in the quality_metrics module.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">quality_metrics</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">spks</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c1"># isi violations</span>
+            <span class="n">isi_violations</span> <span class="o">=</span> <span class="n">compute_isi_violations</span><span class="p">(</span><span class="n">spks</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span><span class="p">,</span>
+                                                    <span class="n">isi_threshold_ms</span><span class="p">,</span>
+                                                    <span class="n">min_isi_ms</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="p">)</span>
+
+            <span class="c1"># presence ratio</span>
+            <span class="n">presence_ratio</span> <span class="o">=</span> <span class="n">compute_presence_ratio</span><span class="p">(</span><span class="n">spks</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="p">,</span>
+                                                    <span class="n">presence_ratio_bin_duration_sec</span><span class="p">,</span>
+                                                    <span class="n">presence_ratio_mean_fr_ratio_thresh</span><span class="p">,</span>
+                                                    <span class="bp">self</span><span class="o">.</span><span class="n">srate</span><span class="p">)</span>
+
+            <span class="c1"># unit firing rates</span>
+            <span class="n">firing_rates</span> <span class="o">=</span> <span class="n">compute_firing_rates</span><span class="p">(</span><span class="n">spks</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span><span class="p">,</span>
+                                                <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="p">)</span>
+
+            <span class="n">quality_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">isi_violations</span>
+            <span class="n">quality_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">presence_ratio</span><span class="p">)</span>
+            <span class="n">quality_metrics</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">firing_rates</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">quality_metrics</span><span class="p">)</span><span class="o">.</span><span class="n">T</span></div>
+
+
+
+<div class="viewcode-block" id="SpikeManager.filter_spike_units">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SpikeManager.html#synapticonn.core.connections.SpikeManager.filter_spike_units">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_spike_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quality_metrics</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                           <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                           <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Filter spike units based on quality metrics.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        quality_metrics : pd.DataFrame</span>
+<span class="sd">            DataFrame containing the quality metrics for each spike unit.</span>
+<span class="sd">            This is the dataframe outputted from the spike_unit_quality method</span>
+<span class="sd">            and will be used to filter spike units.</span>
+<span class="sd">        query : str</span>
+<span class="sd">            Query to filter spike units based on the quality metrics.</span>
+<span class="sd">            This query should be a valid pandas query</span>
+<span class="sd">        log : bool</span>
+<span class="sd">            Whether to log the filtered spike units. Default is False.</span>
+<span class="sd">        overwrite : bool</span>
+<span class="sd">            Whether to overwrite the existing spike_times dictionary with the filtered units.</span>
+<span class="sd">            Default is False.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        filtered_units_df : pd.DataFrame</span>
+<span class="sd">            DataFrame containing the filtered spike units based on the query.</span>
+
+<span class="sd">        Log</span>
+<span class="sd">        ---</span>
+<span class="sd">        If log is True, the method will log the removed spike units</span>
+<span class="sd">        based on the query. The log will contain the unit ID and the</span>
+<span class="sd">        query used to filter the units.</span>
+
+<span class="sd">        The log file will be saved in the &#39;removed_spike_units&#39; folder</span>
+<span class="sd">        in the current working directory. The log file will be named</span>
+<span class="sd">        &#39;low_quality_units_removed.log&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">quality_metrics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DataError</span><span class="p">(</span><span class="s2">&quot;Quality metrics DataFrame is missing. &quot;</span>
+                            <span class="s2">&quot;Please run the spike_unit_quality method.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check the query</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;Query must be a string. Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
+        <span class="c1"># check the quality metrics type</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">quality_metrics</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">),</span> <span class="s2">&quot;Quality metrics must be a DataFrame. </span><span class="se">\</span>
+<span class="s2">                                                            Got {type(quality_metrics)} instead.&quot;</span>
+
+        <span class="c1"># check if spike units have already been filtered</span>
+        <span class="k">if</span> <span class="n">SpikeManager</span><span class="o">.</span><span class="n">spike_unit_filtering</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Spike units have already been filtered. Please re-initialize the object &quot;</span>
+                       <span class="s2">&quot;or &#39;set_spike_times&#39; to set the spike_times dict for re-filtering. &quot;</span>
+                       <span class="s2">&quot;If this was intentional, please set the &#39;overwrite&#39; parameter to True.&quot;</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="n">SpikeManager</span><span class="o">.</span><span class="n">spike_unit_filtering</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">get_quality_metric_keys</span><span class="p">())</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">quality_metrics</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Quality metrics DataFrame is missing required columns. &quot;</span>
+                   <span class="sa">f</span><span class="s2">&quot;Required columns: </span><span class="si">{</span><span class="n">get_quality_metric_keys</span><span class="p">()</span><span class="si">}</span><span class="s2">. &quot;</span>
+                   <span class="s2">&quot;Please run the spike_unit_quality method.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">DataError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># filter units based on query</span>
+        <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">filtered_units_df</span> <span class="o">=</span> <span class="n">quality_metrics</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># if no query, return the original dataframe</span>
+            <span class="n">filtered_units_df</span> <span class="o">=</span> <span class="n">quality_metrics</span>
+
+        <span class="c1"># remove filtered units from the spike times dictionary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">filtered_units_df</span><span class="o">.</span><span class="n">index</span><span class="p">}</span>
+
+        <span class="c1"># if log, track removed units</span>
+        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+
+            <span class="n">setup_log</span><span class="p">(</span><span class="n">log_folder_name</span><span class="o">=</span><span class="s1">&#39;removed_spike_units&#39;</span><span class="p">,</span>
+                      <span class="n">log_fname</span><span class="o">=</span><span class="s1">&#39;low_quality_units_removed.log&#39;</span><span class="p">)</span>
+
+            <span class="n">removed_units</span> <span class="o">=</span> <span class="n">quality_metrics</span><span class="p">[</span><span class="o">~</span><span class="n">quality_metrics</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">filtered_units_df</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">removed_units</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="n">log_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;unit_id: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> - unit removed from original dataframe with query </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">log_msg</span><span class="p">)</span>
+
+        <span class="n">SpikeManager</span><span class="o">.</span><span class="n">spike_unit_filtering</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="n">filtered_units_df</span></div>
+
+
+
+    <span class="nd">@requires_arguments</span><span class="p">(</span><span class="s1">&#39;spike_id_type&#39;</span><span class="p">,</span><span class="s1">&#39;srate&#39;</span><span class="p">,</span> <span class="s1">&#39;spike_times&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;recording_length_t&#39;</span><span class="p">,</span> <span class="s1">&#39;time_unit&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_spiketime_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_times</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">recording_length_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">spike_id_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                <span class="n">srate</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">float</span> <span class="ow">or</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Prepare the spike time data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_times : dict</span>
+<span class="sd">            Dictionary containing spike times for each unit.</span>
+<span class="sd">            Indexed by unit ID.</span>
+<span class="sd">        srate : float or int</span>
+<span class="sd">            Sampling rate of the recording in Hz.</span>
+<span class="sd">        time_unit : str</span>
+<span class="sd">            Unit of time for the spike times. Default is &#39;ms&#39;.</span>
+<span class="sd">            Options include &#39;s&#39;, &#39;ms&#39;.</span>
+<span class="sd">        recording_length_t : float</span>
+<span class="sd">            Length of the recording in time units.</span>
+<span class="sd">        spike_id_type : type</span>
+<span class="sd">            Type of the spike unit ID. Default is int or str.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Returns the validated spike times, time unit, recording length, and spike ID type.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">## sampling rate checks - run these checks on the sampling rate input</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">srate</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">SamplingRateError</span><span class="p">(</span><span class="s2">&quot;Sampling rate must be a float or int.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">srate</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SamplingRateError</span><span class="p">(</span><span class="s2">&quot;Sampling rate must be greater than 0.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">srate</span> <span class="o">&lt;</span> <span class="mi">5000</span> <span class="ow">or</span> <span class="n">srate</span> <span class="o">&gt;</span> <span class="mi">30_000</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Sampling rate is outside the typical range of 5000-30,000 Hz. &quot;</span>
+                          <span class="s2">&quot;Please verify the sampling rate used to perform spike unit extractions. &quot;</span>
+                          <span class="s2">&quot;Please taken into account the Nyquist frequency when analyzing the data. &quot;</span>
+                          <span class="s2">&quot;If this is intentional, please ignore this warning.&quot;</span><span class="p">)</span>
+
+        <span class="c1">## spike time checks - run these checks on the spike times dict input</span>
+
+        <span class="c1"># check that spike_times is a dictionary</span>
+            <span class="c1"># see documentation for more information on the expected format</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">spike_times</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">SpikeTimesError</span><span class="p">(</span><span class="s2">&quot;Spike times must be a dictionary. Each key should be the unit ID.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check that all keys in spike_times match the expected type</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">spike_id_type</span><span class="p">)</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">spike_times</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="n">SpikeTimesError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;All keys in spike_times must be of type &#39;</span><span class="si">{</span><span class="n">spike_id_type</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&#39;. &quot;</span>
+                <span class="s2">&quot;Please verify the unit IDs or update the spike_id_type.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="c1"># validate the spike times for each unit</span>
+        <span class="k">for</span> <span class="n">unit_id</span><span class="p">,</span> <span class="n">spks</span> <span class="ow">in</span> <span class="n">spike_times</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># check if spike times array is empty</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spks</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SpikeTimesError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spike times for unit </span><span class="si">{</span><span class="n">unit_id</span><span class="si">}</span><span class="s2"> are empty. Please check the data.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># check for non-negative spike times</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">spks</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">SpikeTimesError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spike times for unit </span><span class="si">{</span><span class="n">unit_id</span><span class="si">}</span><span class="s2"> must be non-negative.&quot;</span><span class="p">)</span>
+
+            <span class="c1"># check that each spike time is a float</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">spks</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">SpikeTimesError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Spike times for unit </span><span class="si">{</span><span class="n">unit_id</span><span class="si">}</span><span class="s2"> must be of type &#39;float&#39;. &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;Found type &#39;</span><span class="si">{</span><span class="n">spks</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&#39; instead.&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># check if any nan or inf values in spike times</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">spks</span><span class="p">))</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">spks</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="n">SpikeTimesError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spike times for unit </span><span class="si">{</span><span class="n">unit_id</span><span class="si">}</span><span class="s2"> contain NaN or Inf values.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check the time unit type</span>
+        <span class="n">time_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_unit_check</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span>
+
+        <span class="c1"># ensure spike times do not exceed recording length</span>
+            <span class="c1"># if so, probably an error in the recording length, spike times or time unit</span>
+        <span class="k">for</span> <span class="n">unit_id</span><span class="p">,</span> <span class="n">spks</span> <span class="ow">in</span> <span class="n">spike_times</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">spks</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">recording_length_t</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spike times for unit </span><span class="si">{</span><span class="n">unit_id</span><span class="si">}</span><span class="s2"> exceed the recording length. &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;Max spike time: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">spks</span><span class="p">)</span><span class="si">}</span><span class="s2">, Recording length: </span><span class="si">{</span><span class="n">recording_length_t</span><span class="si">}</span><span class="s2">. &quot;</span>
+                       <span class="sa">f</span><span class="s2">&quot;Check that the recording length is correct and in </span><span class="si">{</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">RecordingLengthError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># check the time unit matches the recording length</span>
+            <span class="c1"># raise a warning if the spike times exceed the recording length</span>
+        <span class="n">max_spk_time</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">spks</span><span class="p">)</span> <span class="k">for</span> <span class="n">spks</span> <span class="ow">in</span> <span class="n">spike_times</span><span class="o">.</span><span class="n">values</span><span class="p">()])</span>
+        <span class="k">if</span> <span class="n">max_spk_time</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="o">*</span><span class="n">recording_length_t</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Unit is firing across less than 50</span><span class="si">% o</span><span class="s2">f the recording length. &quot;</span>
+                   <span class="s2">&quot;This may lead to unexpected results. Please check the spike times and recording length &quot;</span>
+                   <span class="s2">&quot;passed to the SpikeManager object. If this is intentional, please ignore this warning.&quot;</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">spike_times</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">,</span> <span class="n">recording_length_t</span><span class="p">,</span> <span class="n">spike_id_type</span><span class="p">,</span> <span class="n">srate</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_time_unit_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Check the time unit. &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">time_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get_unit_time_types</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Time unit must be in </span><span class="si">{</span><span class="n">get_unit_time_types</span><span class="p">()</span><span class="si">}</span><span class="s2">. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">time_unit</span><span class="si">}</span><span class="s2"> instead.&quot;</span>
+                <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">time_unit</span></div>
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2024, Michael Zabolocki.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

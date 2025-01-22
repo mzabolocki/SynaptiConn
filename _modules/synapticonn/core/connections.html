@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../../../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>synapticonn.core.connections &#8212; SynaptiConn 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/bootstrap-sphinx.css?v=284a2d1d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <script src="../../../_static/documentation_options.js?v=5aa371e9"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../_static/copybutton.js?v=a56c686a"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../../_static/js/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="../../../_static/js/jquery-fix.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-3.4.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../../_static/bootstrap-sphinx.js"></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../../index.html">
+          SynaptiConn</a>
+        <span class="navbar-text navbar-version pull-left"><b></b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../../api.html">API</a></li>
+                <li><a href="../../../auto_examples/index.html">Examples</a></li>
+                <li><a href="https://github.com/mzabolocki/SynaptiConn">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+      <div class="col-md-3">
+        <div id="sidebar" class="bs-sidenav" role="complementary">
+<form action="../../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+        </div>
+      </div>
+    <div class="body col-md-9 content" role="main">
+      
+  <h1>Source code for synapticonn.core.connections</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot; connections.py</span>
+
+<span class="sd">Base model object, which is used to quantify monosynaptic connections between neurons.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.core.spike_times</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpikeManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.plots</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_acg</span><span class="p">,</span> <span class="n">plot_ccg</span><span class="p">,</span> <span class="n">plot_ccg_synaptic_strength</span><span class="p">,</span> <span class="n">plot_spiketrain</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.monosynaptic_connections.ccg_synaptic_strength</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_synaptic_strength</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.monosynaptic_connections.ccg_connection_type</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_putative_connection_type</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.postprocessing.crosscorrelograms</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_crosscorrelogram</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.features</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_peak_latency</span><span class="p">,</span> <span class="n">compute_ccg_bootstrap</span><span class="p">,</span> <span class="n">compute_ccg_cv</span><span class="p">,</span> <span class="n">compute_peak_amp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.core.core_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_validate_spike_pairs</span><span class="p">,</span> <span class="n">_validate_parameter</span><span class="p">,</span> <span class="n">setup_log</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.core.info</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_available_processing_methods</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.utils.errors</span><span class="w"> </span><span class="kn">import</span> <span class="n">SpikeTimesError</span><span class="p">,</span> <span class="n">DataError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.utils.attribute_checks</span><span class="w"> </span><span class="kn">import</span> <span class="n">requires_arguments</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.utils.report</span><span class="w"> </span><span class="kn">import</span> <span class="n">gen_model_results_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.utils.warnings</span><span class="w"> </span><span class="kn">import</span> <span class="n">custom_formatwarning</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">synapticonn.utils.data_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatten_list</span>
+
+
+<span class="c1">###############################################################################</span>
+<span class="c1">###############################################################################</span>
+
+<span class="n">warnings</span><span class="o">.</span><span class="n">formatwarning</span> <span class="o">=</span> <span class="n">custom_formatwarning</span>
+
+<span class="c1">###############################################################################</span>
+<span class="c1">###############################################################################</span>
+
+
+<div class="viewcode-block" id="SynaptiConn">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SynaptiConn</span><span class="p">(</span><span class="n">SpikeManager</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for quantifying monosynaptic connections between neurons.</span>
+
+<span class="sd">    This class builds upon the `SpikeManager` to provide functionality for </span>
+<span class="sd">    computing, analyzing, and visualizing monosynaptic connections between </span>
+<span class="sd">    pairs of neurons based on their spike trains. Key features include </span>
+<span class="sd">    cross-correlogram computation, synaptic strength estimation, and connection </span>
+<span class="sd">    classification.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spike_times : dict</span>
+<span class="sd">        Dictionary containing spike times for each unit, indexed by unit ID. Spike</span>
+<span class="sd">        times should be a NumPy array of floats.</span>
+<span class="sd">    time_unit : str</span>
+<span class="sd">        Unit of time for the spike times. Options are &#39;ms&#39; (milliseconds) or &#39;s&#39; (seconds).</span>
+<span class="sd">    bin_size_t : float</span>
+<span class="sd">        Bin size for computing cross-correlograms.</span>
+<span class="sd">    max_lag_t : float</span>
+<span class="sd">        Maximum lag to consider when computing cross-correlograms.</span>
+<span class="sd">    method : str, optional</span>
+<span class="sd">        Method for computing synaptic strength. Default is &#39;cross-correlation&#39;.</span>
+<span class="sd">        Currently, only this method is implemented, but future versions may</span>
+<span class="sd">        include additional methods.</span>
+<span class="sd">    recording_length_t : float</span>
+<span class="sd">        Duration of the recording, in the same time unit as `time_unit`.</span>
+<span class="sd">    srate : float</span>
+<span class="sd">        Sampling rate of the recording in Hz.</span>
+<span class="sd">    spike_id_type : type</span>
+<span class="sd">        Data type of spike unit identifiers. Typically `int` or `str`.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bin_size_t : float</span>
+<span class="sd">        Bin size used for cross-correlogram computations.</span>
+<span class="sd">    max_lag_t : float</span>
+<span class="sd">        Maximum lag used for cross-correlogram computations.</span>
+<span class="sd">    method : str</span>
+<span class="sd">        The method used for synaptic strength computation.</span>
+<span class="sd">    recording_length_t : float</span>
+<span class="sd">        Total duration of the recording, in the specified time unit.</span>
+<span class="sd">    srate : float</span>
+<span class="sd">        Sampling rate of the spike data, in Hz.</span>
+<span class="sd">    spike_id_type : type</span>
+<span class="sd">        Type of spike unit identifiers (e.g., `int` or `str`).</span>
+<span class="sd">    time_unit : str</span>
+<span class="sd">        Unit of time used for computations and spike data.</span>
+<span class="sd">    pair_synaptic_strength : dict</span>
+<span class="sd">        Dictionary containing synaptic strength data for each spike pair. This </span>
+<span class="sd">        is populated after running the `fit` or `synaptic_strength` methods.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The `SynaptiConn` class is designed to process and analyze spike train data </span>
+<span class="sd">      for determining monosynaptic connections.</span>
+<span class="sd">    - If the spike times are provided in seconds, they are converted to milliseconds </span>
+<span class="sd">      internally to maintain consistency.</span>
+<span class="sd">    - The class assumes that the recording duration (`recording_length_t`) and </span>
+<span class="sd">      time unit (`time_unit`) are accurately specified.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Initialize the SynaptiConn object and compute synaptic strength:</span>
+
+<span class="sd">    &gt;&gt;&gt; synapti_conn = SynaptiConn(</span>
+<span class="sd">    ...     spike_times=spike_data,</span>
+<span class="sd">    ...     time_unit=&#39;ms&#39;,</span>
+<span class="sd">    ...     bin_size_t=1.0,</span>
+<span class="sd">    ...     max_lag_t=50.0,</span>
+<span class="sd">    ...     method=&#39;cross-correlation&#39;,</span>
+<span class="sd">    ...     recording_length_t=60000,</span>
+<span class="sd">    ...     srate=20000</span>
+<span class="sd">    ... )</span>
+<span class="sd">    &gt;&gt;&gt; synapti_conn.fit(spike_pairs=[(1, 2), (3, 4)])</span>
+<span class="sd">    &gt;&gt;&gt; print(synapti_conn.pair_synaptic_strength)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># connection filtering flag to track if spike pairs have been filtered</span>
+    <span class="n">connections_filtering</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<div class="viewcode-block" id="SynaptiConn.__init__">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_times</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;ms&#39;</span><span class="p">,</span>
+                 <span class="n">bin_size_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                 <span class="n">max_lag_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+                 <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cross-correlation&#39;</span><span class="p">,</span>
+                 <span class="n">recording_length_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">srate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">spike_id_type</span><span class="p">:</span> <span class="nb">type</span> <span class="o">=</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize the SynaptiConn object. &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">spike_times</span><span class="o">=</span><span class="n">spike_times</span><span class="p">,</span>
+                         <span class="n">time_unit</span><span class="o">=</span><span class="n">time_unit</span><span class="p">,</span>
+                         <span class="n">srate</span><span class="o">=</span><span class="n">srate</span><span class="p">,</span>
+                         <span class="n">recording_length_t</span><span class="o">=</span><span class="n">recording_length_t</span><span class="p">,</span>
+                         <span class="n">spike_id_type</span><span class="o">=</span><span class="n">spike_id_type</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin_size_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bin_size_check</span><span class="p">(</span><span class="n">bin_size_t</span><span class="p">,</span> <span class="n">max_lag_t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_lag_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_lag_check</span><span class="p">(</span><span class="n">bin_size_t</span><span class="p">,</span> <span class="n">max_lag_t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_method_check</span><span class="p">(</span><span class="n">method</span><span class="p">)</span></div>
+
+
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the object. &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+<div class="viewcode-block" id="SynaptiConn.report_correlogram_settings">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.report_correlogram_settings">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report_correlogram_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Report the bin settings. &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;Bin size: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_size_t</span><span class="si">}</span><span class="s2"> ms, Max lag: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lag_t</span><span class="si">}</span><span class="s2"> ms&quot;</span></div>
+
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_default_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the settings of the object. &quot;&quot;&quot;</span>
+
+        <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;bin_size_t&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_size_t</span><span class="p">,</span>
+            <span class="s1">&#39;max_lag_t&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_lag_t</span><span class="p">,</span>
+            <span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="p">,</span>
+            <span class="s1">&#39;recording_length_t&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span><span class="p">,</span>
+            <span class="s1">&#39;srate&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">srate</span><span class="p">,</span>
+            <span class="s1">&#39;spike_id_type&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_id_type</span><span class="p">,</span>
+            <span class="s1">&#39;time_unit&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span>
+            <span class="p">}</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;cross-correlation&#39;</span><span class="p">:</span>  <span class="c1"># default settings for the cross-correlation method</span>
+
+            <span class="n">crosscorr_connection_settings</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="s1">&#39;bin_size_t&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="s1">&#39;max_lag_t&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                <span class="s1">&#39;num_iterations&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                <span class="s1">&#39;jitter_range_t&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+                <span class="s1">&#39;half_window_t&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                <span class="s1">&#39;time_unit&#39;</span><span class="p">:</span> <span class="s1">&#39;ms&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;n_jobs&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="p">}</span>
+
+            <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">crosscorr_connection_settings</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">settings</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Only the &#39;cross-correlation&#39; method is currently implemented.&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SynaptiConn.spike_unit_ids">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.spike_unit_ids">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">spike_unit_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Return the spike unit labels. &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
+
+
+
+    <span class="nd">@requires_arguments</span><span class="p">(</span><span class="s1">&#39;bin_size_t&#39;</span><span class="p">,</span> <span class="s1">&#39;max_lag_t&#39;</span><span class="p">,</span> <span class="s1">&#39;time_unit&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_bin_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_size_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">max_lag_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Set the settings of the object.</span>
+
+<span class="sd">        Useful for changing the bin size and maximum lag after initialization.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bin_size_t : float</span>
+<span class="sd">            Bin size of the cross-correlogram or auto-correlograms.</span>
+<span class="sd">        max_lag_t : float</span>
+<span class="sd">            Maximum lag to compute the cross-correlogram.</span>
+<span class="sd">        time_unit : str</span>
+<span class="sd">            Time unit options in ms (milliseconds) or s (seconds).</span>
+<span class="sd">            These are used to set the time unit for the spike times, recording length, </span>
+<span class="sd">            bin size, and maximum lag for all processing.</span>
+<span class="sd">        verbose : bool</span>
+<span class="sd">            If True, print a message confirming the settings.</span>
+
+<span class="sd">        User Warning</span>
+<span class="sd">        ------------</span>
+<span class="sd">        Please use this method with caution. Parameters should match the spike time units.</span>
+<span class="sd">        If a change in the time unit is required, the spike times will NOT be converted to the new unit</span>
+<span class="sd">        automatically. This should be done manually before calling this method.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;This method is used to set the bin size and maximum &quot;</span>
+                      <span class="s2">&quot;lag after initialization. Please use this method with caution. &quot;</span>
+                      <span class="s2">&quot;Parameters should match the spike time units&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_unit_check</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bin_size_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bin_size_check</span><span class="p">(</span><span class="n">bin_size_t</span><span class="p">,</span> <span class="n">max_lag_t</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_lag_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_lag_check</span><span class="p">(</span><span class="n">bin_size_t</span><span class="p">,</span> <span class="n">max_lag_t</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bin size set to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_size_t</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">, &quot;</span>
+                  <span class="sa">f</span><span class="s2">&quot;and maximum lag set to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lag_t</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+
+    <span class="nd">@requires_arguments</span><span class="p">(</span><span class="s1">&#39;time_unit&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set_time_unit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">time_unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;ms&#39;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Set the time unit for the spike times, recording length, bin size, and maximum lag.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        time_unit : str</span>
+<span class="sd">            Time unit options in ms (milliseconds) or s (seconds).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;This method is used to set the time unit for the spike times. &quot;</span>
+                      <span class="s2">&quot;All processing will be based on this time unit.&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_time_unit_check</span><span class="p">(</span><span class="n">time_unit</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="SynaptiConn.reset_pair_synaptic_strength">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.reset_pair_synaptic_strength">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_pair_synaptic_strength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Reset the synaptic strength data. &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;pair_synaptic_strength&#39;</span><span class="p">):</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">pair_synaptic_strength</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DataError</span><span class="p">(</span><span class="s2">&quot;No synaptic strength data found.&quot;</span><span class="p">)</span></div>
+
+
+
+    <span class="nd">@requires_arguments</span><span class="p">(</span><span class="s1">&#39;spike_pairs&#39;</span><span class="p">,</span> <span class="s1">&#39;synaptic_strength_threshold&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_pairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">synaptic_strength_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute monosynaptic connections between neurons for a given set of spike times.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_pairs : List[Tuple]</span>
+<span class="sd">            List of spike pairs to compute the synaptic strength.</span>
+<span class="sd">            These are tuples of pre- and post-synaptic neuron IDs.</span>
+<span class="sd">            Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.</span>
+<span class="sd">        synaptic_strength_threshold : float</span>
+<span class="sd">            Threshold value for categorizing connection types. Default is 5.</span>
+<span class="sd">            This is used to categorize the connection types based on the synaptic strength values.</span>
+<span class="sd">        **kwargs : dict, optional</span>
+<span class="sd">            Additional parameters for customizing the computation. Includes:</span>
+<span class="sd">            - num_iterations : int</span>
+<span class="sd">                Number of iterations for computing synaptic strength (default: 1000).</span>
+<span class="sd">            - max_lag_t : float</span>
+<span class="sd">                Maximum lag to compute the synaptic strength (in ms, default: 25.0).</span>
+<span class="sd">            - bin_size_t : float</span>
+<span class="sd">                Bin size for computing the synaptic strength (in ms, default: 0.5).</span>
+<span class="sd">            - jitter_range_t : float</span>
+<span class="sd">                Jitter range for synaptic strength computation (in ms, default: 10.0).</span>
+<span class="sd">            - half_window_t : float</span>
+<span class="sd">                Half window size for synaptic strength computation (in ms, default: 5).</span>
+<span class="sd">            - n_jobs : int</span>
+<span class="sd">                Number of parallel jobs to use (default: -1, all cores).</span>
+
+<span class="sd">        Attributes set</span>
+<span class="sd">        --------------</span>
+<span class="sd">        pair_synaptic_strength : dict</span>
+<span class="sd">            Dictionary containing the synaptic strength for each pair of neurons.</span>
+<span class="sd">            This is stored in the object for future reference, and can be accessed using the &#39;pair_synaptic_strength&#39;</span>
+<span class="sd">            attribute. This is used to compute the connection types and features, and perform visualizations.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        SpikeTimesError</span>
+<span class="sd">            If spike pairs are not provided.</span>
+<span class="sd">        DataError</span>
+<span class="sd">            If no synaptic strength data is found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># compute and set the synaptic strength for the given spike pairs</span>
+        <span class="n">synaptic_strength_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">synaptic_strength</span><span class="p">(</span><span class="n">spike_pairs</span><span class="o">=</span><span class="n">spike_pairs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># isolate the mono-synaptic connections</span>
+        <span class="n">connection_types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monosynaptic_connection_types</span><span class="p">(</span><span class="n">synaptic_strength_threshold</span><span class="p">)</span>
+
+        <span class="c1"># extract connection features</span>
+        <span class="c1"># the number of bootstraps can be adjusted, but the default is 1000</span>
+        <span class="n">connection_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">monosynaptic_connection_features</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;n_bootstraps&#39;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+
+        <span class="c1"># merge the connection types and features</span>
+        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">connection_types</span><span class="p">:</span>
+            <span class="n">connection_types</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">connection_features</span><span class="p">[</span><span class="n">pair</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">connection_types</span>
+
+
+<div class="viewcode-block" id="SynaptiConn.report">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.report">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">report</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_pairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+               <span class="n">synaptic_strength_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+               <span class="n">concise</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+               <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute the synaptic strength and connection types, and display a report.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_pairs : List[Tuple]</span>
+<span class="sd">            List of spike pairs to compute the synaptic strength.</span>
+<span class="sd">            These are tuples of pre- and post-synaptic neuron IDs.</span>
+<span class="sd">            Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.</span>
+<span class="sd">        synaptic_strength_threshold : float</span>
+<span class="sd">            Threshold value for categorizing connection types. Default is 5.</span>
+<span class="sd">            This is used to categorize the connection types based on the synaptic strength values.</span>
+<span class="sd">        concise : bool</span>
+<span class="sd">            If True, print a concise summary of the results. This excludes blank lines.</span>
+<span class="sd">        **kwargs : dict, optional</span>
+<span class="sd">            Additional parameters for customizing the computation. Includes:</span>
+<span class="sd">            - num_iterations : int</span>
+<span class="sd">                Number of iterations for computing synaptic strength (default: 1000).</span>
+<span class="sd">            - max_lag_t : float</span>
+<span class="sd">                Maximum lag to compute the synaptic strength (in ms, default: 25.0).</span>
+<span class="sd">            - bin_size_t : float</span>
+<span class="sd">                Bin size for computing the synaptic strength (in ms, default: 0.5).</span>
+<span class="sd">            - jitter_range_t : float</span>
+<span class="sd">                Jitter range for synaptic strength computation (in ms, default: 10.0).</span>
+<span class="sd">            - half_window_t : float</span>
+<span class="sd">                Half window size for synaptic strength computation (in ms, default: 5).</span>
+<span class="sd">            - n_jobs : int</span>
+<span class="sd">                Number of parallel jobs to use (default: -1, all cores).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Data is computed and displayed in a report format.</span>
+
+<span class="sd">        Attributes set</span>
+<span class="sd">        --------------</span>
+<span class="sd">        pair_synaptic_strength : dict</span>
+<span class="sd">            Dictionary containing the synaptic strength for each pair of neurons.</span>
+<span class="sd">            This is stored in the object for future reference, and can be accessedusing the &#39;pair_synaptic_strength&#39;</span>
+<span class="sd">            attribute. This is used to compute the connection types and features, and perform visualizations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># find default settings for reporting</span>
+        <span class="c1"># and update with any additional parameters passed</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_default_settings</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">}</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;synaptic_strength_threshold&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">synaptic_strength_threshold</span>
+
+        <span class="c1"># compute the synaptic strength and connection types</span>
+        <span class="n">connection_types</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">spike_pairs</span><span class="p">,</span> <span class="n">synaptic_strength_threshold</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="c1"># print the results</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">print_connection_results</span><span class="p">(</span><span class="n">connection_types</span><span class="p">,</span> <span class="n">concise</span><span class="p">,</span> <span class="n">settings</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SynaptiConn.print_connection_results">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.print_connection_results">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">print_connection_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connection_types</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                                 <span class="n">concise</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                                 <span class="n">params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Print the results of the synaptic strength and connection types.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        connection_types : dict</span>
+<span class="sd">            Dictionary containing connection types for all pairs of spike trains.</span>
+<span class="sd">            This is computed using the &#39;fit&#39; method.</span>
+<span class="sd">        concise : bool</span>
+<span class="sd">            If True, print a concise summary of the results.</span>
+<span class="sd">            If False, print a detailed summary of the results.</span>
+<span class="sd">        params : dict</span>
+<span class="sd">            Additional parameters used for computing the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="n">gen_model_results_str</span><span class="p">(</span><span class="n">connection_types</span><span class="p">,</span> <span class="n">concise</span><span class="p">,</span> <span class="n">params</span><span class="p">))</span></div>
+
+
+
+    <span class="nd">@requires_arguments</span><span class="p">(</span><span class="s1">&#39;spike_pairs&#39;</span><span class="p">,</span> <span class="s1">&#39;num_iterations&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;max_lag_t&#39;</span><span class="p">,</span> <span class="s1">&#39;bin_size_t&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;jitter_range_t&#39;</span><span class="p">,</span> <span class="s1">&#39;half_window_t&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">synaptic_strength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                          <span class="n">spike_pairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                          <span class="n">num_iterations</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+                          <span class="n">max_lag_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">25.0</span><span class="p">,</span>
+                          <span class="n">bin_size_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
+                          <span class="n">jitter_range_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">10.0</span><span class="p">,</span>
+                          <span class="n">half_window_t</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+                          <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute the synaptic strength for the given spike pairs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_unit_ids : list</span>
+<span class="sd">            List of spike unit labels.</span>
+<span class="sd">        spike_pairs : List[Tuple]</span>
+<span class="sd">            List of spike pairs to compute synaptic strength.</span>
+<span class="sd">            These are tuples of pre- and post-synaptic neuron IDs.</span>
+<span class="sd">            Pre-synaptic neuron ID is the first element and post-synaptic neuron ID is the second element.</span>
+<span class="sd">        num_iterations : int</span>
+<span class="sd">            Number of iterations to compute the synaptic strength.</span>
+<span class="sd">        max_lag_t : float</span>
+<span class="sd">            Maximum lag to compute the synaptic strength.</span>
+<span class="sd">        bin_size_t : float</span>
+<span class="sd">            Bin size of the synaptic strength.</span>
+<span class="sd">        jitter_range_t : float</span>
+<span class="sd">            Jitter range to compute the synaptic strength.</span>
+<span class="sd">        half_window_t : float</span>
+<span class="sd">            Half window size for the synaptic strength.</span>
+<span class="sd">        n_jobs: int</span>
+<span class="sd">            Number of parallel jobs to run. Default is -1.</span>
+<span class="sd">            Use this to speed up computation.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        synaptic_strength_pairs : dict</span>
+<span class="sd">            Dictionary containing synaptic strength data for all pairs of spike trains.</span>
+<span class="sd">            This contains the mean, standard deviation, and confidence intervals of the synaptic strength</span>
+<span class="sd">            following jittering and bootstrapping.</span>
+
+<span class="sd">        Warning</span>
+<span class="sd">        -------</span>
+<span class="sd">        If spike times are not in milliseconds, a DataError is raised. Please convert to milliseconds</span>
+<span class="sd">        for synaptic strength calculations using the &#39;cross-correlation&#39; method. This is based on [1].</span>
+
+<span class="sd">        Attributes set</span>
+<span class="sd">        --------------</span>
+<span class="sd">        pair_synaptic_strength : dict</span>
+<span class="sd">            Dictionary containing the synaptic strength for each pair of neurons.</span>
+<span class="sd">            This is stored in the object for future reference, and can be accessed using the &#39;pair_synaptic_strength&#39;</span>
+<span class="sd">            attribute. This is used to compute the connection types and features, and perform visualizations.</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This method computes the synaptic strength for all pairs of spike trains. Currently, </span>
+<span class="sd">        only the cross-correlogram method is implemented. In future versions, this will be expanded</span>
+<span class="sd">        to include other types of correlation methods, such as cross-correlation, mutual information, etc.</span>
+
+<span class="sd">        The &#39;cross-correlation&#39; method computes the synaptic strength using the cross-correlogram. This method</span>
+<span class="sd">        performs the following:</span>
+<span class="sd">            1. a peak detection on the cross-correlogram to estimate the synaptic strength</span>
+<span class="sd">            2. a statistical analysis to estimate the confidence intervals</span>
+<span class="sd">            3. a jittering analysis to estimate the jittered synaptic strength.</span>
+
+<span class="sd">        Analysis is based on [1]. For excitatory connections, a threshold of 5 is recommended.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># check spike time units</span>
+            <span class="c1"># if not in milliseconds, raise an error</span>
+            <span class="c1"># this is required for synaptic strength calculations</span>
+            <span class="c1"># please see [1] for more details</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DataError</span><span class="p">(</span><span class="s2">&quot;Spike times are not in milliseconds. Please convert to milliseconds &quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot;for synaptic strength calculations using </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">method</span><span class="si">}</span><span class="s2">. &quot;</span>
+                            <span class="s2">&quot;This can be done by setting the time unit to &#39;ms&#39; using &quot;</span>
+                            <span class="s2">&quot;the set_time_unit method.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># get spike unit ids</span>
+        <span class="n">spike_unit_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_unit_ids</span><span class="p">()</span>
+
+        <span class="c1"># filter passed spike pairs for available spike units</span>
+        <span class="n">valid_spike_pairs</span> <span class="o">=</span> <span class="n">_validate_spike_pairs</span><span class="p">(</span><span class="n">spike_pairs</span><span class="p">,</span> <span class="n">spike_unit_ids</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pair_synaptic_strength</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">pre_synaptic_neuron_id</span><span class="p">,</span> <span class="n">post_synaptic_neuron_id</span> <span class="ow">in</span> <span class="n">valid_spike_pairs</span><span class="p">:</span>
+
+            <span class="c1"># retrieve spike times for the pre- and post-synaptic neurons</span>
+            <span class="n">pre_synaptic_spktimes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spike_times_for_units</span><span class="p">([</span><span class="n">pre_synaptic_neuron_id</span><span class="p">])</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pre_synaptic_neuron_id</span><span class="p">)</span>
+            <span class="n">post_synaptic_spktimes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spike_times_for_units</span><span class="p">([</span><span class="n">post_synaptic_neuron_id</span><span class="p">])</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">post_synaptic_neuron_id</span><span class="p">)</span>
+
+            <span class="c1"># calculate synaptic strength</span>
+            <span class="n">synaptic_strength_data</span> <span class="o">=</span> <span class="n">calculate_synaptic_strength</span><span class="p">(</span><span class="n">pre_synaptic_spktimes</span><span class="p">,</span>
+                                                                 <span class="n">post_synaptic_spktimes</span><span class="p">,</span>
+                                                                 <span class="n">jitter_range_t</span><span class="o">=</span><span class="n">jitter_range_t</span><span class="p">,</span>
+                                                                 <span class="n">num_iterations</span><span class="o">=</span><span class="n">num_iterations</span><span class="p">,</span>
+                                                                 <span class="n">max_lag_t</span><span class="o">=</span><span class="n">max_lag_t</span><span class="p">,</span>
+                                                                 <span class="n">bin_size_t</span><span class="o">=</span><span class="n">bin_size_t</span><span class="p">,</span>
+                                                                 <span class="n">half_window_t</span><span class="o">=</span><span class="n">half_window_t</span><span class="p">,</span>
+                                                                 <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">pair_synaptic_strength</span><span class="p">[(</span><span class="n">pre_synaptic_neuron_id</span><span class="p">,</span> <span class="n">post_synaptic_neuron_id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">synaptic_strength_data</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">pair_synaptic_strength</span>
+
+
+<div class="viewcode-block" id="SynaptiConn.monosynaptic_connection_types">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.monosynaptic_connection_types">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">monosynaptic_connection_types</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">synaptic_strength_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Categorize monosynaptic connection types based on synaptic strength data output.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        synaptic_strength_threshold : float</span>
+<span class="sd">            Threshold value for categorizing connection types.</span>
+<span class="sd">            Default is None. This is used to categorize the</span>
+<span class="sd">            connection types based on the synaptic strength values.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        connection_types : dict</span>
+<span class="sd">            Dictionary containing connection types for all pairs of spike trains.</span>
+
+<span class="sd">        Cross-correlation method notes:</span>
+<span class="sd">        ------------------------------</span>
+<span class="sd">        Based on [1], for excitatory connections, a threshold of  5 is recommended.</span>
+<span class="sd">        For inhibitory connections, a threshold of  -5 is recommended. Thresholds</span>
+<span class="sd">        can be adjusted based on the synaptic strength data.</span>
+
+<span class="sd">        Please see [1] for more details.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Currently, connection types are based on the synaptic strength values. This is </span>
+<span class="sd">        computed using the cross-correlation method. In future versions, this will be expanded</span>
+<span class="sd">        to include other types of correlation methods.</span>
+
+<span class="sd">        References</span>
+<span class="sd">        ----------</span>
+<span class="sd">        [1] STAR Protoc. 2024 Jun 21;5(2):103035. doi: 10.1016/j.xpro.2024.103035. Epub 2024 Apr 27.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;pair_synaptic_strength&#39;</span><span class="p">):</span>
+            <span class="n">connection_types</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">pair</span><span class="p">,</span> <span class="n">synaptic_strength_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pair_synaptic_strength</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">connection_types</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_putative_connection_type</span><span class="p">(</span><span class="n">synaptic_strength_data</span><span class="p">[</span><span class="s1">&#39;synaptic_strength&#39;</span><span class="p">],</span>
+                                                                      <span class="n">threshold</span><span class="o">=</span><span class="n">synaptic_strength_threshold</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">connection_types</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DataError</span><span class="p">(</span><span class="s2">&quot;No synaptic strength data found. Please run the synaptic_strength method first.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SynaptiConn.monosynaptic_connection_features">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.monosynaptic_connection_features">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">monosynaptic_connection_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_bootstraps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Extract connection features from synaptic strength data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        n_bootstraps : int</span>
+<span class="sd">            Number of bootstraps to compute the confidence intervals.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        connection_features : dict</span>
+<span class="sd">            Dictionary containing connection features for all pairs of spike trains.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;pair_synaptic_strength&#39;</span><span class="p">):</span>
+            <span class="n">connection_features</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">pair</span><span class="p">,</span> <span class="n">synaptic_strength_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pair_synaptic_strength</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">peak_time</span> <span class="o">=</span> <span class="n">compute_peak_latency</span><span class="p">(</span><span class="n">synaptic_strength_data</span><span class="p">[</span><span class="s1">&#39;original_crosscorr_counts&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">bin_size_t</span><span class="p">)</span>
+                <span class="n">peak_amp</span> <span class="o">=</span> <span class="n">compute_peak_amp</span><span class="p">(</span><span class="n">synaptic_strength_data</span><span class="p">[</span><span class="s1">&#39;original_crosscorr_counts&#39;</span><span class="p">])</span>
+                <span class="n">std_bootstrap</span> <span class="o">=</span> <span class="n">compute_ccg_bootstrap</span><span class="p">(</span><span class="n">synaptic_strength_data</span><span class="p">[</span><span class="s1">&#39;original_crosscorr_counts&#39;</span><span class="p">],</span> <span class="n">n_bootstraps</span><span class="o">=</span><span class="n">n_bootstraps</span><span class="p">)</span>
+                <span class="n">cv_crosscorr</span> <span class="o">=</span> <span class="n">compute_ccg_cv</span><span class="p">(</span><span class="n">synaptic_strength_data</span><span class="p">[</span><span class="s1">&#39;original_crosscorr_counts&#39;</span><span class="p">])</span>
+
+                <span class="n">connection_features</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;synaptic_strength&#39;</span><span class="p">:</span> <span class="n">synaptic_strength_data</span><span class="p">[</span><span class="s1">&#39;synaptic_strength&#39;</span><span class="p">]}</span>
+                <span class="n">connection_features</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">peak_time</span><span class="p">)</span>
+                <span class="n">connection_features</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">peak_amp</span><span class="p">)</span>
+                <span class="n">connection_features</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">std_bootstrap</span><span class="p">)</span>
+                <span class="n">connection_features</span><span class="p">[</span><span class="n">pair</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">cv_crosscorr</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">connection_features</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DataError</span><span class="p">(</span><span class="s2">&quot;No synaptic strength data found. Please run the synaptic_strength method first.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SynaptiConn.filter_connections">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.filter_connections">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filter_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connections_df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+                           <span class="n">query</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                           <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                           <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Filter connections based on a query string.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        connections_df : pd.DataFrame</span>
+<span class="sd">            DataFrame containing the connection data.</span>
+<span class="sd">            This DataFrame should contain the synaptic strength data</span>
+<span class="sd">            for all select pairs of spike trains.</span>
+<span class="sd">        query : str</span>
+<span class="sd">            Query string to filter the DataFrame.</span>
+<span class="sd">        log : bool</span>
+<span class="sd">            If True, print the query string used for filtering.</span>
+<span class="sd">        overwrite : bool</span>
+<span class="sd">            If True, overwrite the DataFrame with the filtered data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        connections_df_filtered : pd.DataFrame</span>
+<span class="sd">            DataFrame containing the filtered connection data.</span>
+
+<span class="sd">        Log</span>
+<span class="sd">        ---</span>
+<span class="sd">        The log parameter is used to track the removed spike pairs with</span>
+<span class="sd">        detected monosynaptic connections. This is useful for tracking</span>
+<span class="sd">        the removed spike pairs from the original DataFrame.</span>
+
+<span class="sd">        The output is saved in a log file in the</span>
+<span class="sd">        &#39;removed_spikepair_connections&#39; folder. The file is named</span>
+<span class="sd">        &#39;low_quality_connections_removed.log&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># validate the input data</span>
+        <span class="k">if</span> <span class="n">connections_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">DataError</span><span class="p">(</span><span class="s2">&quot;No connection data found. &quot;</span>
+                            <span class="s2">&quot;Please run the synaptic_strength method first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check types</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">connections_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connections data must be a pandas DataFrame. </span><span class="se">\</span>
+<span class="s2">                            Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">connections_df</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Query must be a string. Got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="si">}</span><span class="s2"> instead.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># check if the connection data is already filtered</span>
+        <span class="k">if</span> <span class="n">SynaptiConn</span><span class="o">.</span><span class="n">connections_filtering</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Connections have already been filtered. Please re-initialize the object. &quot;</span>
+                       <span class="s2">&quot;If this was intentional, please set the &#39;overwrite&#39; parameter to True.&quot;</span><span class="p">)</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="n">SynaptiConn</span><span class="o">.</span><span class="n">connections_filtering</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># filter based on the query</span>
+        <span class="k">if</span> <span class="n">query</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">connections_df_filtered</span> <span class="o">=</span> <span class="n">connections_df</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># skip filtering if no query is provided</span>
+            <span class="n">connections_df_filtered</span> <span class="o">=</span> <span class="n">connections_df</span>
+
+        <span class="c1"># if log, track removed spike pairs</span>
+        <span class="c1"># with detected monosynaptic connections</span>
+        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+
+            <span class="n">setup_log</span><span class="p">(</span><span class="n">log_folder_name</span><span class="o">=</span><span class="s1">&#39;removed_spikepair_connections&#39;</span><span class="p">,</span>
+                      <span class="n">log_fname</span><span class="o">=</span><span class="s1">&#39;low_quality_connections_removed.log&#39;</span><span class="p">)</span>
+
+            <span class="n">removed_spikepairs</span> <span class="o">=</span> <span class="n">connections_df</span><span class="p">[</span><span class="o">~</span><span class="n">connections_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">connections_df_filtered</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">removed_spikepairs</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                <span class="n">log_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;spike pair: </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> - removed from original dataframe with query </span><span class="si">{</span><span class="n">query</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">log_msg</span><span class="p">)</span>
+
+        <span class="n">SynaptiConn</span><span class="o">.</span><span class="n">connections_filtering</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="n">connections_df_filtered</span></div>
+
+
+
+<div class="viewcode-block" id="SynaptiConn.return_crosscorrelogram_data">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.return_crosscorrelogram_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">return_crosscorrelogram_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_pairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute and return the cross-correlogram data for valid spike pairs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_pairs : List[Tuple]</span>
+<span class="sd">            List of spike pairs to compute the cross-correlogram data.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        crosscorrelogram_data : dict</span>
+<span class="sd">            Dictionary containing cross-correlograms and bins for all pairs of spike trains.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Spike times are not in milliseconds. It is recommended to convert to milliseconds &quot;</span>
+                          <span class="s2">&quot;for cross-correlogram calculations.&quot;</span><span class="p">,</span> <span class="ne">UserWarning</span><span class="p">)</span>
+
+        <span class="c1"># validate spike pairs</span>
+        <span class="n">valid_spike_pairs</span> <span class="o">=</span> <span class="n">_validate_spike_pairs</span><span class="p">(</span><span class="n">spike_pairs</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_unit_ids</span><span class="p">())</span>
+
+        <span class="c1"># unpack the spike pairs to find spike IDs</span>
+        <span class="n">spike_ids</span> <span class="o">=</span> <span class="n">flatten_list</span><span class="p">(</span><span class="n">valid_spike_pairs</span><span class="p">)</span>
+        <span class="c1"># and retrieve spike times and compute cross-correlogram data</span>
+        <span class="n">spike_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spike_times_for_units</span><span class="p">(</span><span class="n">spike_ids</span><span class="p">)</span>
+
+        <span class="n">crosscorrelogram_data</span> <span class="o">=</span> <span class="n">compute_crosscorrelogram</span><span class="p">(</span>
+            <span class="n">spike_times</span><span class="p">,</span> <span class="n">valid_spike_pairs</span><span class="p">,</span> <span class="n">bin_size_t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_size_t</span><span class="p">,</span> <span class="n">max_lag_t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lag_t</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">crosscorrelogram_data</span></div>
+
+
+
+<div class="viewcode-block" id="SynaptiConn.plot_synaptic_strength">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.plot_synaptic_strength">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_synaptic_strength</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_pair</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Plot the synaptic strength for the given spike pair.</span>
+
+<span class="sd">        Note, this method requires the synaptic strength data to be computed first.</span>
+<span class="sd">        It only plots the synaptic strength for a single pair of spike trains.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_pair : tuple</span>
+<span class="sd">            Spike pair to plot the synaptic strength.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional keyword arguments passed to `plot_ccg_synaptic_strength`.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        DataError</span>
+<span class="sd">            If no synaptic strength data is found.</span>
+<span class="sd">        SpikePairError</span>
+<span class="sd">            If spike pair is not provided.</span>
+<span class="sd">        NotImplementedError</span>
+<span class="sd">            If the method is not implemented in the current package version.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">&#39;pair_synaptic_strength&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">DataError</span><span class="p">(</span><span class="s2">&quot;No synaptic strength data found. Please run &quot;</span>
+                            <span class="s2">&quot;the synaptic_strength method first.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># validate spike pair selection</span>
+        <span class="n">valid_spike_pair</span> <span class="o">=</span> <span class="n">_validate_spike_pairs</span><span class="p">([</span><span class="n">spike_pair</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_unit_ids</span><span class="p">())</span>
+
+        <span class="c1"># check if the method is implemented</span>
+        <span class="c1"># note that only the &#39;cross-correlation&#39; method is currently implemented</span>
+        <span class="c1"># and for future versions, this will be expanded to include other types of correlation methods</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;cross-correlation&#39;</span><span class="p">:</span>
+            <span class="n">plot_ccg_synaptic_strength</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pair_synaptic_strength</span><span class="p">,</span> <span class="n">valid_spike_pair</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Only the &#39;cross-correlation&#39; method is currently&quot;</span>
+                                      <span class="s2">&quot; implemented for plot. Please choose this method.&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SynaptiConn.plot_autocorrelogram">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.plot_autocorrelogram">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_autocorrelogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_units</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Plot the autocorrelogram.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_units : list</span>
+<span class="sd">            List of spike units to plot.</span>
+<span class="sd">        **kwargs</span>
+<span class="sd">            Additional keyword arguments passed to `plot_acg`.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Autocorrelograms are computed for each spike unit and plotted.</span>
+<span class="sd">        The bin size and maximum lag are set by the object parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">spike_times</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_spike_times_for_units</span><span class="p">(</span><span class="n">spike_units</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spike_times</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">SpikeTimesError</span><span class="p">(</span><span class="s2">&quot;No valid spike units to plot.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># plot the autocorrelogram</span>
+        <span class="n">plot_acg</span><span class="p">(</span><span class="n">spike_times</span><span class="p">,</span>
+                 <span class="n">bin_size_t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bin_size_t</span><span class="p">,</span>
+                 <span class="n">max_lag_t</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_lag_t</span><span class="p">,</span>
+                 <span class="n">time_unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SynaptiConn.plot_crosscorrelogram">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.plot_crosscorrelogram">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_crosscorrelogram</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_pairs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Plot the cross-correlogram for valid spike pairs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_pairs : List[Tuple]</span>
+<span class="sd">            List of spike pairs to plot.</span>
+<span class="sd">        ax : Any</span>
+<span class="sd">            Axis to plot on.</span>
+<span class="sd">        show_axes : bool</span>
+<span class="sd">            Whether to add axis labels. Default is True.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional keyword arguments passed to `plot_ccg`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">crosscorrelogram_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_crosscorrelogram_data</span><span class="p">(</span><span class="n">spike_pairs</span><span class="p">)</span>
+        <span class="n">plot_ccg</span><span class="p">(</span><span class="n">crosscorrelogram_data</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="SynaptiConn.plot_spike_train">
+<a class="viewcode-back" href="../../../generated/synapticonn.core.connections.SynaptiConn.html#synapticonn.core.connections.SynaptiConn.plot_spike_train">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">plot_spike_train</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">spike_units</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Plot the spike train for the given spike units.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        spike_units : list</span>
+<span class="sd">            List of spike units to plot.</span>
+<span class="sd">            If None, all spike units are plotted.</span>
+<span class="sd">        **kwargs : Any</span>
+<span class="sd">            Additional keyword arguments passed to `plot_spike_train`</span>
+<span class="sd">            for customizing the plot using `matplotlib`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">spike_units</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">spktimes_plotting</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span>  <span class="c1"># default to all spike times</span>
+
+        <span class="k">elif</span> <span class="n">spike_units</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span> 
+                <span class="n">spktimes_plotting</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_times</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">spike_units</span><span class="p">}</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">SpikeTimesError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Please provide valid spike unit keys to plot. &quot;</span>
+                                      <span class="sa">f</span><span class="s2">&quot;Error with spike units: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="n">plot_spiketrain</span><span class="p">(</span><span class="n">spktimes_plotting</span><span class="p">,</span> <span class="n">time_unit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_bin_size_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_size_t</span><span class="p">,</span> <span class="n">max_lag_t</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Check if the bin size is valid. &quot;&quot;&quot;</span>
+
+        <span class="n">_validate_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Bin size&quot;</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">bin_size_t</span><span class="p">,</span>
+            <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">max_value</span><span class="o">=</span><span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span><span class="p">,</span> <span class="n">max_lag_t</span><span class="p">),</span>
+            <span class="n">warn_threshold</span><span class="o">=</span><span class="mf">0.001</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time_unit</span> <span class="o">==</span> <span class="s1">&#39;s&#39;</span> <span class="k">else</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">warn_message</span><span class="o">=</span><span class="s2">&quot;Bin size is greater than 1 ms. This may lead to inaccurate results.&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">bin_size_t</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_max_lag_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bin_size_t</span><span class="p">,</span> <span class="n">max_lag_t</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Check if the maximum lag is valid. &quot;&quot;&quot;</span>
+
+        <span class="n">_validate_parameter</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Maximum lag&quot;</span><span class="p">,</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">max_lag_t</span><span class="p">,</span>
+            <span class="n">min_value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">max_value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">recording_length_t</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">max_lag_t</span> <span class="o">&lt;</span> <span class="n">bin_size_t</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Maximum lag must be greater than or equal to the bin size.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">max_lag_t</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_method_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Check if the method is valid. &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">get_available_processing_methods</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Method </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is not implemented. &quot;</span>
+                                      <span class="sa">f</span><span class="s2">&quot;Please choose from </span><span class="si">{</span><span class="n">get_available_processing_methods</span><span class="p">()</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">method</span></div>
+
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2024, Michael Zabolocki.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 8.1.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
